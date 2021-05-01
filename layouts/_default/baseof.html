@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="{{site.LanguageCode|default `en`}}">
+{{ partial "header" . }}
+    <body>
+        {{ partial "navbar" . }}
+        {{ block "main" . }}{{ end }}
+        {{ partial "footer" }}
+        {{ $bootstrap := resources.Get "js/vendor/bootstrap.min.js" }}
+        <script src="{{$bootstrap.RelPermalink}}"></script>
+    </body>
+</html>

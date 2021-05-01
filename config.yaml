@@ -1,0 +1,28 @@
+title: devon
+baseURL: https://anuragkar16.netlify.app/
+languageCode: en-us
+relativeURLs: true
+Author: Anurag kar
+
+outputs:
+  home:
+    - HTML
+
+dsiableKinds:
+  - page
+  - section
+  - taxonomy
+  - term
+
+# module:
+#   mounts:
+#     - source: node_modules/bootstrap/dist/js/bootstrap.bundle.min.js
+#       target: assets/js/bootstrap.bundle.min.js
+#     # - source: node_modules/bootstrap/dist/js/bootstrap.bundle.min.js
+#     #   target: assets/js/bootstrap.bundle.min.js
+module:
+  mounts:
+    - source: static
+      target: static
+    - source: ../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js
+      target: assets/js/bootstrap.bundle.min.js

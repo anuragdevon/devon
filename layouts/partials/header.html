@@ -1,0 +1,13 @@
+<head>
+    <title>{{site.Title}}</title>
+    <meta name="description"
+        content="Website meta description for google search results go here" />
+    <meta name="dc.relation" content="{{ .Site.BaseURL }}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    {{ $options := (dict "public/" "css/site.css" "outputStyle" "compressed") }}
+    {{ $styles := resources.Get "scss/site.scss" | toCSS $options }}
+    <link rel="stylesheet" href="{{ $styles.RelPermalink }}" media="screen">
+
+
+</head>
