@@ -1,160 +1,82 @@
 {{ define "main" }}
-<div class="about container two-col-example">
-    <div class="row">
-      <div class="col-lg-6 col-xs-12">
-        <h2>Popular Topics</h2>
-        <div class="card-deck mb-1 text-center">
-          <div class="card mb-4 box-shadow">
-            <div class="card-body">
-              <i class="fas fa-shield-alt fa-4x com-icon"></i>
-              <h4 class="card-title pricing-card-title">Password Help</h4>
-              <p class="mt-3 mb-4">Reset, change, or unlock your NT/Login password.</p>
-            </div>
-          </div>
-          <div class="card mb-4 box-shadow">
-            <div class="card-body">
-              <i class="fas fa-cloud fa-4x com-icon"></i>
-              <h4 class="card-title pricing-card-title">Cloud Conferencing Support</h4>
-              <p class="mt-3 mb-4">Setup or schedule a Webex or other video conference.</p>
-            </div>
+{{ $image := resources.Get "/images/profile/devon.jpeg" }}
+{{ $image = $image.Resize "250x250" }}
+<div class="about container-fluid text-center py-5">
+  <div class="row">
+    <div class="about col d-flex justify-content-center">
+      <div class="card1">
+        <div class="card1__side card__side--front card1__side--front">
+          <div class="card1__description"><img class="rounded" src="{{ $image.RelPermalink }}"></div>
+          <div class="name">Anurag Kar</div>
+        </div>
+        <div class="card1__side card1__side--back card1__side--back">
+          <div class="tag py-3">They support my back!</div>
+          <div class="support d-flex flex-column bd-highlight mb-3">
+            <div class="p-2 bd-highlight">My Family!</div>
+            <div class="p-2 bd-highlight">Fiverr</div>
+            <div class="p-2 bd-highlight">Github</div>
+            <div class="p-2 bd-highlight">Youtube</div>
           </div>
         </div>
-        <div class="card-deck mb-1 text-center">
-          <div class="card mb-4 box-shadow">
-            <div class="card-body">
-              <i class="fas fa-laptop fa-4x com-icon"></i>
-              <h4 class="card-title pricing-card-title">Order New Hardware</h4>
-              <p class="mt-3 mb-4">
-  Order a new laptop, phone, or other hardware.
-              </p>
-            </div>
-          </div>
-          <div class="card mb-4 box-shadow">
-            <div class="card-body">
-              <i class="fas fa-calendar-alt fa-4x com-icon"></i>
-              <h4 class="card-title pricing-card-title">Meeting Help</h4>
-              <p class="mt-3 mb-4">Learn how to schedule a meeting or reserve a conference room.</p>
-            </div>
-          </div>
-        </div>
-        <div class="card-deck mb-1 text-center">
-          <div class="card mb-4 box-shadow">
-            <div class="card-body">
-              <i class="fas fa-print fa-4x com-icon"></i>
-              <h4 class="card-title pricing-card-title">Printer Help</h4>
-              <p class="mt-3 mb-4">
-  Get help accessing a network printer or request service.
-              </p>
-            </div>
-          </div>
-          <div class="card mb-4 box-shadow">
-            <div class="card-body">
-              <i class="fas fa-podcast fa-4x com-icon"></i>
-              <h4 class="card-title pricing-card-title">Request VPN Access</h4>
-              <p class="mt-3 mb-4">Setup Comcast VPN on your company issued device.</p>
-            </div>
-          </div>
-        </div>
-        <div class="main-button"><button type="button" class="btn btn-primary com-button">See More Topics</button></div>
       </div>
-      <div class="col-lg-6 col-xs-12">
-        <h2>Announcements</h2>
-        <div class="list-group">
-          <a href="#" class="list-group-item list-group-item-action flex-column align-items-start list-com-announcements">
-            <div class="d-flex w-100 justify-content-between">
-              <h5 class="mb-1">Make Your Mobile Device More Secure</h5>
-  <!--             <small>3 days ago</small> -->
-            </div>
-            <p class="mb-1">With great power (of mobile devices), there must also come great responsibility. Three things you can do now to protect yourself and Comcast.</p>
-          </a>
-          <a href="#" class="list-group-item list-group-item-action flex-column align-items-start list-com-announcements">
-            <div class="d-flex w-100 justify-content-between">
-              <h5 class="mb-1">Upgrades to Web Security: BLUE COAT</h5>
-  <!--             <small class="text-muted">3 days ago</small> -->
-            </div>
-            <p class="mb-1">On Tuesday morning February 13, we will complete a network change that will redirect all web traffic...</p>
-          </a>
-          <a href="#" class="list-group-item list-group-item-action flex-column align-items-start list-com-announcements">
-            <div class="d-flex w-100 justify-content-between">
-              <h5 class="mb-1">Multi-Factor Authentication (MFA) for Outlook Web Access (OWA)</h5>
-  <!--             <small class="text-muted">3 days ago</small> -->
-            </div>
-            <p class="mb-1">Multi-Factor Authentication (MFA) for Outlook Web Acces​s (OWA), also known as “webmail,”...</p>
-          </a>
-          <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-            <div class="d-flex w-100 justify-content-between">
-              <h5 class="mb-1">List group item heading</h5>
-  <!--             <small class="text-muted">3 days ago</small> -->
-            </div>
-            <p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
-          </a>
+    </div>
+    <div class="col">
+      <div class="description pt-5">
+        <div class="card">
+          <div class="card-body">
+            <h3 class="card-title py-3">About</h3>
+            <h6 class="card-subtitle mb-2 text-muted">Introduction</h6>
+            <p class="card-text">Currently, I'm a student pursuing B.tech in Smart Manufacturing in Chennai.
+              My interests and passion lie in everything related to Science and Technology and I work for the development and growth of it.
+            </p>
+            <h6 class="card-subtitle mb-2 text-muted pt-3">Interests</h6>
+            <p class="card-text">Currently, I'm a student pursuing B.tech in Smart Manufacturing in Chennai.
+              My interests and passion lie in everything related to Science and Technology and I work for the development and growth of it.
+            </p>
+          </div>
         </div>
-        <div class="main-button"><button type="button" class="btn btn-primary com-button">See All Announcements & Alerts</button></div>
       </div>
-      
     </div>
   </div>
-  
-  <div class="container">
-        <div class="card-deck mb-3 text-center">
-          <div class="card mb-4 box-shadow">
-            <div class="card-body">
-              <i class="fas fa-shield-alt fa-4x com-icon"></i>
-              <h4 class="card-title pricing-card-title">Password Help</h4>
-              <p class="mt-3 mb-4">Reset, change, or unlock your NT/Login password.</p>
-            </div>
-          </div>
-          <div class="card mb-4 box-shadow">
-            <div class="card-body">
-              <i class="fas fa-cloud fa-4x com-icon"></i>
-              <h4 class="card-title pricing-card-title">Cloud Conferencing Support</h4>
-              <p class="mt-3 mb-4">Setup or schedule a Webex or other video conference.</p>
-            </div>
-          </div>
-          <div class="card mb-4 box-shadow">
-            <div class="card-body">
-              <i class="fas fa-laptop fa-4x com-icon"></i>
-              <h4 class="card-title pricing-card-title">Order New Hardware</h4>
-              <p class="mt-3 mb-4">
-  Order a new laptop, phone, or other hardware.
-              </p>
-            </div>
-          </div>
+  <!--2nd Row-->
+  <div class="row pt-5">
+    <div class="col">
+      <h3 class="text-center py-5">Skillz</h3>
+    </div>
+    <div class="col d-flex justify-content-center">
+      <div class="row">
+        <h3 class="text-center py-5">eXperience</h3>
+        <div class="col mx-auto">
+            
+            <!-- Timeline -->
+            <ul class="timeline">
+                <li class="timeline-item bg-white rounded ml-3 p-4 shadow">
+                    <div class="timeline-arrow"></div>
+                    <h2 class="h5 mb-0">Title of section 1</h2><span class="small text-gray"><i class="fa fa-clock-o mr-1"></i>21 March, 2019</span>
+                </li>
+                <li class="timeline-item bg-white rounded ml-3 p-4 shadow">
+                    <div class="timeline-arrow"></div>
+                    <h2 class="h5 mb-0">Title of section 2</h2><span class="small text-gray"><i class="fa fa-clock-o mr-1"></i>5 April, 2019</span>
+                    <!-- <p class="text-small mt-2 font-weight-light">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque scelerisque diam non nisi semper.</p> -->
+                </li>
+                <li class="timeline-item bg-white rounded ml-3 p-4 shadow">
+                    <div class="timeline-arrow"></div>
+                    <h2 class="h5 mb-0">Title of section 3</h2><span class="small text-gray"><i class="fa fa-clock-o mr-1"></i>18 August, 2019</span>
+                </li>
+                <li class="timeline-item bg-white rounded ml-3 p-4 shadow">
+                    <div class="timeline-arrow"></div>
+                    <h2 class="h5 mb-0">Title of section 4</h2><span class="small text-gray"><i class="fa fa-clock-o mr-1"></i>10 October, 2019</span>
+                </li>
+            </ul><!-- End -->
+
         </div>
+    </div>
+    </div>
   </div>
-  
-  <div class="container">
-        <div class="card-deck mb-3 text-center">
-          <div class="card mb-4 box-shadow">
-            <div class="card-body">
-              <i class="fas fa-shield-alt fa-4x com-icon"></i>
-              <h4 class="card-title pricing-card-title">Password Help</h4>
-              <p class="mt-3 mb-4">Reset, change, or unlock your NT/Login password.</p>
-            </div>
-          </div>
-          <div class="card mb-4 box-shadow">
-            <div class="card-body">
-              <i class="fas fa-cloud fa-4x com-icon"></i>
-              <h4 class="card-title pricing-card-title">Cloud Conferencing Support</h4>
-              <p class="mt-3 mb-4">Setup or schedule a Webex or other video conference.</p>
-            </div>
-          </div>
-          <div class="card mb-4 box-shadow">
-            <div class="card-body">
-              <i class="fas fa-laptop fa-4x com-icon"></i>
-              <h4 class="card-title pricing-card-title">Order New Hardware</h4>
-              <p class="mt-3 mb-4">
-  Order a new laptop, phone, or other hardware.
-              </p>
-            </div>
-          </div>
-          <div class="card mb-4 box-shadow">
-            <div class="card-body">
-              <i class="fas fa-calendar-alt fa-4x com-icon"></i>
-              <h4 class="card-title pricing-card-title">Meeting Help</h4>
-              <p class="mt-3 mb-4">Learn how to schedule a meeting or reserve a conference room.</p>
-            </div>
-          </div>
-        </div>
-  </div>
+</div>
+
+
+
+
+
 {{ end }}
