@@ -7,7 +7,16 @@ Author: Anurag kar
 outputs:
   home:
     - HTML
+    - About
 
+outputFormats:
+  About:
+    path: about
+    mediaType: text/html
+    isHTML: true
+    permalinkable: true
+    notAlternative: true
+  
 dsiableKinds:
   - page
   - section

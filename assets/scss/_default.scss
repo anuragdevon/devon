@@ -1,0 +1,16 @@
+html{
+    scroll-behavior: smooth;
+}
+body{
+    min-height: 100vh;
+    min-width: 100vw;
+    //background: linear-gradient(336deg, rgba(1,14,23,1) 0%, rgba(29,17,29,1) 100%);  
+    background: #1A1E23;
+    overflow-x:hidden;
+    // overflow-y: hidden;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+.canvas{
+
+}

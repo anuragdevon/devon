@@ -2,10 +2,14 @@
 <html lang="{{site.LanguageCode|default `en`}}">
 {{ partial "header" . }}
     <body>
-        {{ partial "navbar" . }}
+        {{ partial "navbar" }}
         {{ block "main" . }}{{ end }}
         {{ partial "footer" }}
         {{ $bootstrap := resources.Get "js/vendor/bootstrap.min.js" }}
+        {{ $site := resources.Get "js/site.js" }}
+
         <script src="{{$bootstrap.RelPermalink}}"></script>
+        <script src="{{$site.RelPermalink}}"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/js/bootstrap.min.js"></script>
     </body>
 </html>
