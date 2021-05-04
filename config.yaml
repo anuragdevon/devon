@@ -8,10 +8,34 @@ outputs:
   home:
     - HTML
     - About
+    - Blog
+    - Project
+    - Contact
 
 outputFormats:
   About:
     path: about
+    mediaType: text/html
+    isHTML: true
+    permalinkable: true
+    notAlternative: true
+
+  Blog:
+    path: blog
+    mediaType: text/html
+    isHTML: true
+    permalinkable: true
+    notAlternative: true
+
+  Project:
+    path: project
+    mediaType: text/html
+    isHTML: true
+    permalinkable: true
+    notAlternative: true
+
+  Contact:
+    path: contact
     mediaType: text/html
     isHTML: true
     permalinkable: true
@@ -23,12 +47,6 @@ dsiableKinds:
   - taxonomy
   - term
 
-# module:
-#   mounts:
-#     - source: node_modules/bootstrap/dist/js/bootstrap.bundle.min.js
-#       target: assets/js/bootstrap.bundle.min.js
-#     # - source: node_modules/bootstrap/dist/js/bootstrap.bundle.min.js
-#     #   target: assets/js/bootstrap.bundle.min.js
 module:
   mounts:
     - source: static

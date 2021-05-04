@@ -38,7 +38,7 @@
         .block {
           width: 0%;
           height: inherit;
-          background: #487ac5;
+          background: #4a535f;
           position: absolute;
           animation: mainBlock 2s cubic-bezier(.74, .06, .4, .92) forwards;
           display: flex;
@@ -57,24 +57,24 @@
           align-items: baseline;
           position: relative;
   
-          span {
-            width:0px;
-            height: 0px;
-            -webkit-border-radius: 50%;
-            -moz-border-radius: 50%;
-            border-radius: 50%;
+          // span {
+          //   width:0px;
+          //   height: 0px;
+          //   -webkit-border-radius: 50%;
+          //   -moz-border-radius: 50%;
+          //   border-radius: 50%;
   
-            background: #1c48b8;
-            -webkit-animation: load 0.6s cubic-bezier(.74, .06, .4, .92) forwards;
-            animation: popIn 0.8s cubic-bezier(.74, .06, .4, .92) forwards;
-            animation-delay: 2s;
-            margin-left: 5px;
-            margin-top: -10px;
-            position: absolute;
-            bottom: 13px;
-            right: -12px;
+          //   background: #1c48b8;
+          //   -webkit-animation: load 0.6s cubic-bezier(.74, .06, .4, .92) forwards;
+          //   animation: popIn 0.8s cubic-bezier(.74, .06, .4, .92) forwards;
+          //   animation-delay: 2s;
+          //   margin-left: 5px;
+          //   margin-top: -10px;
+          //   position: absolute;
+          //   bottom: 13px;
+          //   right: -12px;
   
-          }
+          // }
         }
       }
   
@@ -89,7 +89,7 @@
         .block {
           width: 0%;
           height: inherit;
-          background: #b26fcc;
+          background: #74acc5;
           position: absolute;
           animation: secBlock 2s cubic-bezier(.74, .06, .4, .92) forwards;
           animation-delay: 2s;
@@ -156,41 +156,41 @@
   }
   
   
-  @keyframes popIn {
-    0% {
-      width: 0px;
-      height: 0px;
-      background: #e9d856;
-      border: 0px solid #ddd;
-      opacity: 0;
-    }
-    50% {
-      width: 10px;
-      height: 10px;
-      background: #1c59a9;
-      opacity: 1;
-      bottom: 45px;
-    }
-     65% {
-        width: 7px;
-      height: 7px;
-        bottom: 0px;
-        width: 15px
-     }
-     80% {
-        width: 10px;
-      height: 10px;
-        bottom: 20px
-     }
-    100% {
-      width: 7px;
-      height: 7px;
-      background: #1c7dbd;
-      border: 0px solid rgb(209, 93, 93);
-      bottom: 13px;
+  // @keyframes popIn {
+  //   0% {
+  //     width: 0px;
+  //     height: 0px;
+  //     background: #e9d856;
+  //     border: 0px solid #ddd;
+  //     opacity: 0;
+  //   }
+  //   50% {
+  //     width: 10px;
+  //     height: 10px;
+  //     background: #1c59a9;
+  //     opacity: 1;
+  //     bottom: 45px;
+  //   }
+  //    65% {
+  //       width: 7px;
+  //     height: 7px;
+  //       bottom: 0px;
+  //       width: 15px
+  //    }
+  //    80% {
+  //       width: 10px;
+  //     height: 10px;
+  //       bottom: 20px
+  //    }
+  //   100% {
+  //     width: 7px;
+  //     height: 7px;
+  //     background: #1c7dbd;
+  //     border: 0px solid rgb(209, 93, 93);
+  //     bottom: 13px;
   
-    }
-  }
+  //   }
+  // }
   
   @keyframes secFadeIn {
     0% {
