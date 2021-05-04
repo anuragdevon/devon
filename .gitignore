@@ -1,4 +1,3 @@
 node_modules/
-public/
-resources/
 assets/js/vendor/
+# above contains bootstrap.min.js
