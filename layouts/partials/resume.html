@@ -1,0 +1,42 @@
+{{ with site.Data.resume }}
+<section id="resume" class="resume">
+  <div class="container">
+
+    <div class="section-title">
+      <h2>{{ .title }}</h2>
+      <p>{{ .description }}</p>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-6" data-aos="fade-up">
+        <div class="skills">
+          <h3 class="resume-title">{{ .topic1 }}</h3>
+          {{ range .skills }}
+          <h5>{{ .skill }}</h5>
+            {{ range .items }}
+             {{ partial "inline-svg" . }}
+            {{ end }}
+          {{ end }}
+        </div>
+
+      </div>
+      <div class="col-lg-6">
+        <h3 class="resume-title">{{ .topic2 }}</h3>
+        {{ range .experience }}
+        <div class="resume-item">
+          <h4>{{ .name }}</h4>
+          <h5>{{ .duration }}</h5>
+          <p><em>{{ .location }}</em></p>
+          <ul>
+            {{ range .description }}
+              <li>{{ . }}</li>
+            {{ end }}
+          </ul>
+        </div>
+        {{ end }}
+      </div>
+    </div>
+
+  </div>
+</section>
+{{ end }}

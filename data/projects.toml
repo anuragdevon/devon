@@ -1,0 +1,23 @@
+[[project]]
+title = "Positively"
+date = "24th-30th May 2021"
+sample = "Android-AI app made using Flutter SDK as a part of Hackathon"
+link = "https://www.google.com"
+site = "GitHub"
+image = "positively.jpeg"
+
+[[project]]
+title = "Car-Networking Simulation-Using Android"
+date = "3rd June 2021"
+sample = "Basically I will just test the required color is present in the background ..."
+link = "https://www.instructables.com/Simple-Color-Detection-Using-OpenCV/"
+site = "instructables"
+image = "carnet.png"
+
+[[project]]
+title = "Hostel Management System"
+date = "15th Dec. 2021"
+sample = "Hi, Today I'm going to show how to work with a simple LCD with the help of ..."
+link = "https://www.instructables.com/Simple-Color-Detection-Using-OpenCV/"
+site = "instructables"
+image = "hms.png"

@@ -1,0 +1,21 @@
+<footer class="container-fluid flex-shrink-0 border-top">
+    <div class="row">
+        <div class="col-12 col-md-6 text-center">
+            <p class="my-1">{{ with site.Copyright }}
+            {{ . }}
+            {{ else }}
+            &copy; {{ now.Year }} {{ site.Title }}. All rights are reserved.
+            {{ end }}
+        </p>
+        </div>
+        {{ with site.Data.footer }}
+        <div class="col-12 col-md-6 text-center">
+            <div class="d-inline-flex py-1 py-md-0 flex-wrap justify-content-center flex-row fw-bolder">
+                {{ range .social  }}
+                <a href="{{ .link }}" target="_blank"><i class="{{ .icon }} fa-2x"></i></a>
+                {{ end }}
+            </div>
+        </div>
+        {{ end }}
+    </div>
+</footer>

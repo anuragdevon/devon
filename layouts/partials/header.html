@@ -5,10 +5,10 @@
     <meta name="dc.relation" content="{{ .Site.BaseURL }}" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    {{ $options := (dict "public/" "css/site.css" "outputStyle" "compressed") }}
+        {{ $options := (dict "public/" "css/site.css" "outputStyle" "compressed") }}
     {{/* {{ $styles := resources.Get "scss/site.scss" | resources.ExecuteAsTemplate "site.scss" . | resources.ToCSS $options }} */}}
-    {{ $styles := resources.Get "scss/site.scss" | resources.ExecuteAsTemplate "style.site.scss" . | toCSS | minify | fingerprint }}
+        {{ $styles := resources.Get "scss/site.scss" | resources.ExecuteAsTemplate "style.site.scss" . | toCSS | minify | fingerprint }}
     {{/* {{ $styles := resources.Get "scss/site.scss" | toCSS $options }} */}}
-    <link rel="stylesheet" href="{{ $styles.RelPermalink }}" media="screen">
+        <link rel="stylesheet" href="{{ $styles.RelPermalink }}" media="screen">
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> -->
 </head>

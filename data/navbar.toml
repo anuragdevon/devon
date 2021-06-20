@@ -1,0 +1,19 @@
+[[links]]
+nav = "home"
+navlink = "/"
+icon = "fas fa-home"
+
+[[links]]
+nav = "about"
+navlink = "/about/"
+icon = "fas fa-user-alt"
+
+[[links]]
+nav = "projects"
+navlink = "/projects/"
+icon = "fas fa-laptop"
+
+[[links]]
+nav = "blogs"
+navlink = "/blogs/"
+icon = "fas fa-book"

@@ -1,0 +1,67 @@
+title = "Anurag Kar"
+baseURL = "https://anuragkar16.netlify.app/"
+languageCode = "en-us"
+relativeURLs = true
+Author = "Anurag kar"
+dsiableKinds = [ "page", "section", "taxonomy", "term" ]
+
+[[menus.sections]]
+name = "About"
+weight = 1
+
+[[menus.sections]]
+name = "Projects"
+weight = 2
+
+[[menus.sections]]
+name = "Blogs"
+weight = 3
+
+# [sections.params]
+# hide = true
+
+# [params]
+# myIcon = "html"
+# myIco = "css"
+# myco = "js"
+# myc = "bootstrap"
+
+[outputs]
+home = [ "HTML", "About", "Blog", "Project" ]
+
+[outputFormats.About]
+path = "about"
+mediaType = "text/html"
+isHTML = true
+permalinkable = true
+notAlternative = true
+
+[outputFormats.Blog]
+path = "blogs"
+mediaType = "text/html"
+isHTML = true
+permalinkable = true
+notAlternative = true
+
+[outputFormats.Project]
+path = "projects"
+mediaType = "text/html"
+isHTML = true
+permalinkable = true
+notAlternative = true
+
+[social]
+email = "mailto:mars@iiitdm.ac.in"
+instagram = "https://instagram.com/mars_iiitdm"
+linkedin = "https://www.linkedin.com/company/mars-rover-society"
+youtube = "https://www.youtube.com/channel/UCj1VqrHhDte54oLgPG4xpuQ"
+github = "https://github.com/mars-rover-society"
+
+
+[[module.mounts]]
+source = "static"
+target = "static"
+
+[[module.mounts]]
+source = "../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
+target = "assets/js/bootstrap.bundle.min.js"

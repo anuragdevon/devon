@@ -1,22 +1,36 @@
-<div class="profile text-center" id="profile">
-    <div>Hi!</div> 
-    <div> 
-    <span class="mx-3"> I'm Anurag Kar</span>
-    </div>
-</div>
+{{ $image := resources.Get "/images/laptop.png" }}
+{{ $image = $image.Resize "270x270" }}
 
-<div class="container1">
-    <div class="box">
-
-        <div class="title">
-            <span class="block"></span>
-            <h1>Python Developer</h1>
+<section id="hero" class="hero">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4">
+                <img src="{{ $image.RelPermalink }}" class="img-fluid laptop" alt="">
+            </div>
+            <div class="col-lg-8 pt-4 pt-lg-0">
+                <div class="wrapper">
+                    <div class="typing-demo1">
+                    Hi!
+                    </div>
+                </div>
+                <div class="wrapper">
+                    <div class="typing-demo">
+                    I'm Anurag Kar
+                    </div>
+                </div>
+                </div>
+            </div>
         </div>
-
-        <div class="role">
-            <div class="block"></div>
-            <p>Software and Web-Dev.</p>
-        </div>
-
     </div>
-</div>
+</section>
+
+<!-- <div class="about">
+    <div class="container"> 
+        <div class="profile text-center" id="profile">
+            <div>Hi!</div> 
+            <div> 
+            <span class="mx-3"> I'm Anurag Kar</span>
+            </div>
+        </div>
+    </div>
+</div> -->

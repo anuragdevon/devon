@@ -1,0 +1,35 @@
+footer {
+    background-color: white;
+    // position: absolute;
+    // bottom: 0;
+    // border-top: 1px solid #149ddd !important;
+    font-weight: bold;
+    font-size: 0.8rem;
+    padding-top: 1.8rem;
+    padding-bottom: 1.8rem;
+    a {
+        text-decoration: none;
+        @include margin(0 $spacer);
+        @include font-size(0.8em);
+    }
+    p{
+        @include media-breakpoint-down(md) {
+            text-align: center;
+        }
+    }
+}
+.fa-envelope:before {
+   color: black;
+}
+.fa-github:before{
+    color: rgb(38, 38, 38);
+}
+.fa-youtube:before{
+    color: #c4302b;
+}
+.fa-twitter:before{
+    color: #00acee;
+}
+.fa-linkedin-in:before{
+    color: #0072b1;
+}

@@ -1,202 +1,45 @@
-.profile{
-    color: white;
-    div {
-        padding-top: 5rem;
-    font-size: 5rem;
-    display:inline-block;
-    overflow:hidden;
-    white-space:nowrap;
+.wrapper {
+    // height: 100vh;
+    /*This part is important for centering*/
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .typing-demo {
+    width: 14ch;
+    animation: typing 1.4s steps(14), blink .5s step-end infinite alternate;
+    white-space: nowrap;
+    overflow: hidden;
+    // white-space: inherit;
+    border-right: 3px solid;
+    font-family: monospace;
+    font-size: 1.8em;
+  }
+  .typing-demo1 {
+    width: 2ch;
+    animation: typing 0.2s steps(2), blink .5s step-end infinite alternate;
+    white-space: nowrap;
+    overflow: hidden;
+    // white-space: inherit;
+    // border-right: 3px solid;
+    font-family: monospace;
+    font-size: 2em;
+  }
+  
+  @keyframes typing {
+    from {
+      width: 0
     }
-
-    div:last-of-type {
-    // width:0px;
-    animation: reveal 3s;
+  }
+      
+  @keyframes blink {
+    50% {
+      border-color: transparent
     }
-
-    @keyframes reveal {
-        0% {opacity:0;width:0px;}
-        50% {opacity:1;width:0px;}
-        100% {width:35.5rem;}
+  }
+.hero{
+    .row{
+        text-align: center;
     }
 }
-
-// include the space
-
-.container1 {
-  overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  
-      .title {
-        width: 100%;
-        position: relative;
-        display: flex;
-        align-items: center;
-        height: 50px;
-  
-        .block {
-          width: 0%;
-          height: inherit;
-          background: #4a535f;
-          position: absolute;
-          animation: mainBlock 2s cubic-bezier(.74, .06, .4, .92) forwards;
-          display: flex;
-        }
-  
-        h1 {
-          font-family: 'Poppins';
-          color: #fff;
-          font-size: 32px;
-          -webkit-animation: mainFadeIn 2s forwards;
-          -o-animation: mainFadeIn 2s forwards;
-          animation: mainFadeIn 2s forwards;
-          animation-delay: 1.6s;
-          opacity: 0;
-          display: flex;
-          align-items: baseline;
-          position: relative;
-  
-          // span {
-          //   width:0px;
-          //   height: 0px;
-          //   -webkit-border-radius: 50%;
-          //   -moz-border-radius: 50%;
-          //   border-radius: 50%;
-  
-          //   background: #1c48b8;
-          //   -webkit-animation: load 0.6s cubic-bezier(.74, .06, .4, .92) forwards;
-          //   animation: popIn 0.8s cubic-bezier(.74, .06, .4, .92) forwards;
-          //   animation-delay: 2s;
-          //   margin-left: 5px;
-          //   margin-top: -10px;
-          //   position: absolute;
-          //   bottom: 13px;
-          //   right: -12px;
-  
-          // }
-        }
-      }
-  
-      .role {
-        width: 100%;
-        position: relative;
-        display: flex;
-        align-items: center;
-        height: 30px;
-        margin-top: -10px;
-  
-        .block {
-          width: 0%;
-          height: inherit;
-          background: #74acc5;
-          position: absolute;
-          animation: secBlock 2s cubic-bezier(.74, .06, .4, .92) forwards;
-          animation-delay: 2s;
-          display: flex;
-        }
-  
-        p {
-          animation: secFadeIn 2s forwards;
-          animation-delay: 3.2s;
-          opacity: 0;
-           font-weight: 400;
-          font-family: 'Lato';
-          color: #ffffff;
-          font-size: 12px;
-          text-transform: uppercase;
-          letter-spacing: 5px;
-        }
-      }
-    
-  } 
-  
-  
-  @keyframes mainBlock {
-    0% {
-      width: 0%;
-      left: 0;
-  
-    }
-    50% {
-      width: 100%;
-      left: 0;
-  
-    }
-    100% {
-      width: 0;
-      left: 100%;
-    }
-  }
-  
-  @keyframes secBlock {
-    0% {
-      width: 0%;
-      right: 0;
-  
-    }
-    50% {
-      width: 100%;
-      right: 0;
-  
-    }
-    100% {
-      width: 0;
-      right: 100%;
-    }
-  }
-  
-  @keyframes mainFadeIn {
-    0% {
-      opacity: 0;
-    }
-    100% {
-      opacity: 1;
-    }
-  }
-  
-  
-  // @keyframes popIn {
-  //   0% {
-  //     width: 0px;
-  //     height: 0px;
-  //     background: #e9d856;
-  //     border: 0px solid #ddd;
-  //     opacity: 0;
-  //   }
-  //   50% {
-  //     width: 10px;
-  //     height: 10px;
-  //     background: #1c59a9;
-  //     opacity: 1;
-  //     bottom: 45px;
-  //   }
-  //    65% {
-  //       width: 7px;
-  //     height: 7px;
-  //       bottom: 0px;
-  //       width: 15px
-  //    }
-  //    80% {
-  //       width: 10px;
-  //     height: 10px;
-  //       bottom: 20px
-  //    }
-  //   100% {
-  //     width: 7px;
-  //     height: 7px;
-  //     background: #1c7dbd;
-  //     border: 0px solid rgb(209, 93, 93);
-  //     bottom: 13px;
-  
-  //   }
-  // }
-  
-  @keyframes secFadeIn {
-    0% {
-      opacity: 0;
-    }
-    100% {
-      opacity: 0.5;
-    }
-  }

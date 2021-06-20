@@ -1,55 +1,53 @@
-@import url(https://fonts.googleapis.com/css?family=Lato);
-.nav{
-    body {
-    display: flex;
-    // height: 100vh;
-    // justify-content: center;
-    // align-items: center;
-    // text-align: center;
-    // background: #1A1E23;
-    }
-
-    ul {
-    display: flex;
-    flex-direction: row;
-    align-items: start;
-    list-style-type: none;
-
-    li {
-        padding: 1rem;
-
-        a {
-        position: relative;
-        display: block;
-        padding: 4px 0;
-        font-family: Lato, sans-serif;
-        color: #ecf0f1;
+nav{
+  // padding: 0.3rem 0rem !important;
+  //   border-bottom: 1px solid #149ddd !important;
+    background-color: #fdfeff;
+    transition: 0.3s;
+    a {
+        font-size: 0.8rem;
+        font-weight: bold;
+        color: black;
         text-decoration: none;
-        text-transform: uppercase;
-        transition: 0.5s;
-
-        &::after {
-            position: absolute;
-            content: "";
-            top: 100%;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: #3498db;
-            transform: scaleX(0);
-            transform-origin: right;
-            transition: transform 0.5s;
-        }
-
-        &:hover {
-            color: #95a5a6;
-        }
-
-        &:hover::after {
-            transform: scaleX(1);
-            transform-origin: left;
-        }
-        }
+        display: inline-block;
+        position: relative;
+      }
+      a:hover{
+          color: #149ddd;
+      }
+      
+      /*effect-underline*/
+      a.effect-underline:after {
+        content: '';
+        position: absolute;
+        left: 0;
+        display: inline-block;
+        height: 2em;
+        width: 100%;
+        border-bottom: 4px solid;
+        margin-top: 10px;
+        opacity: 0;
+        transition: opacity 0.35s, -webkit-transform 0.35s;
+        transition: opacity 0.35s, transform 0.35s;
+        transform: scale(0,0.2);
+        transform: scale(0,0.2);
+      }
+      
+      a.effect-underline:hover:after {
+        opacity: 1;
+        transform: scale(1);
+        transform: scale(1);
+        color: #149ddd;
+      }
+    .navbar-toggler:focus{
+        box-shadow: none;
     }
+    li{
+      margin-left: 16px ;
+      margin-right: 16px;
+      @include media-breakpoint-down(md) { 
+        margin-left: auto;
+        margin-right: auto;
+      }
     }
+
 }

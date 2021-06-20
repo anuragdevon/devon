@@ -1,117 +1,33 @@
 {{ define "main" }}
-<div class="container">
-    <div class="courses-container py-3">
-        <div class="course">
-            <div class="course-preview">
-                <h6>POST</h6>
-                <h2>Graph Generator using C++</h2>
-                <a href="#">View all chapters <i class="fas fa-chevron-right"></i></a>
-            </div>
-            <div class="course-info">
-                <div class="progress-container">
-                    <!-- <div class="progress"></div>
-                    <span class="progress-text">
-                        6/9 Challenges
-                    </span> -->
-                </div>
-                <!-- <h6>Chapter 4</h6> -->
-                <h4>Using C++ and OpenGL to create graph plotter. This was done as a part of SciLAB Hackathon.</h4>
-                <button class="btn">View</button>
-            </div>
-        </div>
-    </div>
-    <div class="courses-container py-3">
-        <div class="course">
-            <div class="course-preview">
-                <h6>POST</h6>
-                <h2>Graph Generator using C++</h2>
-                <a href="#">View all chapters <i class="fas fa-chevron-right"></i></a>
-            </div>
-            <div class="course-info">
-                <div class="progress-container">
-                    <!-- <div class="progress"></div>
-                    <span class="progress-text">
-                        6/9 Challenges
-                    </span> -->
-                </div>
-                <!-- <h6>Chapter 4</h6> -->
-                <h4>Using C++ and OpenGL to create graph plotter. This was done as a part of SciLAB Hackathon.</h4>
-                <button class="btn">View</button>
-            </div>
-        </div>
-    </div>
-    <div class="courses-container py-3">
-        <div class="course">
-            <div class="course-preview">
-                <h6>POST</h6>
-                <h2>Graph Generator using C++</h2>
-                <a href="#">View all chapters <i class="fas fa-chevron-right"></i></a>
-            </div>
-            <div class="course-info">
-                <div class="progress-container">
-                    <!-- <div class="progress"></div>
-                    <span class="progress-text">
-                        6/9 Challenges
-                    </span> -->
-                </div>
-                <!-- <h6>Chapter 4</h6> -->
-                <h4>Using C++ and OpenGL to create graph plotter. This was done as a part of SciLAB Hackathon.</h4>
-                <button class="btn">View</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-
-
-
-
-<!-- <div class="container-fluid">
-  <section id="minimal-statistics">
-    <div class="row">
-      <div class="col-12 mt-3 mb-1">
-        <h4 class="text-uppercase">Minimal Statistics Cards</h4>
-        <p>Statistics on minimal cards.</p>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-xl-3 col-sm-6 col-12"> 
-        <div class="card">
-          <div class="card-content">
-            <div class="card-body">
-              <div class="media d-flex">
-                <div class="align-self-center">
-                  <i class="icon-pencil primary font-large-2 float-left"></i>
-                </div>
-                <div class="media-body text-right">
-                  <h3>278</h3>
-                  <span>New Posts</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-xl-3 col-sm-6 col-12">
-        <div class="card">
-          <div class="card-content">
-            <div class="card-body">
-              <div class="media d-flex">
-                <div class="align-self-center">
-                  <i class="icon-speech warning font-large-2 float-left"></i>
-                </div>
-                <div class="media-body text-right">
-                  <h3>156</h3>
-                  <span>New Comments</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+{{ with site.Data.blogs }}
+<section id="blog">
+	<div class="container blog">
+		<div class="row">
+		{{ range .blogs}}
+		  <div class="col-12 col-sm-8 col-md-6 col-lg-4 py-3">
+			<div class="card">
+			  <div class="card-body">
+				<h4 class="card-title">{{ .title }}</h4>
+				<small class="text-muted cat">
+				  <i class="far fa-clock text-info"></i> {{ .time }} to read
+				</small>
+				<p class="card-text">{{.sample }}</p>
+				<button class="custom-btn btn-11">Read</button>
+			  </div>
+			  <div class="card-footer text-muted d-flex justify-content-between bg-transparent border-top-0">
+				<div class="views">{{ .date }}
+				</div>
+				<div class="stats">
+					{{ $icon := .site }}
+					{{ partial "inline-svg" $icon }}
+				</div>
+				 
+			  </div>
+			</div>
+		  </div>
+		  {{ end }}
+		</div>
+	</div>	
 </section>
-</div> -->
-
+{{ end }}
 {{ end }}
