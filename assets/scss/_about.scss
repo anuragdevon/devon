@@ -8,7 +8,13 @@
     list-style: none;
     padding: 0;
   }
-  
+.about{
+  .row{
+    @include media-breakpoint-down(md){
+      align-items: center;
+    }
+  }
+}
   .about .content ul li {
     margin-bottom: 20px;
     display: flex;
