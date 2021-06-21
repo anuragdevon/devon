@@ -12,15 +12,12 @@
 				 {{ .date }}
 				</small>
 				<p class="card-text">{{ .sample }}</p>
-                <div class="d-flex justify-content-between">
-                  {{/*  {{ with resources.GetMatch (print "images/projects/" .image) }} */}} 
-                  {{/* {{ with .Resize "175x80" }} */}}  
+                <div class="d-flex justify-content-between"> 
                     <div>
 						{{ range .tech}}
 							{{ $icon := . }}
 							{{ partial "inline-svg" $icon }}
 						{{ end }}
-                        <!-- <img class="img-fluid d-block mx-auto" src="" alt="some" height="{{.Height}}" width="{{.Width}}"> -->
                     </div>
 					<a href="{{ .link }}"><div><button class="custom-btn btn-11">View</button></div></a>
                 </div>

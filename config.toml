@@ -1,8 +1,13 @@
 title = "Anurag Kar"
 baseURL = "https://anuragkar.netlify.app/"
+languageName = "English"
 languageCode = "en-us"
 relativeURLs = true
-Author = "Anurag kar"
+
+[params]
+  author = "Anurag Kar"
+  description = "Devon's Portfolio"
+
 dsiableKinds = [ "page", "section", "taxonomy", "term" ]
 
 [[menus.sections]]
@@ -16,15 +21,6 @@ weight = 2
 [[menus.sections]]
 name = "Blogs"
 weight = 3
-
-# [sections.params]
-# hide = true
-
-# [params]
-# myIcon = "html"
-# myIco = "css"
-# myco = "js"
-# myc = "bootstrap"
 
 [outputs]
 home = [ "HTML", "About", "Blog", "Project" ]
@@ -50,12 +46,17 @@ isHTML = true
 permalinkable = true
 notAlternative = true
 
+enableEmoji = true
+enableGitInfo = true
+enableRobotsTXT = true
+canonifyURLs = true
+
 [social]
-email = "mailto:mars@iiitdm.ac.in"
-instagram = "https://instagram.com/mars_iiitdm"
-linkedin = "https://www.linkedin.com/company/mars-rover-society"
-youtube = "https://www.youtube.com/channel/UCj1VqrHhDte54oLgPG4xpuQ"
-github = "https://github.com/mars-rover-society"
+email = "mailto:anuragkar16@gmail.com"
+twitter = "https://twitter.com/AnuragKar016"
+linkedin = "https://www.linkedin.com/in/anurag-kar-472587192/"
+youtube = "https://www.youtube.com/channel/UCrWytD5s1b29limBpsis9RQ"
+github = "https://github.com/anuragdevon"
 
 
 [[module.mounts]]

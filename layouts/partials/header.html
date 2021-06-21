@@ -1,14 +1,12 @@
 <head>
-    <title>{{site.Title}}</title>
-    <meta name="description"
-        content="Website meta description for google search results go here" />
+    <title>{{ .Site.Title }}</title>
+    <meta name="description" content="{{if .IsHome}}{{ $.Site.Params.description }}{{else}}{{.Description}}{{end}}" />
     <meta name="dc.relation" content="{{ .Site.BaseURL }}" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    {{ partial "meta" . }}
 
-        {{ $options := (dict "public/" "css/site.css" "outputStyle" "compressed") }}
-    {{/* {{ $styles := resources.Get "scss/site.scss" | resources.ExecuteAsTemplate "site.scss" . | resources.ToCSS $options }} */}}
-        {{ $styles := resources.Get "scss/site.scss" | resources.ExecuteAsTemplate "style.site.scss" . | toCSS | minify | fingerprint }}
-    {{/* {{ $styles := resources.Get "scss/site.scss" | toCSS $options }} */}}
-        <link rel="stylesheet" href="{{ $styles.RelPermalink }}" media="screen">
-    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> -->
+    {{ $options := (dict "public/" "css/site.css" "outputStyle" "compressed") }}
+    {{ $styles := resources.Get "scss/site.scss" | resources.ExecuteAsTemplate "style.site.scss" . | toCSS | minify | fingerprint }}
+    <link rel="stylesheet" href="{{ $styles.RelPermalink }}" media="screen">
 </head>
