@@ -13,14 +13,16 @@
 				</small>
 				<p class="card-text">{{ .sample }}</p>
                 <div class="d-flex justify-content-between">
-                    {{ with resources.GetMatch (print "images/projects/" .image) }}
-                    {{ with .Resize "175x80" }}
+                  {{/*  {{ with resources.GetMatch (print "images/projects/" .image) }} */}} 
+                  {{/* {{ with .Resize "175x80" }} */}}  
                     <div>
-                        <img class="img-fluid d-block mx-auto" src="{{.RelPermalink}}" alt="some" height="{{.Height}}" width="{{.Width}}">
+						{{ range .tech}}
+							{{ $icon := . }}
+							{{ partial "inline-svg" $icon }}
+						{{ end }}
+                        <!-- <img class="img-fluid d-block mx-auto" src="" alt="some" height="{{.Height}}" width="{{.Width}}"> -->
                     </div>
-                    {{ end }}
-                    {{ end }}
-                    <div><button class="custom-btn btn-11">View</button></div>
+					<a href="{{ .link }}"><div><button class="custom-btn btn-11">View</button></div></a>
                 </div>
 			  </div>
 			  <!-- <div class="card-footer text-muted d-flex justify-content-between bg-transparent border-top-0">

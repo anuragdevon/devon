@@ -15,11 +15,17 @@
     <div class="col-lg-8 pt-4 pt-lg-0 content">
       <h3>{{ .tag }}</h3>
       <p>{{ .description }}</p>
-      <p>
+      <p><i><b>Intrests</b>
         {{ .description2 }}
+        </i>
+      </p>
+      <p><b>Side-Stuffs</b>
+        <i>
+        {{ .description3 }}
+        </i>
       </p>
       <div class="row py-3">
-        <div class="col-lg-6 res">
+        <div class="col-lg-6 res py-1">
           <i class="{{ .icon }}"></i> {{ .location }}
         </div>
         <div class="col-lg-6 res">

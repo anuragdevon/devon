@@ -2,30 +2,74 @@
 title = "Positively"
 date = "24th-30th May 2021"
 sample = "Android-AI app made using Flutter SDK as a part of Hackathon"
-link = "https://www.google.com"
-site = "GitHub"
+link = "https://github.com/Hack-IIITDM/Positively"
+tech = ["flutter", "tensor"]
 image = "positively.jpeg"
 
 [[project]]
 title = "Car-Networking Simulation-Using Android"
 date = "3rd Jun 2021"
-sample = "Basically I will just test the required color is present in the background ..."
-link = "https://www.instructables.com/Simple-Color-Detection-Using-OpenCV/"
-site = "instructables"
+sample = "Using bash scripting and python creating a real-time simulation of ..."
+link = "https://github.com/anuragdevon/IoT-Mobile"
+tech = ["python", "bash"]
 image = "carnet.png"
 
 [[project]]
 title = "Hostel Management System"
 date = "15th Dec 2021"
-sample = "Hostel Management System built to solve college hostel issues using Django-Framework"
-link = "https://github.com/DBMS-Web/hostel-management/"
-site = "instructables"
+sample = "Hostel Management System built to solve college hostel issues using Django-Framework."
+link = "https://github.com/DBMS-Web/hostel-management"
+tech = ["django", "postgresql", "bootstrap"]
 image = "hms.png"
 
 [[project]]
 title = "Mars Rover Club, Website"
 date = "Feb 2021 - Apr 2021"
-sample = "Website developed for the mars rover society, IIITDM, as a part of their competition."
+sample = "Website developed for the mars rover society, IIITDM, as a part of their ..."
 link = "https://marsroversociety.netlify.app/"
-site = "instructables"
+tech = ["hugo"]
 image = "hms.png"
+
+[[project]]
+title = "Vidhai Website"
+date = "Dec 2020 - Jan 2021"
+sample = "Our Team modified and polished the website for Vidhai, which is a NPO, helping..."
+link = "https://vidhai.netlify.app/"
+tech = ["html", "css", "js"]
+image = "hms.png"
+
+[[project]]
+title = "IDHA Labs Product Design"
+date = "Feb 2021 - Apr 2021"
+sample = "Our Team modified and polished the website for Vidhai, which is a NPO, helping..."
+link = "https://vidhai.netlify.app/"
+tech = ["fusion"]
+image = "hms.png"
+
+[[project]]
+title = "Robocon 2020"
+date = "Jan 2021 - Aug 2021"
+sample = "Asian Terrestial Robotics Competition. Designed two rugby playing robots."
+link = "https://github.com/TARC-IIITDM"
+tech = ["fusion"]
+
+[[project]]
+title = "The Dark Shadow"
+date = "May 2020 - Jun 2020"
+sample = "Created a 3d-Adventure semi-Open World (Story-Driven) game using Unreal Engine 4."
+link = "https://www.youtube.com/watch?v=E-uwamSdH4c"
+tech = ["unreal", "cpp"]
+
+[[project]]
+title = "PSP Model"
+date = "Jun 2020"
+sample = "Created a modified model of Play sation portable"
+link = "https://www.behance.net/gallery/98661545/PSP%28Fusion-Model%29"
+tech = ["fusion"]
+
+[[project]]
+title = "Static Graph Generator"
+date = "Jun 2020"
+sample = "Using OpenGL to create a static graph generator"
+link = "https://github.com/anuragdevon/Static-Graph"
+tech = ["cpp"]

@@ -1,23 +1,31 @@
 [[blogs]]
 title = "Views in Django"
-time = "10 min"
-date = "22nd april 2021"
+time = ""
+date = ""
 sample = "What are django views and how to implement function and class based ..."
-link = "https://www.google.com"
+link = ""
 site = "medium"
 
 [[blogs]]
 title = "Color-Detection"
-time = "5 min"
-date = "22nd June 2021"
+time = "10 min"
+date = "23rd May 2020"
 sample = "Basically I will just test the required color is present in the background ..."
 link = "https://www.instructables.com/Simple-Color-Detection-Using-OpenCV/"
 site = "instructables"
 
 [[blogs]]
 title = "LCD-arduino"
-time = "5 min"
-date = "15th Dec. 2021"
+time = "10 min"
+date = "2nd Jun. 2020"
 sample = "Hi, Today I'm going to show how to work with a simple LCD with the help of ..."
 link = "https://www.instructables.com/Simple-Color-Detection-Using-OpenCV/"
+site = "instructables"
+
+[[blogs]]
+title = "Push Switch to Control sensors"
+time = "5 min"
+date = "1st Jun. 2020"
+sample = "Hi!, Today I'm going to show how to use the push-button for controlling the ..."
+link = "https://www.instructables.com/Push-Switch-to-Control-LedArduino/"
 site = "instructables"
