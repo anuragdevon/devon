@@ -35,7 +35,14 @@
   .about .content p:last-child {
     margin-bottom: 0;
   }
+//   @keyframes learn {
+//     from {opacity: 0;}
+//     to {opacity: 1;}
+// }
   section {
+    // opacity: 0;
+    // transition: 1s;
+    // animation-name: learn;
     padding-top: 60px;
     padding-bottom: 1rem ;
     overflow: hidden;
@@ -105,7 +112,7 @@
   
   .resume .resume-item h5 {
     font-size: 16px;
-    background: #e4edf9;
+    background: rgb(237, 237, 237);
     padding: 5px 15px;
     display: inline-block;
     font-weight: 600;
@@ -159,4 +166,13 @@
 
 .hero{
   height: vh;
+}
+
+.fa-file-download{
+  color: #149ddd;
+  font-size: 18px;
+}
+
+.res{
+  font-weight:600;
 }

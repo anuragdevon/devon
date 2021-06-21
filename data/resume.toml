@@ -1,5 +1,5 @@
 title = "Skills and Experience"
-description = "Some shit description to be written here"
+description = "Here is the list of skills and relevant experiences, for more details you check out LinkedIn."
 topic1 = "Skills"
 topic2 = "Experience"
 resume = "https://www.google.com"
@@ -25,21 +25,21 @@ name = "WebOps IIITDM"
 title = "Full Stack Developer"
 duration = "Sept. 2020 - Present"
 location = "Chennai, India"
-description = ["Lead in the design, development, and implementation of the graphic, layout, and production communication materials"]
+description = ["Worked and Collaborated in developing clients' websites.", "Helped the team in development and design.", "Successfully able to bring performance of sites upto 98%."]
 
 [[experience]]
 name = "ABU Robocon"
 title = "Team Lead"
 duration = "Jan. 2020 - Aug. 2020"
 location = "Chennai, India"
-description =["Lead in the design, development, and implementation of the graphic, layout, and production communication materials", "some description", "some description about it should be inserted here"]
+description =["Lead a team of people, with other co-leaders for DD ROBOCON 2020 competition, Asian robotics competition.", "Team Secured 98/100 and got selected to represent the college at National Level."]
 
 [[experience]]
-name = "Freelance Game Developer"
+name = "Indie Game Developer"
 title = "Game Developer"
 duration = "Apr. 2020 - Jul. 2020"
 location = "Chennai, India"
-description =["some description about it", "Lead in the design, development, and implementation of the graphic, layout, and production communication materials"]
+description =["Created a 3d-Adventure semi-Open World (Story-Driven) game using Unreal Engine 4", "Alongside developed a cinematic trailer for the same."]
 
 [[certifications]]
 name = ""

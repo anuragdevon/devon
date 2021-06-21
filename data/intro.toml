@@ -1,6 +1,9 @@
 section = "About"
 tag = "Student | Developer"
-description = "Currently, I'm a student pursuing B.tech in Smart Manufacturing in Chennai. My interests and passion lie in everything related to Science and Technology and I love to work for the development and growth of it."
-location = "Chennai, India"
+description = "I'm Anurag Kar, currently a student in IIITDM Kacheepuram, Chennai pursuing B.tech in Smart Manufacturing. I'm passionate about Science and Technology field and love to work for the growth and developement of it."
+description2 = "Interests: These are my interests"
+location = "Bhubaneswar, India"
 icon = "fas fa-map-marked-alt"
-
+resumetag = "Download resume"
+downloadicon = "fas fa-file-download"
+pdf = "resume.pdf"

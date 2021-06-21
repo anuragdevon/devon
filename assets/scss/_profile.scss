@@ -1,30 +1,50 @@
 .wrapper {
     // height: 100vh;
     /*This part is important for centering*/
+    padding-top: 1rem;
     display: flex;
     align-items: center;
     justify-content: center;
   }
-  
-  .typing-demo {
-    width: 14ch;
-    animation: typing 1.4s steps(14), blink .5s step-end infinite alternate;
-    white-space: nowrap;
-    overflow: hidden;
-    // white-space: inherit;
-    border-right: 3px solid;
-    font-family: monospace;
-    font-size: 1.8em;
-  }
-  .typing-demo1 {
-    width: 2ch;
-    animation: typing 0.2s steps(2), blink .5s step-end infinite alternate;
+
+  .hi {
+    opacity: 0;
+    transition: 1s;
+    width: 3ch;
+    animation: typing 0.3s steps(3), blink .5s step-end infinite alternate;
     white-space: nowrap;
     overflow: hidden;
     // white-space: inherit;
     // border-right: 3px solid;
     font-family: monospace;
-    font-size: 2em;
+    font-size: 3em;
+  }
+  .name {
+    opacity: 0;
+    transition: 1s;
+    width: 14ch;
+    animation: typing 1.4s steps(14), blink .5s step-end infinite alternate;
+    animation-delay: 0.3s;
+    white-space: nowrap;
+    overflow: hidden;
+    // white-space: inherit;
+    // border-right: 3px solid;
+    font-family: monospace;
+    font-size: 1.8em;
+  }
+
+  .tag {
+    opacity: 0;
+    transition: 1s;
+    width: 22ch;
+    animation: typing 2s steps(22), blink .5s step-end infinite alternate;
+    animation-delay: 1.7s;
+    white-space: nowrap;
+    overflow: hidden;
+    // white-space: inherit;
+    border-right: 3px solid;
+    font-family: monospace;
+    font-size: 1.2em;
   }
   
   @keyframes typing {
