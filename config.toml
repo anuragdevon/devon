@@ -1,14 +1,27 @@
 title = "Anurag Kar"
 baseURL = "https://anuragkar.netlify.app/"
-languageName = "English"
-languageCode = "en-us"
 relativeURLs = true
+disableKinds = ["page", "section", "taxonomy", "term"]
+
+enableEmoji = true
+enableGitInfo = true
+enableRobotsTXT = true
+canonifyURLs = true
+
+[languages]
+  [languages.en]
+    languageName = "English"
+    languageCode = "en-us"
+    weight = 1
 
 [params]
-  author = "Anurag Kar"
-  description = "Devon's Portfolio"
+Author = "Anurag Kar"
+Description = "Personal Website"
+github = "https://github.com/anuragdevon"
+facebook = "https://www.facebook.com/anurag.kar.395"
+sitename = "Anurag Kar website"
+twitter = "https://twitter.com/AnuragKar016"
 
-dsiableKinds = [ "page", "section", "taxonomy", "term" ]
 
 [[menus.sections]]
 name = "About"
@@ -46,22 +59,12 @@ isHTML = true
 permalinkable = true
 notAlternative = true
 
-enableEmoji = true
-enableGitInfo = true
-enableRobotsTXT = true
-canonifyURLs = true
-
-[social]
-email = "mailto:anuragkar16@gmail.com"
-twitter = "https://twitter.com/AnuragKar016"
-linkedin = "https://www.linkedin.com/in/anurag-kar-472587192/"
-youtube = "https://www.youtube.com/channel/UCrWytD5s1b29limBpsis9RQ"
-github = "https://github.com/anuragdevon"
 
 
-[[module.mounts]]
-source = "static"
-target = "static"
+
+# [[module.mounts]]
+# source = "static"
+# target = "static"
 
 [[module.mounts]]
 source = "../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"

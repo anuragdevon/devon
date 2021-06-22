@@ -62,4 +62,13 @@
     .row{
         text-align: center;
     }
+    img{
+      height: 350px;
+      width: 350px;
+      @include media-breakpoint-down(md){
+        height: 270px;
+        width: 270px;
+      }
+    
+    }
 }

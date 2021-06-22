@@ -1,78 +1,3 @@
-// //<== Canvas ==>
-// function init(elementid){
-//   let canvas = document.getElementById(elementid),
-//       p = canvas.getContext("2d"),
-//       // w = (canvas.width = window.innerWidth),
-//       w = (canvas.width = window.innerWidth),
-//       h = (canvas.height = window.innerWidth);
-//       // h = (canvas.height = window.innerHeight);
-//       // console.log(w, h);
-//   p.fillStyle = "rgba(0, 0, 0, 1)";
-//   p.fillRect(0, 0, w, h);
-// //   console.log(p);
-//   initvalue = [p, w, h];
-//   return initvalue;
-// }
-// // initializing the canvas
-// let pr = init("dotta");
-// let p = pr[0];
-// let w = pr[1];
-// let h = pr[2];
-// // console.log(p, w, h);
-// class stars{
-//   constructor(){
-//       this.x = Math.random()*w;
-//         //   console.log("this is x",this.x);
-//       this.y = Math.random()*h;
-//         //   console.log("this is y",this.y);
-//       this.intensity= Math.random()*2;
-//         //   console.log("this is d",this.intensity);
-//       this.angle = Math.random()*2*Math.PI;
-//         //   console.log("this is a",this.angle);
-//       this.velocity = ((this.intensity)^2)/4;
-//         //   console.log("this is v",this.velocity);
-
-//   }
-//   move(){
-//       this.x += this.velocity*Math.cos(this.angle);
-//       this.y += this.velocity*Math.sin(this.angle);
-//       this.angle += Math.random()*20*Math.PI/180-10*Math.PI/180;
-//     //   console.log(this.x, this.y, this.angle);
-//   }
-//   show(){
-//       p.beginPath();
-//     //   console.log(p.beginPath());
-//       p.arc(this.x, this.y, this.intensity, 0, 2*Math.PI);
-//     //   console.log(p.arc(this.x, this.y, this.intensity, 0, 2*Math.PI));
-//       p.fillStyle = "#149ddd";
-//       p.fill();
-//   }
-// } 
-
-// // array of stars
-// let s = []
-// function display() {
-//   if(s.length <50){
-//       s.push(new stars());
-//   }
-//   // move and show
-//   for(var i = 0; i < s.length; ++i){
-//       s[i].move();
-//       s[i].show();
-//       if(s[i].x < 0 || s[i].x > w ||  s[i].y < 0 || s[i].y > h ){
-//           s.splice(i, 1);
-//       }
-//   }
-// }
-// function animations(){
-//   window.requestAnimationFrame;
-//   p.clearRect(0,0,w,h);
-//   display();
-// }
-// animations();
-// setInterval(animations, 100);
-
-
 //<== contact form ==>
 function openForm() {
     document.getElementById("myForm").style.display = "block";
@@ -83,7 +8,7 @@ function openForm() {
   }
   
   // contact button
-  var mybutton = document.getElementById("mybtn");
+  var mybutton = document.getElementsByClassName("open-button");
   // When the user scrolls down 20px from the top of the document, show the button
   window.onscroll = function() {scrollFunction()};
   
@@ -103,7 +28,104 @@ function openForm() {
       mybutton.style.bottom = "-4px"
     } else {
       // mybutton.style.display = "none";
-      mybutton.style.bottom = "-40px"
+      mybutton.style.bottom = "40px"
     }
   }
-  
+// <== Homepage visible/opacity ==>
+function first() {
+  if (document.getElementById("hi") != null) {
+    setTimeout(function() {
+      document.getElementById('hi').style.opacity = '1';
+    }, 0);
+  }
+}
+first();
+function second() {
+  if (document.getElementById("name") != null) {
+    setTimeout(function() {
+      document.getElementById('name').style.opacity = '1';
+    }, 300);
+  }
+}
+second();
+function third() {
+  if (document.getElementById("tag") != null) {
+    setTimeout(function() {
+      document.getElementById('tag').style.opacity = '1';
+    }, 1700);
+  }
+}
+third();
+
+
+// <== cookie consent ==>
+// --- Config --- //
+var purecookieTitle = "Cookies."; // Title
+var purecookieDesc = "By using this website, you automatically accept that, it uses cookies"; // Description
+var purecookieLink = '<a href="https://developers.google.com/analytics/devguides/collection/analyticsjs/cookie-usage" target="_blank">What for?</a>'; // Cookiepolicy link
+var purecookieButton = "Understood"; // Button text
+// ---        --- //
+
+
+function pureFadeIn(elem, display){
+  var el = document.getElementById(elem);
+  el.style.opacity = 0;
+  el.style.display = display || "block";
+
+  (function fade() {
+    var val = parseFloat(el.style.opacity);
+    if (!((val += .02) > 1)) {
+      el.style.opacity = val;
+      requestAnimationFrame(fade);
+    }
+  })();
+};
+function pureFadeOut(elem){
+  var el = document.getElementById(elem);
+  el.style.opacity = 1;
+
+  (function fade() {
+    if ((el.style.opacity -= .02) < 0) {
+      el.style.display = "none";
+    } else {
+      requestAnimationFrame(fade);
+    }
+  })();
+};
+
+function setCookie(name,value,days) {
+    var expires = "";
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days*24*60*60*1000));
+        expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+}
+function getCookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0;i < ca.length;i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1,c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+    }
+    return null;
+}
+function eraseCookie(name) {
+    document.cookie = name+'=; Max-Age=-99999999;';
+}
+
+function cookieConsent() {
+  if (!getCookie('purecookieDismiss')) {
+    document.body.innerHTML += '<div class="cookieConsentContainer" id="cookieConsentContainer"><div class="cookieTitle"><a>' + purecookieTitle + '</a></div><div class="cookieDesc"><p>' + purecookieDesc + ' ' + purecookieLink + '</p></div><div class="cookieButton"><a onClick="purecookieDismiss();">' + purecookieButton + '</a></div></div>';
+	pureFadeIn("cookieConsentContainer");
+  }
+}
+
+function purecookieDismiss() {
+  setCookie('purecookieDismiss','1',7);
+  pureFadeOut("cookieConsentContainer");
+}
+
+window.onload = function() { cookieConsent(); };

@@ -2,19 +2,24 @@
 <html lang="{{site.LanguageCode|default `en`}}">
 {{ partial "header" . }}
     <body>
-        {{ partial "navbar" }}
-        {{ partial "download" }}
-        {{ partial "contact" }}
-        {{ block "main" . }}{{ end }}
-        {{ $bootstrap := resources.Get "js/vendor/bootstrap.min.js" }}
-        {{ $site := resources.Get "js/local.js" }}
+        <a class="skip-link" href="#main">main</a>
+        <main id="main">
+            {{ partial "navbar" }}
+            {{ partial "download" }}
+            {{ block "main" . }}{{ end }}
+            {{ partial "contact" }}
+            {{ partial "footer" }}
+          </main>
+
+
+        {{ $site := resources.Get "js/site.js" }}
         {{ $bootstrap1 := resources.Get "js/bootstrap.min.js" }}
-        {{ $bootstrap2 := resources.Get "js/bootstrap.bundle.min.js" }}
-        {{ partial "footer" }}
+        {{ $bootstrap2 := resources.Get "js/bootstrap.min.js.map" }}
+        
 
         <script src="{{$site.RelPermalink}}"></script>
         <script src="{{$bootstrap1.RelPermalink}}"></script>
-        <!-- < src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/js/bootstrap.min.js"></> -->
+        <script src="{{$bootstrap2.RelPermalink}}"></script>
         <script src="https://kit.fontawesome.com/f19a3f2e53.js" crossorigin="anonymous"></script>
     </body>
 </html>

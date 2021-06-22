@@ -1,5 +1,5 @@
-{{ $image := resources.Get "/images/profile/devon.jpeg" }}
-{{ $image = $image.Resize "270x270" }}
+{{ $image := resources.Get "/images/profile/devon.avif" }}
+{{/*  {{ $image = $image.Resize "270x270" }}  */}}
 {{ $resume := resources.Get "/pdfs/resume.pdf" }}
 {{ with site.Data.intro }}
 <section id="about" class="about">
@@ -10,7 +10,7 @@
   </div>
   <div class="row">
     <div class="col-lg-4">
-      <img src="{{ $image.RelPermalink }}" class="img-fluid rounded-circle" alt="">
+      <img src="{{ $image.RelPermalink }}" class="img-fluid rounded-circle" height = "270" width = "270" alt="Anurag Kar">
     </div>
     <div class="col-lg-8 pt-4 pt-lg-0 content">
       <h3>{{ .tag }}</h3>
@@ -29,7 +29,7 @@
           <i class="{{ .icon }}"></i> {{ .location }}
         </div>
         <div class="col-lg-6 res">
-          {{ .resumetag }} <a href="{{ $resume.RelPermalink }}"><i class="{{ .downloadicon }}"></i></a>
+          {{ .resumetag }} <a href="{{ $resume.RelPermalink }}" aria-label="resume"><i class="{{ .downloadicon }}"></i></a>
         </div>
       </div>
     </div>

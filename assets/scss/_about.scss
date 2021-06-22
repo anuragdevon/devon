@@ -9,6 +9,9 @@
     padding: 0;
   }
 .about{
+  img {
+    border: 5px solid rgb(221, 218, 218);
+  }
   .row{
     @include media-breakpoint-down(md){
       text-align: center;

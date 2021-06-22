@@ -20,7 +20,7 @@ body{
   position: relative;
   overflow-x: hidden;
   box-sizing: border-box;
-  overflow-y: scrolll;
+  overflow-y: scroll;
   @include media-breakpoint-down(md){
     padding-bottom: 110px;
   }
@@ -78,7 +78,7 @@ body{
   }
   
   
-  @-webkit-keyframes shiny-btn1 {
+  @keyframes shiny-btn1 {
     0% { -webkit-transform: scale(0) rotate(45deg); opacity: 0; }
     80% { -webkit-transform: scale(0) rotate(45deg); opacity: 0.5; }
     81% { -webkit-transform: scale(4) rotate(45deg); opacity: 1; }
@@ -98,3 +98,17 @@ body{
 //   bottom: -4px;
 //   right: 10px;
 // }
+
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #bfbaba;
+  color: rgb(0, 0, 0);
+  padding: 8px;
+  z-index: 100;
+}
+
+.skip-link:focus {
+  top: 0;
+}
