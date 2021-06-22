@@ -77,7 +77,7 @@ function openForm() {
   // <== cookie consent ==>
   // --- Config --- //
   var purecookieTitle = "Cookies."; // Title
-  var purecookieDesc = "By using this website, you automatically accept that, it uses cookies"; // Description
+  var purecookieDesc = "By using this website, you automatically accept cookies"; // Description
   var purecookieLink = '<a href="https://developers.google.com/analytics/devguides/collection/analyticsjs/cookie-usage" target="_blank">What for?</a>'; // Cookiepolicy link
   var purecookieButton = "Understood"; // Button text
   // ---        --- //
@@ -134,7 +134,7 @@ function openForm() {
   
   function cookieConsent() {
     if (!getCookie('purecookieDismiss')) {
-      document.body.innerHTML += '<div class="cookieConsentContainer" id="cookieConsentContainer"><div class="cookieTitle"><a>' + purecookieTitle + '</a></div><div class="cookieDesc"><p>' + purecookieDesc + ' ' + purecookieLink + '</p></div><div class="cookieButton"><a onClick="purecookieDismiss();">' + purecookieButton + '</a></div></div>';
+      document.body.innerHTML += '<div class="cookieConsentContainer" id="cookieConsentContainer"><div class="cookieTitle"><p>' + purecookieTitle + '</p></div><div class="cookieDesc"><p>' + purecookieDesc + ' ' + purecookieLink + '</p></div><div class="cookieButton"><a onClick="purecookieDismiss();">' + purecookieButton + '</a></div></div>';
       pureFadeIn("cookieConsentContainer");
     }
   }
