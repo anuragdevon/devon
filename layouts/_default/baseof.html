@@ -16,7 +16,7 @@
         {{ $bootstrap := resources.Get "js/bootstrap.min.js" }}
         {{ $js := slice $site $bootstrap | resources.Concat "js/bundle.js" | resources.Minify }}
 
-        <script src="{{$site.RelPermalink}}"></script>
+        <script src="{{$js.RelPermalink}}"></script>
         <script src="https://kit.fontawesome.com/f19a3f2e53.js" crossorigin="anonymous"></script>
     </body>
 </html>
