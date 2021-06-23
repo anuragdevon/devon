@@ -13,6 +13,11 @@ name = "linkedin"
 icon = "fab fa-linkedin-in"
 link = "https://www.linkedin.com/in/anurag-kar-472587192/"
 
+# [[social]]
+# name = "facebook"
+# icon = "fab fa-facebook"
+# link = "https://www.facebook.com/anurag.kar.395"
+
 [[social]]
 name = "twitter"
 icon = "fab fa-twitter"

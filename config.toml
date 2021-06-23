@@ -16,7 +16,7 @@ canonifyURLs = true
 
 [params]
 Author = "Anurag Kar"
-Description = "Personal Website"
+Description = "Anurag Kar's Personal Website"
 github = "https://github.com/anuragdevon"
 facebook = "https://www.facebook.com/anurag.kar.395"
 sitename = "Anurag Kar website"
