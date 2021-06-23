@@ -3,6 +3,7 @@
     {{ partial "meta" . }}
 
     {{ $options := (dict "public/" "css/site.css" "outputStyle" "compressed") }}
-    {{ $styles := resources.Get "scss/site.scss" | resources.ExecuteAsTemplate "style.site.scss" . | toCSS | minify | fingerprint }}
-    <link rel="stylesheet" href="{{ $styles.RelPermalink }}" media="screen">
+    {{ $styles := resources.Get "scss/site.scss" | resources.ExecuteAsTemplate "style.scss" . | toCSS | minify | fingerprint }}
+
+    <link rel="stylesheet" type="text/css" aria-disabled="true" href="{{ $styles.RelPermalink }}" media="screen">
 </head>

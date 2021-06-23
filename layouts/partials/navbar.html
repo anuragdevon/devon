@@ -2,7 +2,7 @@
 <nav class="sticky-top navbar navbar-expand-lg border-bottom" id="navbar">
   <div class="container-fluid">
     {{ $svg := partial "inline-svg" "logo" }}
-    <a class="navbar-brand" href="/">{{ $svg }}</a>
+    <a class="navbar-brand" aria-label="logo" href="/">{{ $svg }}</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
       <i class="fas fa-ellipsis-h"></i>
     </button>
@@ -12,7 +12,7 @@
         <!-- <li class="nav-item">
           <a class="nav-link active" aria-current="page" href="#">Home</a>
         </li> -->
-        <li class="nav-item my-2"><a class="nav-link p-1 effect-underline" href="{{ .navlink }}"><i class="{{ .icon }}"></i> {{ upper .nav }}</a></li>
+        <li class="nav-item my-2"><a class="nav-link p-1 effect-underline active" aria-current="page" href="{{ .navlink }}"><i class="{{ .icon }}"></i> {{ upper .nav }}</a></li>
         {{ end }}
       </ul>
     </div>

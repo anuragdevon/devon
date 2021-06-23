@@ -59,13 +59,7 @@ isHTML = true
 permalinkable = true
 notAlternative = true
 
-
-
-
-# [[module.mounts]]
-# source = "static"
-# target = "static"
-
-[[module.mounts]]
-source = "../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
-target = "assets/js/bootstrap.bundle.min.js"
+# [module]
+#   [[module.mounts]]
+#     source = "node_modules/bootstrap/dist/js/bootstrap.min.js"
+#     target = "assets/js/bootstrap.min.js"
