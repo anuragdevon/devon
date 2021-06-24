@@ -1,19 +1,21 @@
+bar = "navbar"
+
 [[links]]
 nav = "home"
 navlink = "/"
-icon = "fas fa-home"
+icon = "home"
 
 [[links]]
 nav = "about"
 navlink = "/about/"
-icon = "fas fa-user-alt"
+icon = "about"
 
 [[links]]
 nav = "projects"
 navlink = "/projects/"
-icon = "fas fa-laptop"
+icon = "laptop"
 
 [[links]]
 nav = "blogs"
 navlink = "/blogs/"
-icon = "fas fa-book"
+icon = "book"

@@ -8,6 +8,7 @@ footer {
     padding-top: 1.8rem;
     padding-bottom: 1.8rem;
     a {
+        color: #149ddd;
         text-decoration: none;
         @include margin(0 $spacer);
         @include font-size(0.8em);

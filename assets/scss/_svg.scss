@@ -14,5 +14,40 @@
       fill: currentColor;
       display: inline-block;
     }
+}
+
+.fa{
+  display: inline-block;
+  vertical-align: middle;
+
+  svg {
+    @include media-breakpoint-down(md) {
+      width: 2em;
+      height:2em;
+      fill: currentColor;
+      display: inline-block;
+     }
+    width: 2em;
+    height: 2em;    
+    fill: currentColor;
+    display: inline-block;
   }
+}
   
+.in{
+  display: inline-block;
+  vertical-align: middle;
+
+  svg {
+    @include media-breakpoint-down(md) {
+      width: 1.1em;
+      height:1.1em;
+      fill: currentColor;
+      display: inline-block;
+     }
+    width: 1.2em;
+    height: 1.2em;    
+    fill: currentColor;
+    display: inline-block;
+  }
+}

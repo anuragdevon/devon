@@ -1,5 +1,7 @@
 {{ with site.Data.contact }}
-<button class="open-button" id="contact" aria-label="contact" onclick="openForm()"><i class="{{ .contactIcon }}"></i></button>
+<button class="open-button" id="contact" aria-label="contact" onclick="openForm()">
+  {{ partial "in" "comment" }}
+</i></button>
 
 <div class="form-popup" id="myForm">
   <form action="/" class="form-container">
@@ -7,8 +9,8 @@
       <div class="col">
         <h3>Contact</h3>
       </div>
-      <div class="col text-end">
-        <i class="{{ .close }}" onclick="closeForm()"></i>
+      <div class="col text-end" onclick="closeForm()">
+        {{ partial "fa" "close" }}
       </div>
     </div>
     <label for="email"><b>{{ .emailid }}</b></label>

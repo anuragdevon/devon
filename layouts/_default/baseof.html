@@ -16,6 +16,5 @@
         {{ $js := slice $site $bootstrap | resources.Concat "js/site.js" | resources.Minify }}
 
         <script async src="{{$js.RelPermalink}}"></script>
-        <script async src="https://kit.fontawesome.com/f19a3f2e53.js" crossorigin="anonymous"></script>
     </body>
 </html>

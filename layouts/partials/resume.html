@@ -10,7 +10,7 @@
         <div class="skills">
           <h3 class="resume-title">{{ .topic1 }}</h3>
           {{ range .skills }}
-          <h5>{{ .skill }}</h5>
+          <h4>{{ .skill }}</h4>
             {{ range .items }}
              {{ partial "inline-svg" . }}
             {{ end }}

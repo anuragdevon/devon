@@ -8,11 +8,13 @@
             {{ end }}
         </p>
         </div>
+        <!-- {{ partial "fa" "envelope"}} -->
+
         {{ with site.Data.footer }}
         <div class="col-12 col-md-6 text-center">
             <div class="d-inline-flex py-1 py-md-0 flex-wrap justify-content-center flex-row fw-bolder">
                 {{ range .social  }}
-                <a href="{{ .link }}" rel="noopener" aria-label="{{ .name }}" target="_blank"><i class="{{ .icon }} fa-2x"></i></a>
+                <a href="{{ .link }}" rel="noopener" aria-label="{{ .name }}" target="_blank">{{ partial "fa" .icon }}</a>
                 {{ end }}
             </div>
         </div>

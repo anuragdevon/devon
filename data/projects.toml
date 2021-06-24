@@ -49,9 +49,9 @@ tech = ["unreal", "cpp"]
 
 [[project]]
 title = "IDHA Labs Product Design"
-date = "Feb 2021 - Apr 2021"
-sample = "Our Team modified and polished the website for Vidhai, which is a NPO, helping..."
-link = "https://vidhai.netlify.app/"
+date = "Aug 2020"
+sample = "Created a innovative product using the concepts of ancient India and space ..."
+link = "https://drive.google.com/file/d/1ZEJ0zSZnzQxm7oDVnn6fZiCxms3FvuZ7/view?usp=sharing"
 tech = ["fusion"]
 
 [[project]]
@@ -59,7 +59,7 @@ title = "Robocon 2020"
 date = "Jan 2021 - Aug 2021"
 sample = "Asian Terrestial Robotics Competition. Designed two rugby playing robots."
 link = "https://github.com/TARC-IIITDM"
-tech = ["fusion"]
+tech = ["fusion", "c"]
 
 [[project]]
 title = "PSP Model"

@@ -1,30 +1,30 @@
 [[social]]
 name = "mail"
-icon = "fas fa-envelope"
+icon = "envelope"
 link = "mailto:anuragkar16@gmail.com"
 
 [[social]]
 name = "github"
-icon = "fab fa-github"
+icon = "github"
 link = "https://github.com/anuragdevon"
 
 [[social]]
 name = "linkedin"
-icon = "fab fa-linkedin-in"
+icon = "linkedin"
 link = "https://www.linkedin.com/in/anurag-kar-472587192/"
 
-# [[social]]
-# name = "facebook"
-# icon = "fab fa-facebook"
-# link = "https://www.facebook.com/anurag.kar.395"
+# # [[social]]
+# # name = "facebook"
+# # icon = "fab fa-facebook"
+# # link = "https://www.facebook.com/anurag.kar.395"
 
 [[social]]
 name = "twitter"
-icon = "fab fa-twitter"
+icon = "twitter"
 link = "https://twitter.com/AnuragKar016"
 
 [[social]]
 name = "youtube"
-icon = "fab fa-youtube"
+icon = "youtube"
 link = "https://www.youtube.com/channel/UCrWytD5s1b29limBpsis9RQ"
 
