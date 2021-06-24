@@ -9,9 +9,6 @@
     <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
       <ul class="navbar-nav mx-auto">
         {{ range .links }}
-        <!-- <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="#">Home</a>
-        </li> -->
         <li class="nav-item my-2"><a class="nav-link p-1 effect-underline active" aria-current="page" href="{{ .navlink }}"><i class="{{ .icon }}"></i> {{ upper .nav }}</a></li>
         {{ end }}
       </ul>

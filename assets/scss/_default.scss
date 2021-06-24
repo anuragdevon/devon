@@ -24,7 +24,6 @@ body{
   @include media-breakpoint-down(md){
     padding-bottom: 110px;
   }
-  @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&display=swap');
   font-family: 'Open Sans', sans-serif;
   background-color: white;
   & > .container:not(footer) {

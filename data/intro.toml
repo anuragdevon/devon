@@ -1,10 +1,13 @@
-section = "About"
-tag = "Student | Developer"
-description = "I'm Anurag Kar, currently a student in IIITDM Kacheepuram, Chennai pursuing B.tech in Smart Manufacturing. I'm passionate about Science and Technology field and love to work for the growth and developement of it."
-description2 = "Linux, Python, Backend, Mobile-app Developement"
-description3 = "Art, Football, Astronomy"
-location = "Bhubaneswar, India"
-icon = "fas fa-map-marked-alt"
-resumetag = "Download resume"
-downloadicon = "fas fa-file-download"
-pdf = "resume.pdf"
+image = "laptop.webp"
+
+[[display]]
+category = "hi"
+text = "Hi!"
+
+[[display]]
+category = "name"
+text = "I'm Anurag Kar"
+
+[[display]]
+category = "tag"
+text = "A passionate developer"

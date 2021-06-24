@@ -1,30 +1,39 @@
-{{ $image := resources.Get "/images/laptop.webp" }}
+{{ $image := resources.Get "/images/profile/devon.webp" }}
 {{/*  {{ $image = $image.Resize "270x270" }}  */}}
-
-<section id="hero" class="hero">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-4">
-                <img src="{{ $image.RelPermalink }}" class="img-fluid laptop" alt="Laptop Coding">
-            </div>
-            <div class="col-lg-8 pt-4 pt-lg-0">
-                <div class="wrapper">
-                    <div class="hi" id="hi">
-                    Hi!
-                    </div>
-                </div>
-                <div class="wrapper">
-                    <div class="name" id ="name">
-                    I'm Anurag Kar
-                    </div>
-                </div>
-                <div class="wrapper">
-                    <div class="tag" id="tag">
-                    A passionate developer
-                    </div>
-                </div>
-                </div>
-            </div>
-        </div>
+{{ $resume := resources.Get "/pdfs/resume.pdf" }}
+{{ with site.Data.profile }}
+<section id="about" class="about">
+<div class="container">
+  <div class="section-title">
+    <h2>{{ .section }}</h2>
+  </div>
+  <div class="row">
+    <div class="col-lg-4">
+      <img src="{{ $image.RelPermalink }}" class="img-fluid rounded-circle" height = "270" width = "270" alt="Anurag Kar">
     </div>
+    <div class="col-lg-8 pt-4 pt-lg-0 content">
+      <h3>{{ .tag }}</h3>
+      <p>{{ .description }}</p>
+      <p><i><b>Intrests</b>
+        {{ .description2 }}
+        </i>
+      </p>
+      <p><b>Side-Stuffs</b>
+        <i>
+        {{ .description3 }}
+        </i>
+      </p>
+      <div class="row py-3">
+        <div class="col-lg-6 res py-1">
+          <i class="{{ .icon }}"></i> {{ .location }}
+        </div>
+        <div class="col-lg-6 res">
+          {{ .resumetag }} <a href="{{ $resume.RelPermalink }}" aria-label="resume"><i class="{{ .downloadicon }}"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<hr class="center-ball">
 </section>
+{{ end }}

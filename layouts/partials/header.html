@@ -5,5 +5,5 @@
     {{ $options := (dict "public/" "css/site.css" "outputStyle" "compressed") }}
     {{ $styles := resources.Get "scss/site.scss" | resources.ExecuteAsTemplate "style.scss" . | toCSS | minify | fingerprint }}
 
-    <link rel="stylesheet" type="text/css" aria-disabled="true" href="{{ $styles.RelPermalink }}" media="screen">
+    <link rel="stylesheet" type="text/css" aria-disabled="true" href="{{ $styles.RelPermalink }}" media="all">
 </head>

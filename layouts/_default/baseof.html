@@ -5,7 +5,6 @@
         <a class="skip-link" href="#main">main</a>
         <main id="main">
             {{ partial "navbar" }}
-            {{ partial "download" }}
             {{ block "main" . }}{{ end }}
             {{ partial "contact" }}
             {{ partial "footer" }}
@@ -14,9 +13,9 @@
 
         {{ $site := resources.Get "js/site.js" }}
         {{ $bootstrap := resources.Get "js/bootstrap.min.js" }}
-        {{ $js := slice $site $bootstrap | resources.Concat "js/bundle.js" | resources.Minify }}
+        {{ $js := slice $site $bootstrap | resources.Concat "js/site.js" | resources.Minify }}
 
-        <script src="{{$js.RelPermalink}}"></script>
-        <script src="https://kit.fontawesome.com/f19a3f2e53.js" crossorigin="anonymous"></script>
+        <script async src="{{$js.RelPermalink}}"></script>
+        <script async src="https://kit.fontawesome.com/f19a3f2e53.js" crossorigin="anonymous"></script>
     </body>
 </html>
