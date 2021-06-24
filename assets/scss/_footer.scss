@@ -13,6 +13,9 @@ footer {
         @include margin(0 $spacer);
         @include font-size(0.8em);
     }
+    a:hover{
+        color: #149ddd !important;
+    }
     p{
         @include media-breakpoint-down(md) {
             text-align: center;

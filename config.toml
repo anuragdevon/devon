@@ -16,12 +16,12 @@ canonifyURLs = true
 
 [params]
 Author = "Anurag Kar"
-Description = "Anurag Kar's Personal Website"
+Description = "This is Anurag Kar's Personal Website"
 github = "https://github.com/anuragdevon"
 facebook = "https://www.facebook.com/anurag.kar.395"
-sitename = "Anurag Kar website"
+sitename = "anuragdevon"
 twitter = "https://twitter.com/AnuragKar016"
-
+logo = "images/logo/favicon.webp"
 
 [[menus.sections]]
 name = "About"

@@ -51,5 +51,13 @@ nav{
         margin-right: auto;
       }
     }
+    img{
+      @include media-breakpoint-down(md){
+        height:2.4em;
+        width: 2.4em;
+      } 
+      height:3em;
+      width: 3em;
+    }
 
 }

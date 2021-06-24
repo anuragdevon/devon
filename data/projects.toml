@@ -1,9 +1,16 @@
 [[project]]
 title = "Positively"
 date = "24th-30th May 2021"
-sample = "Android-AI app made using Flutter SDK as a part of Hackathon"
+sample = "Android-AI app made using Flutter SDK as a part of Hackathon."
 link = "https://github.com/Hack-IIITDM/Positively"
 tech = ["flutter", "tensor"]
+
+[[project]]
+title = "Personal Website"
+date = "June 2021"
+sample = "Eariler Website modified and rebuilt using hugo framework."
+link = "https://anuragkar.netlify.app/"
+tech = ["hugo"]
 
 [[project]]
 title = "Car-Networking Simulation-Using Android"

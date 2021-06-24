@@ -15,6 +15,6 @@
         {{ $bootstrap := resources.Get "js/bootstrap.min.js" }}
         {{ $js := slice $site $bootstrap | resources.Concat "js/site.js" | resources.Minify }}
 
-        <script async src="{{$js.RelPermalink}}"></script>
+        <script src="{{$js.RelPermalink}}"></script>
     </body>
 </html>
