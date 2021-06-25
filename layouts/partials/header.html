@@ -1,5 +1,5 @@
 <head>
-    {{ partial "analytics" }}
+    {{ template "_internal/google_analytics.html" . }}
     {{ partial "meta" . }}
 
     {{ $options := (dict "public/" "css/site.css" "outputStyle" "compressed") }}

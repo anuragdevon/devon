@@ -34,15 +34,13 @@
 <meta name="twitter:image" content="{{ $og.RelPermalink }}" />
 <meta name="twitter:image:src" content="{{ $og.RelPermalink }}" /> 
 
-<link rel="image" type="image/png" href="{{ $og.RelPermalink }}" />
-<link rel="og:image" type="image/png" href="{{ $og.RelPermalink }}">
-<link rel="twitter:image" type="image/png" href="{{ $og.RelPermalink }}">
-<link rel="twitter:image:src" type="image/png" href="{{ $og.RelPermalink }}">
-
 <!-- Date Tags -->
 <meta property="og:updated_time" content="{{ .Lastmod.Format "2006-01-02T15:04:05Z0700" | safeHTML }}" />
 <link rel="sitemap" type="application/xml" title="Sitemap" href="{{ .Site.BaseURL }}sitemap.xml" /> 
 
+
+{{ hugo.Generator }}
+<link rel="canonical" hreflang="{{site.LanguageCode|default `en`}}" href="{{.Permalink}}" />
 
 <!-- Search Engine crawlers -->
 <meta name="robots" content="index,follow" /> 

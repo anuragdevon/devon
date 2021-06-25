@@ -2,6 +2,7 @@ title = "Anurag Kar"
 baseURL = "https://anuragkar.netlify.app/"
 relativeURLs = true
 disableKinds = ["page", "section", "taxonomy", "term"]
+googleAnalytics = "UA-200019838-1"
 
 enableEmoji = true
 enableGitInfo = true

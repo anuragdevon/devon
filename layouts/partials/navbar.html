@@ -1,12 +1,13 @@
 {{ with site.Data.navbar }}
 <nav class="sticky-top navbar navbar-expand-lg border-bottom" id="navbar">
   <div class="container-fluid">
-    {{ $svg := partial "inline-svg" "logo" }}
-    {{ with resources.Get (print "" site.Params.logo) }}
+    {{/*  {{ $svg := partial "inline-svg" "logo" }}  */}}
+    {{/*  {{ with resources.Get (print "" site.Params.logo) }}  */}}
     <a class="navbar-brand" aria-label="logo" href="/">
-      <img src="{{.RelPermalink}}" class="logo" alt="{{site.Title}}">
+      {{ $image := resources.Get "/images/logo/logo.png" }}
+      <img src="{{$image.RelPermalink}}" class="logo" alt="{{site.Title}}">
     </a>
-    {{ end }}
+    {{/*  {{ end }}  */}}
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
        {{ partial "in" .bar }}
     </button>
