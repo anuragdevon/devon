@@ -6,26 +6,37 @@ resume = "https://www.google.com"
 
 [[skills]]
 skill = "Languages"
-items = ["python", "cpp", "c", "dart", "bash", "html", "css", "js"]
+items = ["python", "cpp", "c", "golang", "dart", "git", "bash", "html", "css", "js"]
 
 [[skills]]
 skill = "Frameworks and SDKs"
-items= ["django", "flask", "hugo", "bootstrap", "flutter", "tensor"]
+items= ["docker", "k8s", "fastapi", "django", "flask", "hugo", "bootstrap", "flutter", "tensor"]
 
 [[skills]]
 skill = "Databases"
 items = ["mysql", "postgresql", "firebase"]
 
 [[skills]]
+skill = "Cloud"
+items = ["google", "heroku"]
+
+[[skills]]
 skill = "Softwares"
-items = ["unreal", "blender", "fusion", "matlab"]
+items = ["ansible", "githubsoft", "unreal", "blender", "fusion", "matlab"]
+
+[[experience]]
+name = "aSociette"
+title = "Python Developer"
+duration = "Aug. 2021 - Present"
+location = "Chennai, India"
+description = ["Developed microservices, back end components based on needs and goals are decided by the team.", "Maintained databases of both structured and unstructured data and made efficient algorithms to perform fast and efficient queries on databases.", "Contributed the team on the improvements of data protection and security along with custom user authentication systems.", "Collaborated in creating python scripts for testing codebase with given test cases.", "Assisted in the maintaining the production side of code, creating images, volumes and deployments in google cloud vms."]
 
 [[experience]]
 name = "WebOps IIITDM"
 title = "Full Stack Developer"
 duration = "Sept. 2020 - Present"
 location = "Chennai, India"
-description = ["Worked and Collaborated in developing clients' websites.", "Helped the team in development and design.", "Successfully able to bring performance of sites upto 98%."]
+description = ["Collaborated in developing clients' websites.", "Contributed the team in development and design of HUGO themes.", "Successfully able to bring performance of sites upto 98%."]
 
 [[experience]]
 name = "ABU Robocon"
@@ -34,12 +45,6 @@ duration = "Jan. 2020 - Aug. 2020"
 location = "Chennai, India"
 description =["Lead a team of people, with other co-leaders for DD ROBOCON 2020 competition, Asian robotics competition.", "Team Secured 98/100 and got selected to represent the college at National Level."]
 
-[[experience]]
-name = "Indie Game Developer"
-title = "Game Developer"
-duration = "Apr. 2020 - Jul. 2020"
-location = "Chennai, India"
-description =["Created a 3d-Adventure semi-Open World (Story-Driven) game using Unreal Engine 4", "Alongside developed a cinematic trailer for the same."]
 
 [[certifications]]
 name = ""

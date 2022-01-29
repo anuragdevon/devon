@@ -28,7 +28,7 @@
           {{ partial "in" .map }} {{ .location }}
         </div>
         <div class="col-lg-6 res">
-          {{ .resumetag }} <a href="{{ $resume.RelPermalink }}" aria-label="resume">{{ partial "in" .download }}</a>
+          {{ .resumetag }} <a href="{{ .resumelink }}" target="_blank" aria-label="resume">{{ partial "in" .download }}</a>
         </div>
       </div>
     </div>

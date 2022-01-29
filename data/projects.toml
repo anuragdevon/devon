@@ -1,12 +1,40 @@
 [[project]]
-title = "Remote Shell Configuration"
-date = "October 2021"
-sample = "A script to automatically customize the remote shell to ease tech-support."
-link = "https://github.com/anuragdevon/RSC"
-tech = ["Bash"]
+title = "Chat Room"
+date = "February 2022 - Ongoing"
+sample = "Created a chatroom using django channels"
+link = "https://github.com/anuragdevon/chatroom"
+tech = ["django"]
 
 [[project]]
-title = "i3 mini bar"
+title = "NotesApp"
+date = "January 2022 - Ongoing"
+sample = "An efficiet notes app specifically designed for managing simple projects."
+link = "https://github.com/anuragdevon/notes-app"
+tech = ["hugo", "django"]
+
+[[project]]
+title = "Blog WebApp"
+date = "January 2022 - Ongoing"
+sample = "Simple blogging app developed using fastapi."
+link = "https://github.com/anuragdevon/blog-webapp"
+tech = ["FastAPI"]
+
+[[project]]
+title = "Gash"
+date = "December 2021 - Ongoing"
+sample = "A minimalist shell written in golang."
+link = "https://github.com/anuragdevon/gash"
+tech = ["golang"]
+
+[[project]]
+title = "Simple CI tool"
+date = "November 2021"
+sample = "A minified CI tool to integrate in any small project to maximize productivity."
+link = "https://github.com/anuragdevon/CI-tool"
+tech = ["python"]
+
+[[project]]
+title = "i3 Mini Bar"
 date = "October 2021"
 sample = "A simple, fast and minimalist i3-status bar made on i3-bar."
 link = "https://github.com/anuragdevon/i3-mini-bar"
@@ -15,22 +43,22 @@ tech = ["Bash"]
 [[project]]
 title = "Social Networking Bots"
 date = "August 2021"
-sample = "write something..."
+sample = "Automation bots developed for few social newtworking platforms."
 link = "https://github.com/anuragdevon/sn-bots"
 tech = ["python"]
 
 [[project]]
 title = "Url-Shortener"
 date = "August 2021"
-sample = "write something..."
-link = "https://github.com/anuragdevon/Url-Shortener-Go"
-tech = ["python"]
+sample = "A tool in shorten long urls using both golang and python."
+link = "https://github.com/anuragdevon/shorturl"
+tech = ["golang"]
 
 [[project]]
 title = "WeatherApp"
 date = "July 2021"
-sample = "Used open weather API to create a simple weather showing app"
-link = "https://github.com/anuragdevon/Url-Shortener-Go"
+sample = "Used open weather API to create a simple weather showing Webapp and command-line tool."
+link = "https://github.com/anuragdevon/WeatherApp"
 tech = ["python", "django"]
 
 
@@ -38,7 +66,7 @@ tech = ["python", "django"]
 title = "Agora Video Chat App"
 date = "July 2021"
 sample = "Used Agora to create a simple/minimalist Video-Chat Service using Django and ..."
-link = "https://github.com/anuragdevon/Video-Chat-Django"
+link = "https://github.com/anuragdevon/video-chat-django"
 tech = ["django", "python", "js"]
 
 [[project]]
@@ -92,14 +120,6 @@ link = "https://marsroversociety.netlify.app/"
 tech = ["hugo"]
 
 [[project]]
-title = "Static Graph Generator"
-date = "Jun 2020"
-sample = "Using OpenGL to create a static graph generator"
-link = "https://github.com/anuragdevon/Static-Graph"
-tech = ["cpp"]
-
-
-[[project]]
 title = "Vidhai Website"
 date = "Dec 2020 - Jan 2021"
 sample = "Our Team modified and polished the website for Vidhai, which is a NPO, helping..."
@@ -109,7 +129,7 @@ tech = ["html", "css", "js"]
 [[project]]
 title = "Static Graph Generator"
 date = "Jun 2020"
-sample = "Using OpenGL to create a static graph generator"
+sample = "Using OpenGL to create a static graph generator."
 link = "https://github.com/anuragdevon/Static-Graph"
 tech = ["cpp"]
 
@@ -137,7 +157,7 @@ tech = ["fusion", "c"]
 [[project]]
 title = "PSP Model"
 date = "Jun 2020"
-sample = "Created a modified model of Play sation portable"
+sample = "Created a modified model of Play sation portable."
 link = "https://www.behance.net/gallery/98661545/PSP%28Fusion-Model%29"
 tech = ["fusion"]
 
