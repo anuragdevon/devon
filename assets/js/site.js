@@ -135,3 +135,22 @@ function openForm() {
   
   window.onload = function() { cookieConsent(); };
   
+
+// SMTP SERVER
+function sendEmail() {
+  var myForm = document.getElementById("contactme");
+  sender_email = myForm.elements[0].value;
+  sender_message = myForm.elements[1].value;
+  console.log(sender_email, sender_message);
+	Email.send({
+    Host: "smtp.gmail.com",
+    Username : "noreplydevon@gmail.com",
+    Password : "Something@1234",
+    To : 'anuragkar16@gmail.com',
+    From : "noreplydevon@gmail.com",
+    Subject : "Contact From Website",
+    Body : "EmailID: " + sender_email + "<br> MESSAGE: " + sender_message
+    }).then(
+      alert("Email Sent!")
+    );
+} 

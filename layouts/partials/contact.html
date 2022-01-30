@@ -3,8 +3,8 @@
   {{ partial "in" "comment" }}
 </i></button>
 
-<div class="form-popup" id="myForm">
-  <form action="/" class="form-container">
+<div class="form-popup" id="myForm" method="post">
+  <form class="form-container" id="contactme">
     <div class="row">
       <div class="col">
         <h3>Contact</h3>
@@ -14,10 +14,10 @@
       </div>
     </div>
     <label for="email"><b>{{ .emailid }}</b></label>
-    <input type="text" placeholder="{{ .emailPh }}" name="email" required>
+    <input type="text" placeholder="{{ .emailPh }}" name="email" value="" required>
     <label for="psw"><b>{{ .messege }}</b></label>
-    <input placeholder="{{ .messegePh }}" type="text" value="" required>
-    <button type="submit" class="custom-btn btn11">{{ .send }}</button>
+    <input type="text" placeholder="{{ .messegePh }}" name="message" value="" required>
+    <button type="submit" value="Send Email" onclick="sendEmail()" class="custom-btn btn11">{{ .send }}</button>
   </form>
 </div>
 {{ end }}
