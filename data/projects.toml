@@ -12,12 +12,12 @@ sample = "An efficiet notes app specifically designed for managing simple projec
 link = "https://github.com/anuragdevon/notes-app"
 tech = ["hugo", "django"]
 
-[[project]]
-title = "Blog WebApp"
-date = "January 2022 - Ongoing"
-sample = "Simple blogging app developed using fastapi."
-link = "https://github.com/anuragdevon/blog-webapp"
-tech = ["FastAPI"]
+# [[project]]
+# title = "Blog WebApp"
+# date = "January 2022 - Ongoing"
+# sample = "Simple blogging app developed using fastapi."
+# link = "https://github.com/anuragdevon/blog-webapp"
+# tech = ["FastAPI"]
 
 [[project]]
 title = "Gash"
@@ -48,7 +48,7 @@ link = "https://github.com/anuragdevon/sn-bots"
 tech = ["python"]
 
 [[project]]
-title = "Url-Shortener"
+title = "ShortUrl"
 date = "August 2021"
 sample = "A tool in shorten long urls using both golang and python."
 link = "https://github.com/anuragdevon/shorturl"
@@ -62,12 +62,12 @@ link = "https://github.com/anuragdevon/WeatherApp"
 tech = ["python", "django"]
 
 
-[[project]]
-title = "Agora Video Chat App"
-date = "July 2021"
-sample = "Used Agora to create a simple/minimalist Video-Chat Service using Django and ..."
-link = "https://github.com/anuragdevon/video-chat-django"
-tech = ["django", "python", "js"]
+# [[project]]
+# title = "Agora Video Chat App"
+# date = "July 2021"
+# sample = "Used Agora to create a simple/minimalist Video-Chat Service using Django and ..."
+# link = "https://github.com/anuragdevon/video-chat-django"
+# tech = ["django", "python", "js"]
 
 [[project]]
 title = "Backend Netflix Clone"
@@ -76,12 +76,12 @@ sample = "Used django to recreate the backend mechanism of video streaming platf
 link = "https://github.com/anuragdevon/netflix"
 tech = ["django", "python"]
 
-[[project]]
-title = "E-commerce Website"
-date = "June 2021 - July 2021"
-sample = "Website made using Django to understand the working of online shopping ..."
-link = "https://github.com/anuragdevon/Ecommerce/"
-tech = ["django", "python"]
+# [[project]]
+# title = "E-commerce Website"
+# date = "June 2021 - July 2021"
+# sample = "Website made using Django to understand the working of online shopping ..."
+# link = "https://github.com/anuragdevon/Ecommerce/"
+# tech = ["django", "python"]
 
 
 [[project]]
