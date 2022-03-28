@@ -1,4 +1,11 @@
 [[project]]
+title = "Genric Auth System"
+date = "March 2022"
+sample = "A Genric authentication system, can be integrated...."
+link = "https://github.com/anuragdevon/firebase_go_auth"
+tech = ["golang"]
+
+[[project]]
 title = "Chat Room"
 date = "February 2022 - Ongoing"
 sample = "Created a chatroom using django channels"
