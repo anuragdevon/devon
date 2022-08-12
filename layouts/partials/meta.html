@@ -46,6 +46,15 @@
 <meta name="robots" content="index,follow" /> 
 <meta name="googlebot" content="index,follow" />
 
+<!-- PWA static files -->
+{{ $android192 := resources.Get "metadata/android-chrome-192x192.png" }}
+{{ $android512 := resources.Get "metadata/android-chrome-512x512.png" }}
+{{ $maskable512 := resources.Get "metadata/maskable_icon.png" }}
+
+<link rel="android192" href="{{ $android192.RelPermalink }}" />
+<link rel="android512" href="{{ $android512.RelPermalink }}" />
+<link rel="maskable512" href="{{ $maskable512.RelPermalink }}" />
+
 {{ $manifest := resources.Get "metadata/manifest.json" }}
 <!-- Manifest File -->
 <link rel="manifest" href="{{ $manifest.RelPermalink }}" />

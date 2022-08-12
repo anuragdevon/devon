@@ -14,8 +14,29 @@
         {{ $site := resources.Get "js/site.js" }}
         {{ $bootstrap := resources.Get "js/bootstrap.min.js" }}
         {{ $smtp := resources.Get "js/smtp.js" }}
+        {{ $sw := resources.Get "service_worker.js" }}
         {{ $js := slice $site $bootstrap $smtp | resources.Concat "js/site.js" | resources.Minify }}
-
+        
         <script src="{{$js.RelPermalink}}"></script>
+        <script src="{{$sw.RelPermalink}}"></script>
+        <script>
+            if('serviceWorker' in navigator) {
+                console.log('Service Worker is supported');
+                navigator.serviceWorker
+                    .register('/service_worker.js', { scope: '/' })
+                    .then(function(registration) {
+                        console.log('Service Worker Registered');
+                    });
+          
+                navigator.serviceWorker
+                    .ready
+                    .then(function(registration) {
+                        console.log('Service Worker Ready');
+                    });
+            }
+            else {
+                console.log('Service Worker Not Supported');
+            }
+          </script>
     </body>
 </html>
