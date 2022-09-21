@@ -1,11 +1,4 @@
-[[project]]
-title = "NITISH"
-date = "Jun 2020"
-sample = "Created a modified model of Play sation portable."
-link = "https://www.behance.net/gallery/98661545/PSP%28Fusion-Model%29"
-tech = ["fusion"]
-
-[[project]]
+[project]]
 title = "Genric Auth System"
 date = "March 2022"
 sample = "A Genric authentication system, can be integrated...."
