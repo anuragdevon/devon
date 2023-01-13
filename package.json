@@ -1,35 +1,43 @@
 {
- "author": "Anurag Kar",
- "comments": {
-  "dependencies": {
-   "@popperjs/core": "project",
-   "autoprefixer": "project",
-   "bootstrap": "project",
-   "bootstrap-icons": "project",
-   "jquery": "project",
-   "popper.js": "project",
-   "postcss-cli": "project"
+  "author": "Anurag Kar",
+  "comments": {
+    "dependencies": {
+      "@popperjs/core": "project",
+      "autoprefixer": "project",
+      "bootstrap": "project",
+      "bootstrap-icons": "project",
+      "jquery": "project",
+      "popper.js": "project",
+      "postcss-cli": "project"
+    },
+    "devDependencies": {}
   },
-  "devDependencies": {}
- },
- "dependencies": {
-  "@popperjs/core": "^2.9.2",
-  "autoprefixer": "^10.2.5",
-  "bootstrap": "^5.0.0-beta3",
-  "bootstrap-icons": "^1.5.0",
-  "jquery": "^3.6.0",
-  "popper.js": "^1.16.1",
-  "postcss-cli": "^8.3.1"
- },
- "description": "portfolio",
- "devDependencies": {
-  "postcss": "^8.3.5"
- },
- "license": "ISC",
- "main": "index.html",
- "name": "devon",
- "scripts": {
-  "test": "echo \"Error: no test specified\" && exit 1"
- },
- "version": "1.0.0"
+  "dependencies": {
+    "@popperjs/core": "^2.9.2",
+    "autoprefixer": "^10.2.5",
+    "bootstrap": "^5.0.0-beta3",
+    "bootstrap-icons": "^1.5.0",
+    "jquery": "^3.6.0",
+    "popper.js": "^1.16.1",
+    "postcss-cli": "^8.3.1"
+  },
+  "description": "portfolio",
+  "devDependencies": {
+    "postcss": "^8.3.5"
+  },
+  "license": "ISC",
+  "main": "index.html",
+  "name": "devon",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anuragdevon/devon.git"
+  },
+  "bugs": {
+    "url": "https://github.com/anuragdevon/devon/issues"
+  },
+  "homepage": "https://github.com/anuragdevon/devon#readme"
 }
