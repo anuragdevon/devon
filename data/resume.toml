@@ -25,14 +25,21 @@ skill = "Softwares"
 items = ["ansible", "githubsoft", "unreal", "blender", "fusion", "matlab"]
 
 [[experience]]
+name = "RedcarpetUp Pvt. Ltd."
+title = "Backend Developer"
+duration = "Jun. 2022 - Nov. 2022"
+location = "Gurgaon, India"
+description = ["Contributed to the team improving the different authentication modules and base development systems.", "Assisted with direct API integration for the company for co brands.", "Developed multiple term loan products for different partner and co brands based on their requirements.", "Contributed in developing payouts modules targeting large and small scale payouts."]
+
+[[experience]]
 name = "aSociette"
-title = "Python Developer"
+title = "Backend Developer"
 duration = "Aug. 2021 - Present"
-location = "Chennai, India"
+location = "Hyderabad, India"
 description = ["Developed microservices, back end components based on needs and goals are decided by the team.", "Maintained databases of both structured and unstructured data and made efficient algorithms to perform fast and efficient queries on databases.", "Contributed the team on the improvements of data protection and security along with custom user authentication systems.", "Collaborated in creating python scripts for testing codebase with given test cases.", "Assisted in the maintaining the production side of code, creating images, volumes and deployments in google cloud vms."]
 
 [[experience]]
-name = "WebOps IIITDM"
+name = "CsClub/WebOps IIITDM"
 title = "Full Stack Developer"
 duration = "Sept. 2020 - Present"
 location = "Chennai, India"
