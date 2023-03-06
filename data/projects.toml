@@ -1,7 +1,21 @@
 [[project]]
+title = "Password Safe App"
+date = "Jan 2023"
+sample = "A Password Safe Backend App for personal usage and ..."
+link = "https://github.com/anuragdevon/passwordSafe"
+tech = ["python", "django"]
+
+[[project]]
+title = "Genric Auth System"
+date = "April 2022"
+sample = "A Genric authentication system using fastapi, can be integrated...."
+link = "https://github.com/anuragdevon/firebase-python-auth"
+tech = ["python", "fastapi"]
+
+[[project]]
 title = "Genric Auth System"
 date = "March 2022"
-sample = "A Genric authentication system, can be integrated...."
+sample = "A Genric authentication system in golang, can be integrated...."
 link = "https://github.com/anuragdevon/firebase_go_auth"
 tech = ["golang"]
 

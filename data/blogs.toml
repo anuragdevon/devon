@@ -1,14 +1,30 @@
 [[blogs]]
+title = "Ctf-Wireshark"
+time = "7min"
+date = "23rd May 2020"
+sample = "What are django views and how to implement function and class based ..."
+link = ""
+site = "medium"
+
+[[blogs]]
+title = "Decorators & Wrappers"
+time = "12min"
+date = "23rd May 2020"
+sample = "What are django views and how to implement function and class based ..."
+link = ""
+site = "medium"
+
+[[blogs]]
 title = "Views in Django"
-time = ""
-date = ""
+time = "8min"
+date = "23rd May 2020"
 sample = "What are django views and how to implement function and class based ..."
 link = ""
 site = "medium"
 
 [[blogs]]
 title = "Color-Detection"
-time = "10 min"
+time = "6 min"
 date = "23rd May 2020"
 sample = "Basically I will just test the required color is present in the background ..."
 link = "https://www.instructables.com/Simple-Color-Detection-Using-OpenCV/"
@@ -16,7 +32,7 @@ site = "instructables"
 
 [[blogs]]
 title = "LCD-arduino"
-time = "10 min"
+time = "9 min"
 date = "2nd Jun. 2020"
 sample = "Hi, Today I'm going to show how to work with a simple LCD with the help of ..."
 link = "https://www.instructables.com/Working-With-LCDArduino/"
