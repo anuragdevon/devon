@@ -1,4 +1,11 @@
 [[project]]
+title = "HeartGaurdian"
+date = "Jan 2023"
+sample = "Live Heart Monitoring App developed using flutter and ..."
+link = "https://github.com/anuragdevon/HeartGaurdian"
+tech = ["flutter"]
+
+[[project]]
 title = "Password Safe App"
 date = "Jan 2023"
 sample = "A Password Safe Backend App for personal usage and ..."
