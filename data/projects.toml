@@ -6,24 +6,24 @@ link = "https://github.com/anuragdevon/HeartGaurdian"
 tech = ["flutter"]
 
 [[project]]
-title = "Password Safe App"
+title = "PassWarden"
 date = "Jan 2023"
-sample = "A Password Safe Backend App for personal usage and ..."
-link = "https://github.com/anuragdevon/passwordSafe"
+sample = "A Password Safe API streamlines password..."
+link = "https://github.com/anuragdevon/passwarden"
 tech = ["python", "django"]
 
 [[project]]
-title = "Genric Auth System"
+title = "Authit-Python"
 date = "April 2022"
-sample = "A Genric authentication system using fastapi, can be integrated...."
-link = "https://github.com/anuragdevon/firebase-python-auth"
+sample = "Fast and Secure Authentication with Python..."
+link = "https://github.com/anuragdevon/authit-python"
 tech = ["python", "fastapi"]
 
 [[project]]
-title = "Genric Auth System"
+title = "Authit-Go"
 date = "March 2022"
 sample = "A Genric authentication system in golang, can be integrated...."
-link = "https://github.com/anuragdevon/firebase_go_auth"
+link = "https://github.com/anuragdevon/authit-go"
 tech = ["golang"]
 
 [[project]]
@@ -34,59 +34,59 @@ link = "https://github.com/anuragdevon/chatroom"
 tech = ["django"]
 
 [[project]]
-title = "Gash"
+title = "GoPrompt"
 date = "December 2021 - Ongoing"
-sample = "A minimalist shell written in golang."
-link = "https://github.com/anuragdevon/gash"
+sample = "A Custom interactive shell developed using golang..."
+link = "https://github.com/anuragdevon/goprompt-repo"
 tech = ["golang"]
 
 [[project]]
-title = "Simple CI tool"
+title = "CI-Toolbox"
 date = "November 2021"
-sample = "A minified CI tool to integrate in any small project to maximize productivity."
+sample = "A minified CI tool to integrate in any small..."
 link = "https://github.com/anuragdevon/CI-tool"
 tech = ["python"]
 
 [[project]]
-title = "i3 Mini Bar"
+title = "Tiny-i3bar"
 date = "October 2021"
-sample = "A simple, fast and minimalist i3-status bar made on i3-bar."
-link = "https://github.com/anuragdevon/i3-mini-bar"
+sample = "tiny-i3bar is a lightweight and customizable i3 status..."
+link = "https://github.com/anuragdevon/tiny-i3bar"
 tech = ["Bash"]
 
 [[project]]
-title = "Social Networking Bots"
+title = "SmartSocials"
 date = "August 2021"
-sample = "Automation bots developed for few social newtworking platforms."
-link = "https://github.com/anuragdevon/sn-bots"
+sample = "Contains automation bots for different social networking..."
+link = "https://github.com/anuragdevon/SmartSocials"
 tech = ["python"]
 
 [[project]]
-title = "ShortUrl"
+title = "Shortify"
 date = "August 2021"
-sample = "A tool in shorten long urls using both golang and python."
-link = "https://github.com/anuragdevon/shorturl"
+sample = "Shortify is a URL shortener developed in GoLang and..."
+link = "https://github.com/anuragdevon/Shortify"
 tech = ["golang"]
 
 [[project]]
-title = "WeatherApp"
+title = "WeatherWizard"
 date = "July 2021"
-sample = "Used open weather API to create a simple weather showing Webapp and command-line tool."
-link = "https://github.com/anuragdevon/WeatherApp"
+sample = "Python Django web app and CLI tool that uses OpenWeather API..."
+link = "https://github.com/anuragdevon/WeatherWizard"
 tech = ["python", "django"]
 
 [[project]]
-title = "Backend Netflix Clone"
+title = "NetClon"
 date = "July 2021"
-sample = "Used django to recreate the backend mechanism of video streaming platform, Netflix."
-link = "https://github.com/anuragdevon/netflix"
+sample = "A minimalist video management system, resembles that..."
+link = "https://github.com/anuragdevon/NetClon"
 tech = ["django", "python"]
 
 
 [[project]]
 title = "Personal Website"
 date = "June 2021"
-sample = "Eariler Website modified and rebuilt using hugo framework."
+sample = "Earlier Website modified and rebuilt using hugo framework."
 link = "https://anuragkar.netlify.app/"
 tech = ["hugo"]
 
@@ -98,17 +98,17 @@ link = "https://github.com/Hack-IIITDM/Positively"
 tech = ["flutter", "tensor"]
 
 [[project]]
-title = "Car-Networking Simulation-Using Android"
+title = "Virtual Car Automation"
 date = "April 2021"
-sample = "Using bash scripting and python creating a real-time simulation of ..."
-link = "https://github.com/anuragdevon/IoT-Mobile"
+sample = "Using bash scripting and python creating a real-time simulation of..."
+link = "https://github.com/anuragdevon/virtual-car-automation"
 tech = ["python", "bash"]
 
 [[project]]
-title = "Hostel Management System"
+title = "HostelMaven"
 date = "Mar 2021 - Apr 2021"
-sample = "Hostel Management System built to solve college hostel issues using Django-Framework."
-link = "https://github.com/DBMS-Web/hostel-management"
+sample = "A web application made using django framework which can make..."
+link = "https://github.com/anuragdevon/hostelmaven-repo"
 tech = ["django", "postgresql", "bootstrap"]
 
 [[project]]
