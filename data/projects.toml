@@ -1,8 +1,8 @@
 [[project]]
-title = "HeartGaurdian"
+title = "LifePulse"
 date = "Jan 2023 - Ongoing"
 sample = "Live Heart Monitoring App developed using flutter and ..."
-link = "https://github.com/anuragdevon/HeartGaurdian"
+link = "https://github.com/anuragdevon/lifepulse-repo"
 tech = ["flutter"]
 
 [[project]]
@@ -27,7 +27,7 @@ link = "https://github.com/anuragdevon/authit-go"
 tech = ["golang"]
 
 [[project]]
-title = "Chat Room"
+title = "ChatRoom"
 date = "February 2022 - Ongoing"
 sample = "Created a chatroom using django channels"
 link = "https://github.com/anuragdevon/chatroom"
