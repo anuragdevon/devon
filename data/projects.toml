@@ -1,4 +1,11 @@
 [[project]]
+title = "DockerPress"
+date = "March 2023 - Ongoing"
+sample = "Set of scripts to automate the wordpress..."
+link = "https://github.com/anuragdevon/dockerpress"
+tech = ["bash", "docker"]
+
+[[project]]
 title = "LifePulse"
 date = "Jan 2023 - Ongoing"
 sample = "Live Heart Monitoring App developed using flutter and ..."
