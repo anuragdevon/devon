@@ -1,4 +1,11 @@
 [[project]]
+title = "CampusHire"
+date = "March 2023 - Ongoing"
+sample = "A Django-based REST API for managing student..."
+link = "https://github.com/anuragdevon/campus-hire"
+tech = ["python", "django"]
+
+[[project]]
 title = "DockerPress"
 date = "March 2023 - Ongoing"
 sample = "Set of scripts to automate the wordpress..."
