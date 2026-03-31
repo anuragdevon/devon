@@ -1,39 +1,52 @@
 footer {
-    background-color: rgb(250, 250, 250);
-    position: absolute;
-    bottom: 0;
-    // border-top: 1px solid #149ddd !important;
-    font-weight: bold;
-    font-size: 0.8rem;
-    padding-top: 1.8rem;
-    padding-bottom: 1.8rem;
-    a {
-        color: #149ddd;
-        text-decoration: none;
-        @include margin(0 $spacer);
-        @include font-size(0.8em);
+  background: var(--footer-bg) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border-glass) !important;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  font-size: 0.78rem;
+  font-weight: 500;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+  color: var(--text-muted-custom);
+
+  p {
+    margin: 0;
+    letter-spacing: 0.02em;
+
+    @include media-breakpoint-down(md) { text-align: center; }
+  }
+
+  .d-inline-flex { gap: 0.25rem; }
+
+  a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.1rem;
+    height: 2.1rem;
+    border-radius: 50%;
+    border: 1px solid var(--border-glass);
+    background: transparent;
+    transition: var(--transition-base);
+
+    @include margin(0 0.15rem);
+
+    &:hover {
+      background: var(--accent-glow);
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px var(--accent-glow);
     }
-    a:hover{
-        color: #149ddd !important;
-    }
-    p{
-        @include media-breakpoint-down(md) {
-            text-align: center;
-        }
-    }
-}
-.fa-envelope:before {
-   color: black;
-}
-.fa-github:before{
-    color: rgb(38, 38, 38);
-}
-.fa-youtube:before{
-    color: #c4302b;
-}
-.fa-twitter:before{
-    color: #00acee;
-}
-.fa-linkedin-in:before{
-    color: #0072b1;
+
+    .fa svg { fill: currentColor; }
+  }
+
+  a[aria-label="linkedin"]:hover { color: #0a66c2; border-color: #0a66c2; box-shadow: 0 4px 14px rgba(10,102,194,0.25); }
+  a[aria-label="twitter"]:hover  { color: #1d9bf0; border-color: #1d9bf0; box-shadow: 0 4px 14px rgba(29,155,240,0.25); }
+  a[aria-label="youtube"]:hover  { color: #ff0000; border-color: #ff0000; box-shadow: 0 4px 14px rgba(255,0,0,0.18); }
 }

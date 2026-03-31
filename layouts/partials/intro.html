@@ -2,19 +2,20 @@
 {{ $image := resources.Get "/images/laptop.webp" }}
 <section id="hero" class="hero">
     <div class="container">
-        <div class="row">
-            <div class="col-lg-4">
-                <img src="{{ $image.RelPermalink }}" class="img-fluid laptop" alt="Laptop Coding">
+        <div class="row align-items-center">
+            <div class="col-lg-4 text-center animate-fade">
+                <img src="{{ $image.RelPermalink }}"
+                     class="img-fluid laptop"
+                     alt="Laptop Coding"
+                     loading="eager"
+                     decoding="async">
             </div>
             <div class="col-lg-8 pt-4 pt-lg-0">
                 {{ range .display}}
-                <div class="wrapper">
-                    <div class="{{ .category }}" id="{{ .category }}">
-                        {{ .text }}
-                    </div>
+                <div class="wrapper animate-on-scroll">
+                    <div class="{{ .category }}" id="{{ .category }}">{{ .text }}</div>
                 </div>
                 {{ end }}
-                </div>
             </div>
         </div>
     </div>

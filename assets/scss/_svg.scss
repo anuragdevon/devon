@@ -1,53 +1,50 @@
 .inline-svg {
-    display: inline-block;
-    vertical-align: middle;
-  
-    svg {
-      @include media-breakpoint-down(md) {
-        width: 3em;
-        height: 3em;
-        fill: currentColor;
-        display: inline-block;
-       }
-      width: 4em;
-      height: 4em;
-      fill: currentColor;
-      display: inline-block;
-    }
-}
-
-.fa{
   display: inline-block;
   vertical-align: middle;
 
   svg {
-    @include media-breakpoint-down(md) {
-      width: 2em;
-      height:2em;
-      fill: currentColor;
-      display: inline-block;
-     }
-    width: 2em;
-    height: 2em;    
+    width: 3.4em;
+    height: 3.4em;
     fill: currentColor;
     display: inline-block;
+    color: var(--text-secondary);
+    transition: color 0.2s ease;
+
+    @include media-breakpoint-down(md) {
+      width: 2.8em;
+      height: 2.8em;
+    }
+
+    &:hover { color: var(--accent-light); }
   }
 }
-  
-.in{
-  display: inline-block;
+
+.fa {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   vertical-align: middle;
 
   svg {
-    @include media-breakpoint-down(md) {
-      width: 1.1em;
-      height:1.1em;
-      fill: currentColor;
-      display: inline-block;
-     }
-    width: 1.2em;
-    height: 1.2em;    
+    width: 1.6em;
+    height: 1.6em;
     fill: currentColor;
     display: inline-block;
+    transition: fill 0.2s ease;
+  }
+}
+
+.in {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+
+  svg {
+    width: 1.1em;
+    height: 1.1em;
+    fill: currentColor;
+    display: inline-block;
+    transition: fill 0.2s ease;
   }
 }

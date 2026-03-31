@@ -1,32 +1,36 @@
 {{ define "main" }}
 {{ with site.Data.blogs }}
-<section id="blog">
-	<div class="container blog">
-		<div class="row">
-		{{ range .blogs}}
-		  <div class="col-12 col-sm-8 col-md-6 col-lg-4 py-3">
-			<div class="card">
-			  <div class="card-body">
-				<h4 class="card-title">{{ .title }}</h4>
-				<small class="text-muted cat">
-				  <i class="far fa-clock text-info"></i> {{ .time }} to read
-				</small>
-				<p class="card-text">{{.sample }}</p>
-				<a href = "{{ .link }}"><button class="custom-btn btn-11">Read</button></a>
-			  </div>
-			  <div class="card-footer text-muted d-flex justify-content-between bg-transparent border-top-0">
-				<div class="views">{{ .date }}
-				</div>
-				<div class="stats">
-					{{ $icon := .site }}
-					{{ partial "inline-svg" $icon }}
-				</div>
-			  </div>
-			</div>
-		  </div>
-		  {{ end }}
-		</div>
-	</div>	
+<section id="blogs">
+  <div class="container blog">
+    <div class="section-title animate-on-scroll">
+      <h2>Blogs</h2>
+    </div>
+    <div class="row g-3">
+      {{ range $i, $b := .blogs }}
+      <div class="col-12 col-sm-10 col-md-6 col-lg-4 animate-on-scroll stagger-{{ add (mod $i 6) 1 }}">
+        <div class="card h-100">
+          <div class="card-body">
+            <h4 class="card-title">{{ $b.title }}</h4>
+            <small class="text-muted">
+              {{ $b.time }} min read &middot; {{ $b.date }}
+            </small>
+            <p class="card-text">{{ $b.sample }}</p>
+            <a href="{{ $b.link }}" target="_blank" rel="noopener" aria-label="{{ $b.title }}">
+              <button class="custom-btn btn-11">Read</button>
+            </a>
+          </div>
+          <div class="card-footer d-flex justify-content-between align-items-center">
+            <span>{{ $b.date }}</span>
+            <div>
+              {{ $icon := $b.site }}
+              {{ partial "inline-svg" $icon }}
+            </div>
+          </div>
+        </div>
+      </div>
+      {{ end }}
+    </div>
+  </div>
 </section>
 {{ end }}
 {{ end }}

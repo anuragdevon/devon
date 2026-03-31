@@ -1,39 +1,37 @@
-{{ $image := resources.Get "/images/profile/devon.webp" }}
-{{/*  {{ $image = $image.Resize "270x270" }}  */}}
+{{ $image  := resources.Get "/images/profile/devon.webp" }}
 {{ $resume := resources.Get "/pdfs/resume.pdf" }}
 {{ with site.Data.profile }}
 <section id="about" class="about">
-<div class="container">
-  <div class="section-title">
-    <h1>{{ .section }}</h1>
-  </div>
-  <div class="row">
-    <div class="col-lg-4">
-      <img src="{{ $image.RelPermalink }}" class="img-fluid rounded-circle" height = "270" width = "270" alt="Anurag Kar">
+  <div class="container">
+    <div class="section-title animate-on-scroll">
+      <h1>{{ .section }}</h1>
     </div>
-    <div class="col-lg-8 pt-4 pt-lg-0 content">
-      <h3>{{ .tag }}</h3>
-      <p>{{ .description }}</p>
-      <p><i><b>Interests</b>
-        {{ .description2 }}
-        </i>
-      </p>
-      <p><b>Side-Stuffs</b>
-        <i>
-        {{ .description3 }}
-        </i>
-      </p>
-      <div class="row py-3">
-        <div class="col-lg-6 res py-1">
-          {{ partial "in" .map }} {{ .location }}
-        </div>
-        <div class="col-lg-6 res">
-          {{ .resumetag }} <a href="{{ .resumelink }}" target="_blank" aria-label="resume">{{ partial "in" .download }}</a>
+    <div class="row align-items-center">
+      <div class="col-lg-4 text-center animate-fade stagger-1">
+        <img src="{{ $image.RelPermalink }}"
+             class="img-fluid rounded-circle"
+             height="270"
+             width="270"
+             alt="Anurag Kar"
+             loading="lazy"
+             decoding="async">
+      </div>
+      <div class="col-lg-8 pt-4 pt-lg-0 content animate-on-scroll stagger-2">
+        <h3>{{ .tag }}</h3>
+        <p>{{ .description }}</p>
+        <p><i><b>Interests</b> {{ .description2 }}</i></p>
+        <p><b>Side-Stuffs</b> <i>{{ .description3 }}</i></p>
+        <div class="row py-3">
+          <div class="col-lg-6 res py-1">
+            {{ partial "in" .map }} {{ .location }}
+          </div>
+          <div class="col-lg-6 res">
+            {{ .resumetag }}&nbsp;<a href="{{ .resumelink }}" target="_blank" rel="noopener" aria-label="resume">{{ partial "in" .download }}</a>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
-<hr class="center-ball">
+  <hr class="center-ball">
 </section>
 {{ end }}

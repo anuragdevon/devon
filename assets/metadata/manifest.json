@@ -1,36 +1,32 @@
 {
-    "name":"Anurag Kar's Website",
-    "short_name":"anuragdevon",
-    "icons":[
-       {
-          "src":"android-chrome-192x192.png",
-          "sizes":"192x192",
-          "type":"image/png",
-          "density":"0.75x",
-          "purpose":"any",
-          "platform":"android"
-       },
-       {
-         "src":"android-chrome-512x512.png",
-         "sizes":"512x512",
-         "type":"image/png",
-         "density":"0.75x",
-         "purpose":"any",
-         "platform":"android"
-      },
-      {
-         "src": "android-chrome-512x512.png",
-         "sizes": "196x196",
-         "type": "image/png",
-         "density": "1.0x",
-         "purpose": "maskable",
-         "platform": "android"
-      }
-
+    "name": "Anurag Kar",
+    "short_name": "Anurag",
+    "description": "Anurag Kar's personal portfolio — backend developer & student",
+    "icons": [
+        {
+            "src": "android-chrome-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "android-chrome-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "maskable_icon.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
     ],
     "start_url": "/",
-    "theme_color":"#ffffff",
-    "background_color":"#ffffff",
-    "display":"standalone",
-    "orientation":"portrait"
+    "scope": "/",
+    "theme_color": "#080c14",
+    "background_color": "#080c14",
+    "display": "standalone",
+    "orientation": "portrait",
+    "categories": ["portfolio", "developer"]
 }

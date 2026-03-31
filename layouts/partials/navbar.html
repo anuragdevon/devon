@@ -1,20 +1,50 @@
 {{ with site.Data.navbar }}
 <nav class="sticky-top navbar navbar-expand-lg border-bottom" id="navbar">
   <div class="container-fluid">
-    {{/*  {{ $svg := partial "inline-svg" "logo" }}  */}}
-    {{/*  {{ with resources.Get (print "" site.Params.logo) }}  */}}
     <a class="navbar-brand" aria-label="logo" href="/">
       {{ $image := resources.Get "/images/logo/logo.png" }}
-      <img src="{{$image.RelPermalink}}" class="logo" alt="{{site.Title}}">
+      <img src="{{ $image.RelPermalink }}" class="logo" alt="{{ site.Title }}">
     </a>
-    {{/*  {{ end }}  */}}
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
-       {{ partial "in" .bar }}
-    </button>
+
+    <div class="d-flex align-items-center gap-2">
+      {{/* Theme toggle — visible at all breakpoints */}}
+      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle colour theme" onclick="toggleTheme()">
+        {{/* Moon icon — shown in light mode (click to go dark) */}}
+        <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+        {{/* Sun icon — shown in dark mode (click to go light) */}}
+        <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="5"/>
+          <line x1="12" y1="1"     x2="12" y2="3"/>
+          <line x1="12" y1="21"    x2="12" y2="23"/>
+          <line x1="4.22" y1="4.22"   x2="5.64" y2="5.64"/>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+          <line x1="1"  y1="12" x2="3"  y2="12"/>
+          <line x1="21" y1="12" x2="23" y2="12"/>
+          <line x1="4.22"  y1="19.78" x2="5.64"  y2="18.36"/>
+          <line x1="18.36" y1="5.64"  x2="19.78" y2="4.22"/>
+        </svg>
+      </button>
+
+      <button class="navbar-toggler" type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#navbarTogglerDemo02"
+              aria-controls="navbarTogglerDemo02"
+              aria-expanded="false"
+              aria-label="Toggle navigation">
+        {{ partial "in" .bar }}
+      </button>
+    </div>
+
     <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
       <ul class="navbar-nav mx-auto">
         {{ range .links }}
-        <li class="nav-item my-2"><a class="nav-link p-1 effect-underline active" aria-current="page" href="{{ .navlink }}">{{ partial "in" .icon }}{{ upper .nav }}</a></li>
+        <li class="nav-item my-2">
+          <a class="nav-link p-1 effect-underline" href="{{ .navlink }}">
+            {{ partial "in" .icon }}{{ upper .nav }}
+          </a>
+        </li>
         {{ end }}
       </ul>
     </div>

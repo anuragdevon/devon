@@ -2,8 +2,20 @@
     {{ template "_internal/google_analytics.html" . }}
     {{ partial "meta" . }}
 
-    {{ $options := (dict "public/" "css/site.css" "outputStyle" "compressed") }}
-    {{ $styles := resources.Get "scss/site.scss" | resources.ExecuteAsTemplate "style.scss" . | toCSS | minify | fingerprint }}
+    {{/* Anti-flash: apply saved theme before CSS paints — must be synchronous */}}
+    <script>
+      (function () {
+        var t = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', t);
+      }());
+    </script>
 
-    <link rel="stylesheet" type="text/css" aria-disabled="true" href="{{ $styles.RelPermalink }}" media="all">
+    {{/* Performance: preconnect to font origins */}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    {{ $styles := resources.Get "scss/site.scss" | resources.ExecuteAsTemplate "style.scss" . | toCSS | minify | fingerprint }}
+    <link rel="preload" as="style" href="{{ $styles.RelPermalink }}">
+    <link rel="stylesheet" type="text/css" href="{{ $styles.RelPermalink }}" media="all">
 </head>

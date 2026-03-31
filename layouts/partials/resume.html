@@ -1,24 +1,25 @@
 {{ with site.Data.resume }}
 <section id="resume" class="resume">
   <div class="container">
-    <div class="section-title">
+    <div class="section-title animate-on-scroll">
       <h2>{{ .title }}</h2>
       <p>{{ .description }}</p>
     </div>
     <div class="row">
-      <div class="col-lg-6 py-3">
+      <div class="col-lg-6 py-3 animate-on-scroll stagger-1">
         <div class="skills">
           <h3 class="resume-title">{{ .topic1 }}</h3>
           {{ range .skills }}
           <h4>{{ .skill }}</h4>
+          <div class="d-flex flex-wrap gap-1 mb-2">
             {{ range .items }}
-             {{ partial "inline-svg" . }}
+            {{ partial "inline-svg" . }}
             {{ end }}
-            <br><br>
+          </div>
           {{ end }}
         </div>
       </div>
-      <div class="col-lg-6">
+      <div class="col-lg-6 animate-on-scroll stagger-2">
         <h3 class="resume-title">{{ .topic2 }}</h3>
         {{ range .experience }}
         <div class="resume-item">
@@ -27,7 +28,7 @@
           <p><em>{{ .location }}</em></p>
           <ul>
             {{ range .description }}
-              <li>{{ . }}</li>
+            <li>{{ . }}</li>
             {{ end }}
           </ul>
         </div>

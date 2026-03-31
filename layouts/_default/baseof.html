@@ -2,41 +2,36 @@
 <html lang="{{site.LanguageCode|default `en`}}">
 {{ partial "header" . }}
     <body>
-        <a class="skip-link" href="#main">main</a>
+        <a class="skip-link" href="#main">Skip to main content</a>
         <main id="main">
             {{ partial "navbar" }}
             {{ block "main" . }}{{ end }}
             {{ partial "contact" }}
             {{ partial "footer" }}
-          </main>
+        </main>
 
-
-        {{ $site := resources.Get "js/site.js" }}
+        {{ $site      := resources.Get "js/site.js" }}
         {{ $bootstrap := resources.Get "js/bootstrap.min.js" }}
-        {{ $smtp := resources.Get "js/smtp.js" }}
+        {{ $smtp      := resources.Get "js/smtp.js" }}
+        {{ $js        := slice $site $bootstrap $smtp | resources.Concat "js/bundle.js" | minify | fingerprint }}
+
+        <script src="{{ $js.RelPermalink }}" defer></script>
+
+        {{/* Service Worker registration — must be a separate file at root scope */}}
         {{ $sw := resources.Get "service_worker.js" }}
-        {{ $js := slice $site $bootstrap $smtp | resources.Concat "js/site.js" | resources.Minify }}
-        
-        <script src="{{$js.RelPermalink}}"></script>
-        <script src="{{$sw.RelPermalink}}"></script>
         <script>
-            if('serviceWorker' in navigator) {
-                console.log('Service Worker is supported');
-                navigator.serviceWorker
-                    .register('/service_worker.js', { scope: '/' })
-                    .then(function(registration) {
-                        console.log('Service Worker Registered');
-                    });
-          
-                navigator.serviceWorker
-                    .ready
-                    .then(function(registration) {
-                        console.log('Service Worker Ready');
-                    });
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function () {
+                    navigator.serviceWorker
+                        .register('{{ $sw.RelPermalink }}', { scope: '/' })
+                        .then(function (reg) {
+                            console.log('[SW] Registered, scope:', reg.scope);
+                        })
+                        .catch(function (err) {
+                            console.warn('[SW] Registration failed:', err);
+                        });
+                });
             }
-            else {
-                console.log('Service Worker Not Supported');
-            }
-          </script>
+        </script>
     </body>
 </html>

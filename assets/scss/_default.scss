@@ -1,113 +1,352 @@
-html{
-    scroll-behavior: smooth;
-    &::-webkit-scrollbar {
-      width: 8px;
-    }
-    &::-webkit-scrollbar-track {
-        background-color: transparent;
-    }
-    &::-webkit-scrollbar-thumb {
-        background-color: rgba(20, 157, 221, 0.6);
-        border-radius: 2px;
-    }
-    &::-webkit-scrollbar-thumb:hover {
-        background-color: rgba(20, 157, 221, 0.8);
-    }
+// ============================================================
+// CSS Custom Properties — Light Mode (default)
+// ============================================================
+:root {
+  // Backgrounds
+  --bg-primary:          #ffffff;
+  --bg-secondary:        #f8fafc;
+  --bg-tertiary:         #f1f5f9;
+  --bg-card:             rgba(255, 255, 255, 0.85);
+  --bg-card-hover:       rgba(255, 255, 255, 1);
+  --nav-bg:              rgba(255, 255, 255, 0.85);
+  --nav-bg-scrolled:     rgba(255, 255, 255, 0.98);
+  --footer-bg:           rgba(255, 255, 255, 0.95);
+  --form-bg:             rgba(255, 255, 255, 0.98);
+  --cookie-bg:           rgba(255, 255, 255, 0.98);
+
+  // Borders
+  --border-glass:        rgba(0, 0, 0, 0.08);
+  --border-glass-hover:  rgba(20, 157, 221, 0.45);
+
+  // Text
+  --text-primary:        #0f172a;
+  --text-secondary:      rgba(15, 23, 42, 0.65);
+  --text-muted-custom:   rgba(15, 23, 42, 0.42);
+
+  // Accent
+  --accent:              #149ddd;
+  --accent-dark:         #0a7bc4;
+  --accent-light:        #3db8f0;
+  --accent-glow:         rgba(20, 157, 221, 0.15);
+  --accent-glow-strong:  rgba(20, 157, 221, 0.32);
+
+  // Shadows (lighter for light bg)
+  --shadow-card:         0 4px 20px rgba(0, 0, 0, 0.07), 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-card-hover:   0 12px 40px rgba(0, 0, 0, 0.12), 0 0 28px var(--accent-glow);
+
+  // Scrollbar
+  --scrollbar-track:     rgba(0, 0, 0, 0.05);
+
+  // Radii & layout
+  --radius-card:         16px;
+  --radius-sm:           8px;
+  --radius-lg:           24px;
+
+  // Blur
+  --blur-sm:             blur(10px);
+  --blur-md:             blur(20px);
+  --blur-lg:             blur(40px);
+
+  // Transitions
+  --transition-base:     all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow:     all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
-body{
+
+// ============================================================
+// Dark Mode Overrides
+// ============================================================
+[data-theme="dark"] {
+  --bg-primary:         #080c14;
+  --bg-secondary:       #0d1525;
+  --bg-tertiary:        #111827;
+  --bg-card:            rgba(255, 255, 255, 0.04);
+  --bg-card-hover:      rgba(255, 255, 255, 0.07);
+  --nav-bg:             rgba(8, 12, 20, 0.82);
+  --nav-bg-scrolled:    rgba(8, 12, 20, 0.97);
+  --footer-bg:          rgba(8, 12, 20, 0.92);
+  --form-bg:            rgba(13, 21, 37, 0.92);
+  --cookie-bg:          rgba(13, 21, 37, 0.94);
+  --border-glass:       rgba(255, 255, 255, 0.08);
+  --text-primary:       #e8edf5;
+  --text-secondary:     rgba(232, 237, 245, 0.65);
+  --text-muted-custom:  rgba(232, 237, 245, 0.4);
+  --accent-light:       #5ec8f0;
+  --scrollbar-track:    #0d1525;
+  --shadow-card:        0 8px 32px rgba(0, 0, 0, 0.45);
+  --shadow-card-hover:  0 20px 56px rgba(0, 0, 0, 0.55), 0 0 40px var(--accent-glow);
+}
+
+// ============================================================
+// Global Resets & Base
+// ============================================================
+html {
+  scroll-behavior: smooth;
+
+  &::-webkit-scrollbar        { width: 6px; }
+  &::-webkit-scrollbar-track  { background-color: var(--scrollbar-track); }
+  &::-webkit-scrollbar-thumb  {
+    background: linear-gradient(180deg, var(--accent), var(--accent-dark));
+    border-radius: 3px;
+  }
+  &::-webkit-scrollbar-thumb:hover { background: var(--accent-light); }
+}
+
+// Smooth theme transitions (toggling only — initial paint has no transition)
+body, nav, footer, .card, section {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+body {
   padding-bottom: 70px;
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
   box-sizing: border-box;
   overflow-y: scroll;
-  @include media-breakpoint-down(md){
+  font-family: 'Inter', 'Open Sans', sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  @include media-breakpoint-down(md) {
     padding-bottom: 110px;
   }
-  font-family: 'Open Sans', sans-serif;
-  background-color: white;
+
   & > .container:not(footer) {
-      flex: 1 0 auto;
+    flex: 1 0 auto;
   }
 }
-#dotta{
-    border: 1px solid rgb(0, 0, 0);
-    height: 95vh;
-    width: 100%;
-    // background: #1A1E23;
-    position: relative;
-}
-#dotta canvas{
-    position:absolute; top:0; left:0; z-index:0
+
+// Bootstrap overrides for theme
+.text-muted       { color: var(--text-muted-custom) !important; }
+.border-top       { border-top-color:    var(--border-glass) !important; }
+.border-bottom    { border-bottom-color: var(--border-glass) !important; }
+.card-footer {
+  background: transparent !important;
+  border-top-color: var(--border-glass) !important;
+  color: var(--text-muted-custom);
 }
 
+// ============================================================
+// Section Base
+// ============================================================
+section {
+  padding-top: 4rem;
+  padding-bottom: 2rem;
+  overflow: hidden;
+}
+
+.section-bg { background: var(--bg-secondary); }
+
+// ============================================================
+// Section Titles
+// ============================================================
+.section-title {
+  padding-bottom: 2.5rem;
+
+  h1, h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    padding-bottom: 1rem;
+    position: relative;
+    color: var(--text-primary);
+    letter-spacing: -0.025em;
+
+    @include media-breakpoint-down(md) { font-size: 1.6rem; }
+
+    &::after {
+      content: '';
+      position: absolute;
+      display: block;
+      width: 48px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-dark));
+      bottom: 0;
+      left: 0;
+      border-radius: 2px;
+    }
+  }
+
+  p {
+    margin-bottom: 0;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+  }
+}
+
+// ============================================================
+// Scroll-Reveal Animations
+// ============================================================
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.65s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade {
+  opacity: 0;
+  transition: opacity 0.75s ease;
+  &.is-visible { opacity: 1; }
+}
+
+@for $i from 1 through 12 {
+  .stagger-#{$i} { transition-delay: #{$i * 0.07}s; }
+}
+
+// ============================================================
+// Buttons
+// ============================================================
 .custom-btn {
   white-space: nowrap;
-    width: 5rem;
-    height: 2.5rem;
-    padding: 0.5rem 1rem;
-    border: 2px solid #0c7db1;
-    // font-weight: 500;
-    background: transparent;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
-    display: inline-block;
+  min-width: 5.5rem;
+  height: 2.4rem;
+  padding: 0.45rem 1.1rem;
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  transition: var(--transition-base);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  overflow: hidden;
+  text-transform: uppercase;
+
+  // Shimmer sweep via ::after
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 55%;
+    height: 100%;
+    background: linear-gradient(
+      to right,
+      rgba(255,255,255,0) 0%,
+      rgba(255,255,255,0.2) 50%,
+      rgba(255,255,255,0) 100%
+    );
+    transform: skewX(-20deg);
+    animation: shimmer-sweep 4s ease-in-out infinite;
+    pointer-events: none;
   }
-/* 11 */
-.btn-11 {
-    overflow: hidden;
-    transition: all 0.3s ease;
-  }
-  .btn-11:hover {
-    border: 2px solid #149ddd;
-     background: #149ddd;
-    color: rgb(255, 255, 255);
-  }
-  .btn-11:before {
-      position: absolute;
-      content: '';
-      display: inline-block;
-      top: -180px;
-      left: 0;
-      width: 30px;
-      height: 100%;
-      background-color: #fff;
-      animation: shiny-btn1 3s ease-in-out infinite;
-  }
-  
-  
-  @keyframes shiny-btn1 {
-    0% { -webkit-transform: scale(0) rotate(45deg); opacity: 0; }
-    80% { -webkit-transform: scale(0) rotate(45deg); opacity: 0.5; }
-    81% { -webkit-transform: scale(4) rotate(45deg); opacity: 1; }
-    100% { -webkit-transform: scale(50) rotate(45deg); opacity: 0; }
 }
 
+.btn-11 {
+  &:hover {
+    background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+    color: #fff !important;
+    border-color: var(--accent);
+    box-shadow: 0 0 24px var(--accent-glow-strong);
+  }
+}
 
-// .download {
-//   background-color : #31B0D5;
-//   color: white;
-//   padding: 10px 20px;
-//   border-radius: 4px;
-//   border-color: #46b8da;
-// }
-// #download{
-//   position: fixed;
-//   bottom: -4px;
-//   right: 10px;
-// }
+// Also target when the button sits inside an <a> and the <a> is hovered
+a:hover > .btn-11,
+a:hover .btn-11 {
+  color: #fff !important;
+}
 
+@keyframes shimmer-sweep {
+  0%        { left: -80%; }
+  55%, 100% { left: 130%; }
+}
+
+// ============================================================
+// Theme Toggle Button
+// ============================================================
+.theme-toggle {
+  background: transparent;
+  border: 1px solid var(--border-glass);
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: var(--transition-base);
+  padding: 0;
+  flex-shrink: 0;
+
+  &:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-glow);
+    box-shadow: 0 0 12px var(--accent-glow);
+  }
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    display: block;
+    pointer-events: none;
+  }
+}
+
+// Show/hide sun & moon icons based on theme
+// Default (light): show moon icon (clicking → go dark)
+.icon-sun  { display: none; }
+.icon-moon { display: block; }
+
+[data-theme="dark"] {
+  // Dark: show sun icon (clicking → go light)
+  .icon-sun  { display: block; }
+  .icon-moon { display: none; }
+}
+
+// ============================================================
+// Accessibility
+// ============================================================
 .skip-link {
   position: absolute;
   top: -40px;
   left: 0;
-  background: #bfbaba;
-  color: rgb(0, 0, 0);
-  padding: 8px;
-  z-index: 100;
+  background: var(--accent);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 0 0 var(--radius-sm) 0;
+  z-index: 1000;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+
+  &:focus { top: 0; }
 }
 
-.skip-link:focus {
-  top: 0;
+// ============================================================
+// Reduced-Motion Support
+// ============================================================
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animate-on-scroll, .animate-fade {
+    opacity: 1;
+    transform: none;
+  }
 }

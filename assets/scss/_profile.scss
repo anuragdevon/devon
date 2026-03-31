@@ -1,74 +1,172 @@
+// ============================================================
+// Hero Section
+// ============================================================
+.hero {
+  position: relative;
+  min-height: calc(100vh - 60px);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+
+  // Light mode: very subtle dot grid
+  background-image: radial-gradient(rgba(20, 157, 221, 0.06) 1px, transparent 1px);
+  background-size: 36px 36px;
+  background-position: center center;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -20%;
+    left: -10%;
+    width: 700px;
+    max-width: 80vw;
+    height: 700px;
+    max-height: 80vw;
+    // Light mode: subtle glow
+    background: radial-gradient(circle, rgba(20, 157, 221, 0.07) 0%, transparent 68%);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: glow-pulse 8s ease-in-out infinite;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -15%;
+    right: -5%;
+    width: 500px;
+    max-width: 60vw;
+    height: 500px;
+    max-height: 60vw;
+    background: radial-gradient(circle, rgba(20, 157, 221, 0.05) 0%, transparent 68%);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: glow-pulse 10s ease-in-out 2s infinite reverse;
+  }
+
+  .container { position: relative; z-index: 1; }
+  .row { align-items: center; }
+
+  .laptop {
+    height: 340px;
+    width: 340px;
+    filter: drop-shadow(0 16px 40px rgba(20, 157, 221, 0.18));
+    animation: float-laptop 7s ease-in-out infinite;
+    will-change: transform;
+
+    @include media-breakpoint-down(lg) {
+      height: 260px;
+      width: 260px;
+      margin-bottom: 1.5rem;
+    }
+
+    @include media-breakpoint-down(md) {
+      height: 220px;
+      width: 220px;
+    }
+  }
+}
+
+// Dark mode: stronger dots & orbs
+[data-theme="dark"] .hero {
+  background-image: radial-gradient(rgba(20, 157, 221, 0.12) 1px, transparent 1px);
+
+  &::before {
+    background: radial-gradient(circle, rgba(20, 157, 221, 0.10) 0%, transparent 68%);
+  }
+
+  &::after {
+    background: radial-gradient(circle, rgba(20, 157, 221, 0.07) 0%, transparent 68%);
+  }
+
+  .laptop {
+    filter: drop-shadow(0 20px 60px rgba(20, 157, 221, 0.28));
+  }
+}
+
+@keyframes float-laptop {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-18px); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 1;   transform: scale(1); }
+  50%       { opacity: 0.6; transform: scale(1.08); }
+}
+
+// ============================================================
+// Typing Text
+// ============================================================
 .wrapper {
-    // height: 100vh;
-    /*This part is important for centering*/
-    padding-top: 1rem;
-    display: flex;
-    align-items: center;
+  padding-top: 0.6rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+
+  @include media-breakpoint-down(lg) {
     justify-content: center;
   }
+}
 
-  .hi {
-    opacity: 0;
-    transition: 1s;
-    width: 3ch;
-    animation: typing 0.3s steps(3), blink .5s step-end infinite alternate;
-    white-space: nowrap;
-    overflow: hidden;
-    // white-space: inherit;
-    // border-right: 3px solid;
-    font-family: monospace;
-    font-size: 3em;
-  }
-  .name {
-    opacity: 0;
-    transition: 1s;
-    width: 14ch;
-    animation: typing 1.4s steps(14), blink .5s step-end infinite alternate;
-    animation-delay: 0.3s;
-    white-space: nowrap;
-    overflow: hidden;
-    // white-space: inherit;
-    // border-right: 3px solid;
-    font-family: monospace;
-    font-size: 1.8em;
-  }
+.hi {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  width: 3ch;
+  overflow: hidden;
+  white-space: nowrap;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 3rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  animation: typing 0.3s steps(3);
 
-  .tag {
-    opacity: 0;
-    transition: 1s;
-    width: 22ch;
-    animation: typing 2s steps(22), blink .5s step-end infinite alternate;
-    animation-delay: 1.7s;
-    white-space: nowrap;
-    overflow: hidden;
-    // white-space: inherit;
-    border-right: 3px solid;
-    font-family: monospace;
-    font-size: 1.2em;
-  }
-  
-  @keyframes typing {
-    from {
-      width: 0
-    }
-  }
-      
-  @keyframes blink {
-    50% {
-      border-color: transparent
-    }
-  }
-.hero{
-    .row{
-        text-align: center;
-    }
-    img{
-      height: 350px;
-      width: 350px;
-      @include media-breakpoint-down(md){
-        height: 270px;
-        width: 270px;
-      }
-    
-    }
+  @include media-breakpoint-down(md) { font-size: 2rem; }
+
+  // Gradient accent
+  background: linear-gradient(135deg, var(--accent-light), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.name {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  width: 14ch;
+  overflow: hidden;
+  white-space: nowrap;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  animation: typing 1.4s steps(14);
+  animation-delay: 0.3s;
+  letter-spacing: -0.01em;
+
+  @include media-breakpoint-down(md) { font-size: 1.2rem; }
+}
+
+.tag {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  width: 22ch;
+  overflow: hidden;
+  white-space: nowrap;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  border-right: 2px solid var(--accent);
+  animation: typing 2s steps(22), blink 0.6s step-end infinite alternate;
+  animation-delay: 1.7s, 3.7s;
+
+  @include media-breakpoint-down(md) { font-size: 0.9rem; }
+}
+
+@keyframes typing { from { width: 0; } }
+@keyframes blink  { 50% { border-color: transparent; } }
+
+@include media-breakpoint-down(lg) {
+  .hi, .name, .tag { text-align: center; }
+  .hero .row       { text-align: center; }
 }

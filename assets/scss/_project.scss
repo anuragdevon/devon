@@ -1,323 +1,181 @@
-
-// .card-margin {
-//     margin-bottom: 1.875rem;
-// }
-
-
-.project{
-  .card {
-    border: 0;
-    box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.15);
-    -webkit-box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.15);
-    -moz-box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.15);
-    -ms-box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.15);
-  }
+// ============================================================
+// Projects Section — Glass Cards
+// ============================================================
+.project {
   .card {
     position: relative;
     display: flex;
     flex-direction: column;
     min-width: 0;
     word-wrap: break-word;
-    background-color: rgb(255, 255, 255);
-    background-clip: border-box;
-    border: 1px solid #e6e4e9;
-    border-radius: 6px;
-  }
+    // Glassmorphism
+    background: var(--bg-card) !important;
+    backdrop-filter: var(--blur-md);
+    -webkit-backdrop-filter: var(--blur-md);
+    border: 1px solid var(--border-glass) !important;
+    border-radius: var(--radius-card) !important;
+    box-shadow: var(--shadow-card);
+    transition: var(--transition-base);
+    overflow: hidden;
+    height: 100%;
 
-  .card .card-header.no-border {
-    border: 0;
-  }
-  .card{
-  border: none !important;
-  }
-  .card-title{
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 0px;
-  padding-bottom: 20px;
-  position: relative;
-  color: #404648;
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(
+        135deg,
+        rgba(20, 157, 221, 0.05) 0%,
+        transparent 55%
+      );
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+    }
+
+    &:hover {
+      background: var(--bg-card-hover) !important;
+      border-color: rgba(20, 157, 221, 0.32) !important;
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-card-hover);
+
+      &::before { opacity: 1; }
+    }
+
+    .card-body {
+      padding: 1.4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      flex: 1;
+    }
+
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin: 0;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+      line-height: 1.4;
+    }
+
+    .card-text {
+      color: var(--text-secondary);
+      font-size: 0.88rem;
+      line-height: 1.75;
+      flex: 1;
+    }
+
+    .card-body > .d-flex {
+      align-items: center;
+      margin-top: auto;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border-glass);
+    }
+
+    // Tech stack icons
+    .inline-svg {
+      opacity: 0.7;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+
+      &:hover {
+        opacity: 1;
+        transform: translateY(-2px);
+      }
+    }
   }
 }
 
-.card .card-header {
-    background: none;
-    padding: 0 0.9375rem;
-    font-weight: 500;
+// Date badge — unified style
+.widget-49 {
+  .widget-49-title-wrapper {
     display: flex;
     align-items: center;
-    min-height: 50px;
-}
-.card-header:first-child {
-    border-radius: calc(8px - 1px) calc(8px - 1px) 0 0;
+    margin-bottom: 0.5rem;
+
+    // Single date bubble style
+    [class*="widget-49-date-"] {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      width: 3.5rem;
+      height: 3.5rem;
+      border-radius: 50%;
+      background: rgba(20, 157, 221, 0.1);
+      border: 1px solid rgba(20, 157, 221, 0.2);
+      flex-shrink: 0;
+    }
+
+    [class*="widget-49-date-day"] {
+      color: var(--accent-light);
+      font-weight: 600;
+      font-size: 1.3rem;
+      line-height: 1;
+    }
+
+    [class*="widget-49-date-month"] {
+      color: var(--accent);
+      line-height: 1;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .widget-49-meeting-info {
+      display: flex;
+      flex-direction: column;
+      margin-left: 0.9rem;
+    }
+
+    .widget-49-pro-title {
+      color: var(--text-primary);
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .widget-49-meeting-time {
+      color: var(--text-muted-custom);
+      font-size: 0.78rem;
+    }
+  }
+
+  .widget-49-meeting-points {
+    font-weight: 400;
+    font-size: 0.85rem;
+    margin-top: 0.4rem;
+    color: var(--text-secondary);
+
+    .widget-49-meeting-item {
+      display: list-item;
+      color: var(--text-secondary);
+
+      span { margin-left: 0.4rem; }
+    }
+  }
+
+  .widget-49-meeting-action {
+    text-align: right;
+
+    a { text-transform: uppercase; }
+  }
 }
 
-.widget-49 .widget-49-title-wrapper {
+// Section-level card header reset
+.card .card-header {
+  background: transparent;
+  padding: 0 1rem;
+  font-weight: 600;
   display: flex;
   align-items: center;
+  min-height: 48px;
+  border-bottom: 1px solid var(--border-glass);
+  color: var(--text-primary);
 }
 
-.widget-49 .widget-49-title-wrapper .widget-49-date-primary {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  background-color: #edf1fc;
-  width: 4rem;
-  height: 4rem;
-  border-radius: 50%;
-}
-
-.widget-49 .widget-49-title-wrapper .widget-49-date-primary .widget-49-date-day {
-  color: #4e73e5;
-  font-weight: 500;
-  font-size: 1.5rem;
-  line-height: 1;
-}
-
-.widget-49 .widget-49-title-wrapper .widget-49-date-primary .widget-49-date-month {
-  color: #4e73e5;
-  line-height: 1;
-  font-size: 1rem;
-  text-transform: uppercase;
-}
-
-.widget-49 .widget-49-title-wrapper .widget-49-date-secondary {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  background-color: #fcfcfd;
-  width: 4rem;
-  height: 4rem;
-  border-radius: 50%;
-}
-
-.widget-49 .widget-49-title-wrapper .widget-49-date-secondary .widget-49-date-day {
-  color: #dde1e9;
-  font-weight: 500;
-  font-size: 1.5rem;
-  line-height: 1;
-}
-
-.widget-49 .widget-49-title-wrapper .widget-49-date-secondary .widget-49-date-month {
-  color: #dde1e9;
-  line-height: 1;
-  font-size: 1rem;
-  text-transform: uppercase;
-}
-
-.widget-49 .widget-49-title-wrapper .widget-49-date-success {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  background-color: #e8faf8;
-  width: 4rem;
-  height: 4rem;
-  border-radius: 50%;
-}
-
-.widget-49 .widget-49-title-wrapper .widget-49-date-success .widget-49-date-day {
-  color: #17d1bd;
-  font-weight: 500;
-  font-size: 1.5rem;
-  line-height: 1;
-}
-
-.widget-49 .widget-49-title-wrapper .widget-49-date-success .widget-49-date-month {
-  color: #17d1bd;
-  line-height: 1;
-  font-size: 1rem;
-  text-transform: uppercase;
-}
-
-.widget-49 .widget-49-title-wrapper .widget-49-date-info {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  background-color: #ebf7ff;
-  width: 4rem;
-  height: 4rem;
-  border-radius: 50%;
-}
-
-.widget-49 .widget-49-title-wrapper .widget-49-date-info .widget-49-date-day {
-  color: #36afff;
-  font-weight: 500;
-  font-size: 1.5rem;
-  line-height: 1;
-}
-
-.widget-49 .widget-49-title-wrapper .widget-49-date-info .widget-49-date-month {
-  color: #36afff;
-  line-height: 1;
-  font-size: 1rem;
-  text-transform: uppercase;
-}
-
-.widget-49 .widget-49-title-wrapper .widget-49-date-warning {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  background-color: floralwhite;
-  width: 4rem;
-  height: 4rem;
-  border-radius: 50%;
-}
-
-.widget-49 .widget-49-title-wrapper .widget-49-date-warning .widget-49-date-day {
-  color: #FFC868;
-  font-weight: 500;
-  font-size: 1.5rem;
-  line-height: 1;
-}
-
-.widget-49 .widget-49-title-wrapper .widget-49-date-warning .widget-49-date-month {
-  color: #FFC868;
-  line-height: 1;
-  font-size: 1rem;
-  text-transform: uppercase;
-}
-
-.widget-49 .widget-49-title-wrapper .widget-49-date-danger {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  background-color: #feeeef;
-  width: 4rem;
-  height: 4rem;
-  border-radius: 50%;
-}
-
-.widget-49 .widget-49-title-wrapper .widget-49-date-danger .widget-49-date-day {
-  color: #F95062;
-  font-weight: 500;
-  font-size: 1.5rem;
-  line-height: 1;
-}
-
-.widget-49 .widget-49-title-wrapper .widget-49-date-danger .widget-49-date-month {
-  color: #F95062;
-  line-height: 1;
-  font-size: 1rem;
-  text-transform: uppercase;
-}
-
-.widget-49 .widget-49-title-wrapper .widget-49-date-light {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  background-color: #fefeff;
-  width: 4rem;
-  height: 4rem;
-  border-radius: 50%;
-}
-
-.widget-49 .widget-49-title-wrapper .widget-49-date-light .widget-49-date-day {
-  color: #f7f9fa;
-  font-weight: 500;
-  font-size: 1.5rem;
-  line-height: 1;
-}
-
-.widget-49 .widget-49-title-wrapper .widget-49-date-light .widget-49-date-month {
-  color: #f7f9fa;
-  line-height: 1;
-  font-size: 1rem;
-  text-transform: uppercase;
-}
-
-.widget-49 .widget-49-title-wrapper .widget-49-date-dark {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  background-color: #ebedee;
-  width: 4rem;
-  height: 4rem;
-  border-radius: 50%;
-}
-
-.widget-49 .widget-49-title-wrapper .widget-49-date-dark .widget-49-date-day {
-  color: #394856;
-  font-weight: 500;
-  font-size: 1.5rem;
-  line-height: 1;
-}
-
-.widget-49 .widget-49-title-wrapper .widget-49-date-dark .widget-49-date-month {
-  color: #394856;
-  line-height: 1;
-  font-size: 1rem;
-  text-transform: uppercase;
-}
-
-.widget-49 .widget-49-title-wrapper .widget-49-date-base {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  background-color: #f0fafb;
-  width: 4rem;
-  height: 4rem;
-  border-radius: 50%;
-}
-
-.widget-49 .widget-49-title-wrapper .widget-49-date-base .widget-49-date-day {
-  color: #68CBD7;
-  font-weight: 500;
-  font-size: 1.5rem;
-  line-height: 1;
-}
-
-.widget-49 .widget-49-title-wrapper .widget-49-date-base .widget-49-date-month {
-  color: #68CBD7;
-  line-height: 1;
-  font-size: 1rem;
-  text-transform: uppercase;
-}
-
-.widget-49 .widget-49-title-wrapper .widget-49-meeting-info {
-  display: flex;
-  flex-direction: column;
-  margin-left: 1rem;
-}
-
-.widget-49 .widget-49-title-wrapper .widget-49-meeting-info .widget-49-pro-title {
-  color: #3c4142;
-  font-size: 18px;
-  font-weight: bold;
-}
-
-.widget-49 .widget-49-title-wrapper .widget-49-meeting-info .widget-49-meeting-time {
-  color: #a3acb6;
-  font-size: 13px;
-}
-
-.widget-49 .widget-49-meeting-points {
-  font-weight: 400;
-  font-size: 13px;
-  margin-top: .5rem;
-}
-
-.widget-49 .widget-49-meeting-points .widget-49-meeting-item {
-  display: list-item;
-  color: #727686;
-}
-
-.widget-49 .widget-49-meeting-points .widget-49-meeting-item span {
-  margin-left: .5rem;
-}
-
-.widget-49 .widget-49-meeting-action {
-  text-align: right;
-}
-
-.widget-49 .widget-49-meeting-action a {
-  text-transform: uppercase;
+small.text-muted.cat {
+  color: var(--text-muted-custom) !important;
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
 }
