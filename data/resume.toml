@@ -1,8 +1,8 @@
 title = "Skills and Experience"
-description = "Current stack and professional experience. For full details check my LinkedIn."
+description = "Current tech stack and professional experience. Full details on LinkedIn."
 topic1 = "Skills"
 topic2 = "Experience"
-resume = "https://www.google.com"
+resume = "https://docs.google.com/document/d/1uthhMX_uw6QhDcCrYrC48HvwP2f7mtIi/edit"
 
 [[skills]]
 skill = "Languages"
@@ -14,7 +14,7 @@ items = ["fastapi", "django", "docker", "k8s"]
 
 [[skills]]
 skill = "Infrastructure & Cloud"
-items = ["docker", "k8s", "google", "googlecloud"]
+items = ["googlecloud", "docker", "k8s", "git"]
 
 [[skills]]
 skill = "Tooling"
@@ -22,18 +22,20 @@ items = ["git", "githubsoft"]
 
 [[experience]]
 name = "Swiggy · Instamart Supply Chain"
-title = "Software Development Engineer I"
+title = "Software Development Engineer II"
 duration = "May 2023 – Present"
-location = "Bengaluru, India (Hybrid)"
+location = "Bengaluru, India"
 description = [
-  "Rated Outstanding Performer · MVP Award ×3 (Dec, Mar, Nov).",
-  "Owned end-to-end LLD for DSD PO AutoEmailer, Item Location Downloader & FnV Digitisation — gRPC contracts, DynamoDB GSI strategies, API-first design.",
-  "Delivered Express Inwarding (40%+ time reduction), RTV Revamp (vendor receipt rate 82% → 95%), Cycle Count L2 (prevented 80%+ daily fraud cases).",
-  "Built Vendor Portal generic Elasticsearch batch-job framework reused across RTV, GRN and PO modules.",
-  "Led Spot Cycle Count delivery in Tech Lead's absence — PR reviews, QA cycles, GTM with zero blockers.",
-  "24×7 on-call: DLQ redrives, DDB PartiQL updates, outage mitigation; structured RCA documentation.",
+  "Rated Outstanding Performer · MVP Award ×3 (Dec, Mar & Nov).",
+  "End-to-end LLD ownership: DSD PO AutoEmailer, Item Location Downloader, FnV Digitisation — gRPC contracts, DynamoDB GSI strategies, API-first design.",
+  "Express Inwarding: HTTP→gRPC migration, SKU-level filters — reduced inwarding time by 40%+.",
+  "RTV Revamp: invoice step-function workflow, gRPC migration with backoff — vendor receipt rate improved from 82% to 95%.",
+  "Cycle Count L2: in-progress review API, Retool dashboard for Central Tower Managers — prevented 80%+ fraudulent threshold-breach cases daily.",
+  "Built generic Elasticsearch batch-job framework reused across RTV, GRN and PO modules.",
+  "Led Spot Cycle Count delivery solo — all PR reviews, QA cycles and GTM with zero blockers.",
+  "24×7 on-call: DLQ redrives, DynamoDB PartiQL updates, outage mitigation and structured RCA documentation.",
   "Mentored junior engineers; conducted code reviews for ~130 hiring candidates across 4 batches.",
-  "AI-augmented dev: Claude Code CLI, Cursor, MCP servers, CodeRabbit — authored internal Swiggy skills for CMR generation and blocker-check automation."
+  "Built internal AI automation tools using Claude Code CLI, Cursor and MCP servers for CMR generation and blocker-check workflows."
 ]
 
 [[experience]]
@@ -42,20 +44,20 @@ title = "Backend Developer Intern"
 duration = "Jun 2022 – Nov 2022"
 location = "Gurgaon, India"
 description = [
-  "Improved authentication modules and base development systems.",
+  "Improved authentication modules and core development systems.",
   "Delivered direct API integrations for co-brand partners.",
-  "Developed multiple term-loan products and contributed to payout modules."
+  "Developed term-loan products and contributed to payout modules."
 ]
 
 [[experience]]
 name = "aSociette"
 title = "Backend Developer"
-duration = "Aug 2021 – Mar 2023"
+duration = "Aug 2021 – Apr 2023"
 location = "Hyderabad, India"
 description = [
-  "Built microservices and backend components; maintained structured and unstructured databases.",
-  "Improved data-protection systems and custom user authentication.",
-  "Managed production deployments on Google Cloud VMs."
+  "Built microservices and backend components; maintained structured and unstructured databases with optimised query algorithms.",
+  "Strengthened data-protection and custom user authentication systems.",
+  "Managed production deployments and infrastructure on Google Cloud VMs."
 ]
 
 [[experience]]
