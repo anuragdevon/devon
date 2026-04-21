@@ -1,58 +1,69 @@
 title = "Skills and Experience"
-description = "Here is the list of skills and relevant experiences, for more details check out my LinkedIn."
+description = "Current stack and professional experience. For full details check my LinkedIn."
 topic1 = "Skills"
 topic2 = "Experience"
 resume = "https://www.google.com"
 
 [[skills]]
 skill = "Languages"
-items = ["python", "cpp", "c", "golang", "dart", "git", "bash", "html", "css", "js"]
+items = ["golang", "python", "bash", "postgresql"]
 
 [[skills]]
-skill = "Frameworks and SDKs"
-items= ["docker", "k8s", "fastapi", "django", "flask", "hugo", "bootstrap", "flutter", "tensor"]
+skill = "Frameworks & APIs"
+items = ["fastapi", "django", "docker", "k8s"]
 
 [[skills]]
-skill = "Databases"
-items = ["mysql", "postgresql", "firebase"]
+skill = "Infrastructure & Cloud"
+items = ["docker", "k8s", "google", "googlecloud"]
 
 [[skills]]
-skill = "Cloud"
-items = ["google", "heroku"]
+skill = "Tooling"
+items = ["git", "githubsoft"]
 
-[[skills]]
-skill = "Softwares"
-items = ["ansible", "githubsoft", "unreal", "blender", "fusion", "matlab"]
+[[experience]]
+name = "Swiggy · Instamart Supply Chain"
+title = "Software Development Engineer I"
+duration = "May 2023 – Present"
+location = "Bengaluru, India (Hybrid)"
+description = [
+  "Rated Outstanding Performer · MVP Award ×3 (Dec, Mar, Nov).",
+  "Owned end-to-end LLD for DSD PO AutoEmailer, Item Location Downloader & FnV Digitisation — gRPC contracts, DynamoDB GSI strategies, API-first design.",
+  "Delivered Express Inwarding (40%+ time reduction), RTV Revamp (vendor receipt rate 82% → 95%), Cycle Count L2 (prevented 80%+ daily fraud cases).",
+  "Built Vendor Portal generic Elasticsearch batch-job framework reused across RTV, GRN and PO modules.",
+  "Led Spot Cycle Count delivery in Tech Lead's absence — PR reviews, QA cycles, GTM with zero blockers.",
+  "24×7 on-call: DLQ redrives, DDB PartiQL updates, outage mitigation; structured RCA documentation.",
+  "Mentored junior engineers; conducted code reviews for ~130 hiring candidates across 4 batches.",
+  "AI-augmented dev: Claude Code CLI, Cursor, MCP servers, CodeRabbit — authored internal Swiggy skills for CMR generation and blocker-check automation."
+]
 
 [[experience]]
 name = "RedcarpetUp Pvt. Ltd."
-title = "Backend Developer"
-duration = "Jun. 2022 - Nov. 2022"
+title = "Backend Developer Intern"
+duration = "Jun 2022 – Nov 2022"
 location = "Gurgaon, India"
-description = ["Contributed to the team improving the different authentication modules and base development systems.", "Assisted with direct API integration for the company for co brands.", "Developed multiple term loan products for different partner and co brands based on their requirements.", "Contributed in developing payouts modules targeting large and small scale payouts."]
+description = [
+  "Improved authentication modules and base development systems.",
+  "Delivered direct API integrations for co-brand partners.",
+  "Developed multiple term-loan products and contributed to payout modules."
+]
 
 [[experience]]
 name = "aSociette"
 title = "Backend Developer"
-duration = "Aug. 2021 - Present"
+duration = "Aug 2021 – Mar 2023"
 location = "Hyderabad, India"
-description = ["Developed microservices, back end components based on needs and goals are decided by the team.", "Maintained databases of both structured and unstructured data and made efficient algorithms to perform fast and efficient queries on databases.", "Contributed the team on the improvements of data protection and security along with custom user authentication systems.", "Collaborated in creating python scripts for testing codebase with given test cases.", "Assisted in the maintaining the production side of code, creating images, volumes and deployments in google cloud vms."]
+description = [
+  "Built microservices and backend components; maintained structured and unstructured databases.",
+  "Improved data-protection systems and custom user authentication.",
+  "Managed production deployments on Google Cloud VMs."
+]
 
 [[experience]]
-name = "CsClub/WebOps IIITDM"
+name = "CsClub / WebOps — IIITDM"
 title = "Full Stack Developer"
-duration = "Sept. 2020 - Present"
+duration = "Sep 2020 – May 2023"
 location = "Chennai, India"
-description = ["Collaborated in developing clients' websites.", "Contributed the team in development and design of HUGO themes.", "Successfully able to bring performance of sites upto 98%."]
-
-[[experience]]
-name = "ABU Robocon"
-title = "Team Lead"
-duration = "Jan. 2020 - Aug. 2020"
-location = "Chennai, India"
-description =["Lead a team of people, with other co-leaders for DD ROBOCON 2020 competition, Asian robotics competition.", "Team Secured 98/100 and got selected to represent the college at National Level."]
-
-
-[[certifications]]
-name = ""
-link = []
+description = [
+  "Developed client websites and contributed to Hugo theme development.",
+  "Achieved Lighthouse performance scores up to 98%."
+]
