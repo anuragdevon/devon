@@ -1,5 +1,5 @@
 {{ $imageRaw := resources.Get "/images/profile/devon.webp" }}
-{{ $image    := $imageRaw.Resize "540x540 webp q85 Center" }}
+{{ $image    := $imageRaw.Fill "600x600 webp q90 Center" }}
 {{ $resume   := resources.Get "/pdfs/resume.pdf" }}
 {{ with site.Data.profile }}
 <section id="about" class="about">

@@ -6,19 +6,23 @@ resume = "https://docs.google.com/document/d/1uthhMX_uw6QhDcCrYrC48HvwP2f7mtIi/e
 
 [[skills]]
 skill = "Languages"
-items = ["golang", "python", "bash", "postgresql"]
+items = ["golang", "python", "cpp", "c", "dart", "bash", "html", "css", "js"]
 
 [[skills]]
-skill = "Frameworks & APIs"
-items = ["fastapi", "django", "docker", "k8s"]
+skill = "Frameworks & SDKs"
+items = ["docker", "k8s", "fastapi", "django", "flask", "hugo", "bootstrap", "flutter", "tensor"]
 
 [[skills]]
-skill = "Infrastructure & Cloud"
-items = ["googlecloud", "docker", "k8s", "git"]
+skill = "Databases"
+items = ["mysql", "postgresql", "firebase"]
 
 [[skills]]
-skill = "Tooling"
-items = ["git", "githubsoft"]
+skill = "Cloud"
+items = ["google", "googlecloud", "heroku"]
+
+[[skills]]
+skill = "Softwares"
+items = ["ansible", "githubsoft", "git", "unreal", "blender", "fusion", "matlab"]
 
 [[experience]]
 name = "Swiggy · Instamart Supply Chain"

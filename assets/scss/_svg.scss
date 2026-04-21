@@ -3,16 +3,16 @@
   vertical-align: middle;
 
   svg {
-    width: 3.4em;
-    height: 3.4em;
+    width: 4em;
+    height: 4em;
     fill: currentColor;
     display: inline-block;
     color: var(--text-secondary);
     transition: color 0.2s ease;
 
     @include media-breakpoint-down(md) {
-      width: 2.8em;
-      height: 2.8em;
+      width: 3em;
+      height: 3em;
     }
 
     &:hover { color: var(--accent-light); }
@@ -26,8 +26,8 @@
   vertical-align: middle;
 
   svg {
-    width: 1.6em;
-    height: 1.6em;
+    width: 2em;
+    height: 2em;
     fill: currentColor;
     display: inline-block;
     transition: fill 0.2s ease;
@@ -41,10 +41,15 @@
   vertical-align: middle;
 
   svg {
-    width: 1.1em;
-    height: 1.1em;
+    width: 1.2em;
+    height: 1.2em;
     fill: currentColor;
     display: inline-block;
     transition: fill 0.2s ease;
+
+    @include media-breakpoint-down(md) {
+      width: 1.1em;
+      height: 1.1em;
+    }
   }
 }
