@@ -1,7 +1,7 @@
 // ============================================================
-// Hero Section
+// Hero Section (homepage only — scoped to #home)
 // ============================================================
-.hero {
+#hero.hero {
   position: relative;
   min-height: calc(100vh - 60px);
   display: flex;
@@ -68,7 +68,7 @@
 }
 
 // Dark mode: stronger dots & orbs
-[data-theme="dark"] .hero {
+[data-theme="dark"] #hero.hero {
   background-image: radial-gradient(rgba(20, 157, 221, 0.12) 1px, transparent 1px);
 
   &::before {

@@ -6,6 +6,24 @@
       <h2>Blogs</h2>
     </div>
     <div class="row g-3">
+      <div class="col-12 col-sm-10 col-md-6 col-lg-4 animate-on-scroll stagger-1">
+        <div class="card h-100">
+          <div class="card-body">
+            <h4 class="card-title">I Left i3wm. No Regrets.</h4>
+            <small class="text-muted">14 min read &middot; 26th Apr. 2026</small>
+            <p class="card-text">A full Andromeda Hyprland rice breakdown, including setup, tools, keybinds, and migration gotchas from i3wm.</p>
+            <a href="/blogs/andromeda-rice/" aria-label="I Left i3wm. No Regrets.">
+              <button class="custom-btn btn-11">Read</button>
+            </a>
+          </div>
+          <div class="card-footer d-flex justify-content-between align-items-center">
+            <span>26th Apr. 2026</span>
+            <div>
+              {{ partial "inline-svg" "github" }}
+            </div>
+          </div>
+        </div>
+      </div>
       {{ range $i, $b := .blogs }}
       <div class="col-12 col-sm-10 col-md-6 col-lg-4 animate-on-scroll stagger-{{ add (mod $i 6) 1 }}">
         <div class="card h-100">
@@ -15,7 +33,8 @@
               {{ $b.time }} min read &middot; {{ $b.date }}
             </small>
             <p class="card-text">{{ $b.sample }}</p>
-            <a href="{{ $b.link }}" target="_blank" rel="noopener" aria-label="{{ $b.title }}">
+            {{ $isExternal := or (hasPrefix $b.link "http://") (hasPrefix $b.link "https://") }}
+            <a href="{{ $b.link }}" {{ if $isExternal }}target="_blank" rel="noopener"{{ end }} aria-label="{{ $b.title }}">
               <button class="custom-btn btn-11">Read</button>
             </a>
           </div>

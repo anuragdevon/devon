@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>I Left i3wm. No Regrets. — Andromeda Rice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════
+   TOKENS
+═══════════════════════════════════════════ */
+:root {
+  --bg:        #1e1e2e;
+  --surface0:  #181825;
+  --surface1:  #1e1e2e;
+  --surface2:  #313244;
+  --overlay0:  #6c7086;
+  --overlay1:  #7f849c;
+  --subtext:   #a6adc8;
+  --text:      #cdd6f4;
+  --lavender:  #b4befe;
+  --blue:      #89b4fa;
+  --sapphire:  #74c7ec;
+  --teal:      #94e2d5;
+  --green:     #a6e3a1;
+  --yellow:    #f9e2af;
+  --peach:     #fab387;
+  --maroon:    #eba0ac;
+  --pink:      #f38ba8;
+  --mauve:     #cba6f7;
+  --border:        rgba(137,180,250,0.12);
+  --border-mid:    rgba(137,180,250,0.25);
+  --border-strong: rgba(137,180,250,0.4);
+  --font-sans: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --font-serif:'DM Serif Display', Georgia, serif;
+  --max-w: 780px;
+  --radius: 12px;
+  --radius-sm: 6px;
+  --radius-pill: 100px;
+}
+
+/* ═══════════════════════════════════════════
+   RESET & BASE
+═══════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  line-height: 1.75;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+img { max-width: 100%; display: block; }
+a { color: var(--blue); text-decoration: none; transition: opacity .15s; }
+a:hover { opacity: .75; }
+
+/* ═══════════════════════════════════════════
+   NOISE TEXTURE
+═══════════════════════════════════════════ */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  background-size: 300px;
+  opacity: 1;
+}
+
+/* ═══════════════════════════════════════════
+   PROGRESS BAR
+═══════════════════════════════════════════ */
+#progress-bar {
+  position: fixed; top: 0; left: 0; right: 0; height: 2px;
+  z-index: 1000; background: var(--surface0);
+}
+#progress-fill {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, var(--blue), var(--mauve), var(--pink));
+  transition: width 0.08s linear;
+}
+
+/* ═══════════════════════════════════════════
+   LAYOUT
+═══════════════════════════════════════════ */
+.page {
+  position: relative; z-index: 1;
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 40px 100px;
+}
+
+/* ═══════════════════════════════════════════
+   HERO
+═══════════════════════════════════════════ */
+.hero {
+  padding: 72px 0 56px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 52px;
+}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(137,180,250,0.08);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: 5px 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--blue);
+  letter-spacing: .07em;
+  margin-bottom: 32px;
+}
+.hero-eyebrow::before {
+  content: '';
+  display: block; width: 6px; height: 6px;
+  background: var(--blue); border-radius: 50%;
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .4; transform: scale(.8); }
+}
+.hero h1 {
+  font-family: var(--font-serif);
+  font-size: clamp(38px, 6vw, 58px);
+  line-height: 1.08;
+  letter-spacing: -.02em;
+  color: var(--text);
+  margin-bottom: 20px;
+}
+.hero h1 em {
+  font-style: italic;
+  background: linear-gradient(135deg, var(--blue), var(--mauve));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-lead {
+  font-size: 17px;
+  color: var(--subtext);
+  max-width: 580px;
+  line-height: 1.65;
+  margin-bottom: 32px;
+}
+.hero-meta {
+  display: flex; gap: 24px; flex-wrap: wrap;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--overlay0);
+}
+.hero-meta span {
+  display: flex; align-items: center; gap: 7px;
+}
+.hero-meta span::before {
+  content: attr(data-icon);
+  font-size: 14px;
+}
+
+/* ═══════════════════════════════════════════
+   SCREENSHOT PLACEHOLDER
+═══════════════════════════════════════════ */
+.ss-slot {
+  border: 1.5px dashed var(--border-mid);
+  border-radius: var(--radius);
+  padding: 48px 24px;
+  text-align: center;
+  margin: 28px 0;
+  background: rgba(137,180,250,0.018);
+  transition: border-color .2s, background .2s;
+  cursor: pointer;
+}
+.ss-slot:hover {
+  border-color: var(--border-strong);
+  background: rgba(137,180,250,0.04);
+}
+.ss-icon { font-size: 32px; margin-bottom: 12px; opacity: .5; }
+.ss-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: .08em;
+  color: var(--blue);
+  margin-bottom: 5px;
+}
+.ss-desc { font-size: 12px; color: var(--overlay0); }
+
+/* ═══════════════════════════════════════════
+   TOC
+═══════════════════════════════════════════ */
+.toc {
+  background: var(--surface0);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px 32px;
+  margin-bottom: 60px;
+}
+.toc-label {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: .12em;
+  color: var(--blue);
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+.toc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px 16px;
+}
+.toc-link {
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  color: var(--subtext);
+  transition: background .12s, color .12s;
+}
+.toc-link:hover {
+  background: rgba(137,180,250,0.06);
+  color: var(--text);
+  opacity: 1;
+}
+.toc-link.active {
+  background: rgba(137,180,250,0.1);
+  color: var(--blue);
+}
+.toc-n {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--blue);
+  min-width: 20px;
+  opacity: .7;
+}
+
+/* ═══════════════════════════════════════════
+   SECTIONS
+═══════════════════════════════════════════ */
+.section {
+  margin-bottom: 72px;
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity .5s ease, transform .5s ease;
+}
+.section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.section-header {
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.section-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--blue);
+  background: rgba(137,180,250,0.1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 3px 9px;
+  flex-shrink: 0;
+}
+h2.section-title {
+  font-family: var(--font-serif);
+  font-size: 30px;
+  color: var(--text);
+  font-weight: 400;
+}
+
+h3.subsection {
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--font-sans);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--lavender);
+  margin: 36px 0 14px;
+}
+h3.subsection::before {
+  content: '▸';
+  color: var(--blue);
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+p {
+  color: var(--subtext);
+  margin-bottom: 16px;
+  font-size: 15.5px;
+}
+p strong { color: var(--text); font-weight: 500; }
+
+ul, ol {
+  padding-left: 20px;
+  margin-bottom: 16px;
+}
+li {
+  color: var(--subtext);
+  font-size: 15.5px;
+  margin-bottom: 6px;
+  padding-left: 6px;
+}
+li strong { color: var(--text); font-weight: 500; }
+
+/* ═══════════════════════════════════════════
+   CALLOUT BOXES
+═══════════════════════════════════════════ */
+.callout {
+  border-left: 3px solid;
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 18px 14px 20px;
+  margin: 20px 0;
+  font-size: 14px;
+  line-height: 1.65;
+}
+.callout-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: .1em;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.callout p { font-size: 14px; margin-bottom: 0; }
+.callout.warn  { border-color: var(--yellow); background: rgba(249,226,175,.055); }
+.callout.info  { border-color: var(--blue);   background: rgba(137,180,250,.055); }
+.callout.tip   { border-color: var(--green);  background: rgba(166,227,161,.055); }
+.callout.warn  .callout-label { color: var(--yellow); }
+.callout.info  .callout-label { color: var(--blue);   }
+.callout.tip   .callout-label { color: var(--green);  }
+.callout.warn  p { color: var(--subtext); }
+.callout.info  p { color: var(--subtext); }
+.callout.tip   p { color: var(--subtext); }
+
+/* ═══════════════════════════════════════════
+   CODE BLOCKS
+═══════════════════════════════════════════ */
+.code-wrap {
+  background: var(--surface0);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin: 18px 0 22px;
+  font-size: 13px;
+}
+.code-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(255,255,255,0.02);
+}
+.code-lang {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--blue);
+  letter-spacing: .06em;
+}
+.code-actions { display: flex; align-items: center; gap: 12px; }
+.dots { display: flex; gap: 6px; }
+.dots span {
+  width: 10px; height: 10px; border-radius: 50%;
+}
+.d-red    { background: var(--pink); }
+.d-yellow { background: var(--yellow); }
+.d-green  { background: var(--green); }
+.copy-btn {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--overlay0);
+  background: none; border: none; cursor: pointer;
+  letter-spacing: .06em;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: color .15s, background .15s;
+}
+.copy-btn:hover { color: var(--blue); background: rgba(137,180,250,.1); }
+.copy-btn.copied { color: var(--green); }
+pre {
+  padding: 20px 22px;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: var(--text);
+  tab-size: 2;
+}
+/* Syntax colours */
+.t-cm  { color: var(--overlay0); font-style: italic; }
+.t-kw  { color: var(--mauve); }
+.t-fn  { color: var(--blue); }
+.t-st  { color: var(--green); }
+.t-nu  { color: var(--peach); }
+.t-vr  { color: var(--sapphire); }
+.t-op  { color: var(--pink); }
+.t-pr  { color: var(--yellow); }
+/* inline code */
+code {
+  font-family: var(--font-mono);
+  font-size: .84em;
+  background: rgba(137,180,250,0.1);
+  color: var(--blue);
+  padding: 1px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(137,180,250,.12);
+}
+pre code { background: none; border: none; padding: 0; font-size: inherit; color: inherit; }
+
+/* ═══════════════════════════════════════════
+   TABLES
+═══════════════════════════════════════════ */
+.table-wrap { overflow-x: auto; margin: 16px 0 24px; border-radius: var(--radius); border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+thead tr { border-bottom: 1px solid var(--border); background: rgba(255,255,255,.02); }
+th {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: .08em;
+  color: var(--blue);
+  text-align: left;
+  padding: 10px 16px;
+  font-weight: 500;
+}
+td { padding: 10px 16px; color: var(--subtext); border-bottom: 1px solid rgba(137,180,250,.06); }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(137,180,250,.025); }
+td:last-child { color: var(--text); }
+.badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 10px; padding: 2px 7px;
+  border-radius: 4px; margin-left: 7px;
+  vertical-align: middle;
+}
+.badge-new     { background: rgba(166,227,161,.12); color: var(--green);  border: 1px solid rgba(166,227,161,.2); }
+.badge-updated { background: rgba(249,226,175,.12); color: var(--yellow); border: 1px solid rgba(249,226,175,.2); }
+
+/* ═══════════════════════════════════════════
+   SPEC CARD
+═══════════════════════════════════════════ */
+.spec-card {
+  background: var(--surface0);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin: 16px 0 20px;
+}
+.spec-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 11px 18px;
+  border-bottom: 1px solid rgba(137,180,250,.06);
+  font-size: 13.5px;
+}
+.spec-row:last-child { border-bottom: none; }
+.spec-key { color: var(--overlay1); }
+.spec-val { font-family: var(--font-mono); font-size: 12px; color: var(--text); }
+
+/* ═══════════════════════════════════════════
+   KEYBINDS GRID
+═══════════════════════════════════════════ */
+.kb-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin: 16px 0;
+}
+.kb-item {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--surface0);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 10px 14px;
+  gap: 12px;
+  transition: border-color .12s;
+}
+.kb-item:hover { border-color: var(--border-mid); }
+.kb-action { font-size: 12.5px; color: var(--subtext); }
+.kb-keys { display: flex; gap: 4px; flex-shrink: 0; align-items: center; }
+.key {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  background: var(--surface2);
+  border: 1px solid rgba(255,255,255,.12);
+  border-bottom: 2px solid rgba(0,0,0,.3);
+  border-radius: 4px;
+  padding: 2px 7px;
+  color: var(--text);
+  white-space: nowrap;
+  display: inline-block;
+}
+
+/* ═══════════════════════════════════════════
+   GOTCHAS
+═══════════════════════════════════════════ */
+.gotchas { display: flex; flex-direction: column; gap: 12px; }
+.gotcha {
+  display: flex; gap: 16px;
+  background: var(--surface0);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  transition: border-color .15s, transform .15s;
+}
+.gotcha:hover {
+  border-color: var(--border-mid);
+  transform: translateX(3px);
+}
+.gotcha-num {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--pink);
+  min-width: 30px;
+  padding-top: 1px;
+  flex-shrink: 0;
+}
+.gotcha-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 5px;
+}
+.gotcha-desc {
+  font-size: 13px;
+  color: var(--subtext);
+  line-height: 1.6;
+}
+
+/* ═══════════════════════════════════════════
+   DIVIDER
+═══════════════════════════════════════════ */
+.divider {
+  display: flex; align-items: center; gap: 16px;
+  margin: 56px 0;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--overlay0);
+  letter-spacing: .1em;
+}
+.divider::before, .divider::after {
+  content: ''; flex: 1;
+  height: 1px; background: var(--border);
+}
+
+/* ═══════════════════════════════════════════
+   CTA
+═══════════════════════════════════════════ */
+.cta {
+  background: linear-gradient(135deg,
+    rgba(137,180,250,.07) 0%,
+    rgba(203,166,247,.05) 60%,
+    rgba(243,139,168,.04) 100%);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 44px 36px;
+  text-align: center;
+  margin-top: 72px;
+}
+.cta h3 {
+  font-family: var(--font-serif);
+  font-size: 30px;
+  color: var(--text);
+  margin-bottom: 12px;
+  font-weight: 400;
+}
+.cta p { font-size: 15px; max-width: 460px; margin: 0 auto 28px; }
+.cta-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 24px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-sans);
+  font-size: 14px; font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform .12s, opacity .12s;
+  border: none;
+}
+.btn:hover { transform: translateY(-1px); opacity: .9; }
+.btn:active { transform: translateY(0); }
+.btn-primary { background: var(--blue); color: var(--surface0); }
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border-mid);
+  color: var(--subtext);
+}
+.btn-ghost:hover { border-color: var(--blue); color: var(--text); opacity: 1; }
+.cta-note {
+  margin-top: 22px !important;
+  font-size: 13px !important;
+  color: var(--overlay0) !important;
+}
+
+/* ═══════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════ */
+footer {
+  text-align: center;
+  padding: 32px 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--overlay0);
+  border-top: 1px solid var(--border);
+  margin-top: 56px;
+}
+footer a { color: var(--overlay0); }
+footer a:hover { color: var(--blue); opacity: 1; }
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════ */
+@media (max-width: 640px) {
+  .page { padding: 0 20px 80px; }
+  .toc-grid { grid-template-columns: 1fr; }
+  .kb-grid { grid-template-columns: 1fr; }
+  h2.section-title { font-size: 24px; }
+  .hero h1 { font-size: 34px; }
+  .cta { padding: 32px 20px; }
+  .hero-meta { gap: 14px; }
+}
+</style>
+</head>
+<body>
+
+<!-- PROGRESS -->
+<div id="progress-bar"><div id="progress-fill"></div></div>
+
+<div class="page">
+
+  <!-- ══════════════════ HERO ══════════════════ -->
+  <header class="hero">
+    <div class="hero-eyebrow">ARCH LINUX · HYPRLAND · WAYLAND · CATPPUCCIN MOCHA</div>
+    <h1>I Left i3wm.<br><em>No Regrets.</em></h1>
+    <p class="hero-lead">Two weeks building Andromeda — a full Hyprland rice with floating pill bar, workspace overview, clipboard history, idle management, and one-script install. Here's everything, including what broke.</p>
+    <div class="hero-meta">
+      <span data-icon="✍">anuragdevon</span>
+      <span data-icon="⏱">~14 min read</span>
+      <span data-icon="🔗"><a href="https://github.com/anuragdevon/devon-rice">devon-rice</a></span>
+      <span data-icon="📦">Hyprland 0.54.3</span>
+    </div>
+  </header>
+
+  <!-- Cover screenshot -->
+  <div class="ss-cover">
+    <img src="/images/blog_arch_home_image.png" alt="Andromeda rice — full desktop screenshot" loading="lazy">
+  </div>
+
+  <!-- ══════════════════ TOC ══════════════════ -->
+  <nav class="toc" aria-label="Table of contents">
+    <div class="toc-label">// contents</div>
+    <div class="toc-grid">
+      <a class="toc-link" href="#s1"><span class="toc-n">01</span>Why I jumped</a>
+      <a class="toc-link" href="#s2"><span class="toc-n">02</span>Full stack</a>
+      <a class="toc-link" href="#s3"><span class="toc-n">03</span>Quick start</a>
+      <a class="toc-link" href="#s4"><span class="toc-n">04</span>Step by step</a>
+      <a class="toc-link" href="#s5"><span class="toc-n">05</span>Monitor setup</a>
+      <a class="toc-link" href="#s6"><span class="toc-n">06</span>Animations + polish</a>
+      <a class="toc-link" href="#s7"><span class="toc-n">07</span>Keybindings</a>
+      <a class="toc-link" href="#s8"><span class="toc-n">08</span>Components</a>
+      <a class="toc-link" href="#s9"><span class="toc-n">09</span>Idle + wallpaper</a>
+      <a class="toc-link" href="#s10"><span class="toc-n">10</span>Colors + fonts</a>
+      <a class="toc-link" href="#s11"><span class="toc-n">11</span>The gotchas</a>
+      <a class="toc-link" href="#s12"><span class="toc-n">12</span>Was it worth it?</a>
+    </div>
+  </nav>
+
+  <!-- ══════════════════ S1 ══════════════════ -->
+  <section class="section" id="s1">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2 class="section-title">Why I Jumped</h2>
+    </div>
+    <p>My old rice — <strong>archrice</strong> — was i3wm on X11. It was fast, muscle-memory-perfect, and entirely mine. I had no real reason to move. Then I saw <a href="https://github.com/ViegPhunt/Dotfiles">ViegPhunt's dotfiles</a>.</p>
+    <p>That blur. Those rounded corners. The way the notification center slid open like a UI concept that wasn't supposed to run on a real machine. I sat with my perfectly functional i3 setup and felt something I hadn't expected: envy.</p>
+    <p>So I switched. Two weeks of <code>hyprctl reload</code> and more <code>journalctl -xe</code> than I'd like to admit later — here's the result. <strong>Andromeda.</strong></p>
+    <p>This isn't the "here's pretty screenshots, good luck" version. This is the real one — what I built, why I picked each tool, and the debugging I wish I'd skipped. If you're migrating from i3, you'll feel at home faster than you expect.</p>
+    <div class="callout info">
+      <div class="callout-label">// REPO</div>
+      <p>All configs, scripts, and install automation: <strong><a href="https://github.com/anuragdevon/devon-rice">github.com/anuragdevon/devon-rice</a></strong>. Clone it, run one script, done.</p>
+    </div>
+  </section>
+
+  <!-- ══════════════════ S2 ══════════════════ -->
+  <section class="section" id="s2">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2 class="section-title">Full Stack</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Role</th><th>Tool</th></tr></thead>
+        <tbody>
+          <tr><td>Window manager</td><td>Hyprland 0.54.3</td></tr>
+          <tr><td>Terminal</td><td>Ghostty</td></tr>
+          <tr><td>Shell</td><td>Zsh + Starship</td></tr>
+          <tr><td>Editor</td><td>Neovim</td></tr>
+          <tr><td>File manager (GUI)</td><td>Nautilus (GTK4, Catppuccin) <span class="badge badge-updated">updated</span></td></tr>
+          <tr><td>File manager (TUI)</td><td>Yazi</td></tr>
+          <tr><td>Browser</td><td>Brave / Thorium</td></tr>
+          <tr><td>Status bar</td><td>Waybar — floating pill <span class="badge badge-updated">updated</span></td></tr>
+          <tr><td>Notifications</td><td>Swaync</td></tr>
+          <tr><td>Lock screen</td><td>Hyprlock</td></tr>
+          <tr><td>Idle daemon</td><td>Hypridle <span class="badge badge-new">new</span></td></tr>
+          <tr><td>Wallpaper</td><td>Hyprpaper + random picker <span class="badge badge-new">new</span></td></tr>
+          <tr><td>Screenshot</td><td>Hyprshot <span class="badge badge-new">new</span></td></tr>
+          <tr><td>Workspace overview</td><td>Hyprexpo plugin <span class="badge badge-new">new</span></td></tr>
+          <tr><td>Clipboard</td><td>Cliphist + wl-clipboard <span class="badge badge-new">new</span></td></tr>
+          <tr><td>Audio toggle</td><td>Dynamic Rofi sink picker <span class="badge badge-updated">updated</span></td></tr>
+          <tr><td>Monitor toggle</td><td>toggle-monitor.sh <span class="badge badge-new">new</span></td></tr>
+          <tr><td>Font (terminal/UI)</td><td>FiraCode Nerd Font</td></tr>
+          <tr><td>Font (browser/GTK)</td><td>Noto Sans via fontconfig <span class="badge badge-new">new</span></td></tr>
+          <tr><td>Icons / Cursor</td><td>Papirus-Dark / Bibata Modern Classic</td></tr>
+          <tr><td>Color scheme</td><td>Catppuccin Mocha</td></tr>
+          <tr><td>Login manager</td><td>SDDM catppuccin-mocha-blue</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="subsection">Hardware</h3>
+    <div class="spec-card">
+      <div class="spec-row"><span class="spec-key">Machine</span><span class="spec-val">HP Laptop 15s — AMD Ryzen 3 3250U</span></div>
+      <div class="spec-row"><span class="spec-key">GPU</span><span class="spec-val">AMD Radeon Vega 3 (integrated)</span></div>
+      <div class="spec-row"><span class="spec-key">RAM</span><span class="spec-val">13.59 GiB</span></div>
+      <div class="spec-row"><span class="spec-key">Displays</span><span class="spec-val">eDP-1 15" 1080p@60 · HDMI-A-1 21" 1080p@60</span></div>
+      <div class="spec-row"><span class="spec-key">OS / Kernel</span><span class="spec-val">Arch Linux x86_64 · 6.19.9-arch1-1</span></div>
+      <div class="spec-row"><span class="spec-key">WM</span><span class="spec-val">Hyprland 0.54.3 (Wayland)</span></div>
+    </div>
+    <div class="callout warn">
+      <div class="callout-label">⚠ GPU NOTE</div>
+      <p>Vega 3 is integrated. Blur passes are capped at 3. Go higher and you will feel every frame drop.</p>
+    </div>
+  </section>
+
+  <!-- ══════════════════ S3 ══════════════════ -->
+  <section class="section" id="s3">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2 class="section-title">Quick Start</h2>
+    </div>
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="code-lang">bash</span>
+        <div class="code-actions">
+          <div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div>
+          <button class="copy-btn" data-target="code-qs">COPY</button>
+        </div>
+      </div>
+      <pre id="code-qs"><span class="t-cm"># 1. Install everything</span>
+<span class="t-fn">yay</span> <span class="t-vr">-S</span> hyprland ghostty waybar rofi-wayland swaync wlogout hyprlock hyprpaper \
+       hypridle cava starship zsh-autosuggestions zsh-syntax-highlighting \
+       ttf-firacode-nerd papirus-icon-theme bibata-cursor-theme noto-fonts noto-fonts-emoji \
+       gnome-keyring libsecret neovim nautilus \
+       catppuccin-gtk-theme-mocha kvantum qt6ct \
+       cliphist wl-clipboard playerctl hyprshot \
+       socat jq brightnessctl \
+       bluez bluez-utils bluetuith sddm
+
+<span class="t-cm"># 2. Clone the dotfiles</span>
+<span class="t-fn">git</span> clone https://github.com/anuragdevon/devon-rice ~/devon-rice
+
+<span class="t-cm"># 3. Wire up symlinks (backs up your existing configs first)</span>
+<span class="t-fn">cd</span> ~/devon-rice &amp;&amp; <span class="t-fn">bash</span> install.sh
+
+<span class="t-cm"># 4. Symlink GTK4 CSS for Nautilus (settings.ini alone won't work for GTK4)</span>
+<span class="t-fn">ln</span> -sf /usr/share/themes/catppuccin-mocha-blue-standard+default/gtk-4.0/gtk.css \
+        ~/.config/gtk-4.0/gtk.css
+<span class="t-fn">ln</span> -sf /usr/share/themes/catppuccin-mocha-blue-standard+default/gtk-4.0/gtk-dark.css \
+        ~/.config/gtk-4.0/gtk-dark.css
+
+<span class="t-cm"># 5. Hyprexpo workspace overview plugin</span>
+<span class="t-fn">hyprpm</span> add https://github.com/hyprwm/hyprland-plugins
+<span class="t-fn">hyprpm</span> enable hyprexpo
+
+<span class="t-cm"># 6. Update wallpaper paths — hyprpaper ignores ~/</span>
+<span class="t-fn">nvim</span> configs/hyprpaper/hyprpaper.conf
+<span class="t-fn">nvim</span> configs/hypr/set-wallpaper.sh
+
+<span class="t-cm"># 7. Reload</span>
+<span class="t-fn">hyprctl</span> reload</pre>
+    </div>
+    <div class="callout tip">
+      <div class="callout-label">// HOW SYMLINKS WORK</div>
+      <p><code>install.sh</code> creates symlinks, not copies. Edit any config from anywhere — terminal, Neovim, Nautilus — and you're editing the repo file directly. <code>git commit &amp;&amp; git push</code> whenever you want a checkpoint.</p>
+    </div>
+  </section>
+
+  <!-- ══════════════════ S4 ══════════════════ -->
+  <section class="section" id="s4">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2 class="section-title">Step-by-Step Walkthrough</h2>
+    </div>
+
+    <h3 class="subsection">1. Base System</h3>
+    <p>Fresh Arch install via <code>archinstall</code>. Get yay first:</p>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="code-lang">bash</span><div class="code-actions"><div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div><button class="copy-btn" data-target="code-yay">COPY</button></div></div>
+      <pre id="code-yay"><span class="t-fn">sudo</span> pacman -S --needed git base-devel
+<span class="t-fn">git</span> clone https://aur.archlinux.org/yay.git &amp;&amp; <span class="t-fn">cd</span> yay &amp;&amp; <span class="t-fn">makepkg</span> -si</pre>
+    </div>
+
+    <h3 class="subsection">2. Hyprland + Core</h3>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="code-lang">bash</span><div class="code-actions"><div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div><button class="copy-btn" data-target="code-hypr">COPY</button></div></div>
+      <pre id="code-hypr"><span class="t-fn">yay</span> -S hyprland ghostty waybar rofi-wayland swaync wlogout \
+       hyprlock hypridle hyprpaper cava wl-clipboard nm-applet playerctl</pre>
+    </div>
+
+    <h3 class="subsection">3. Fonts, Icons, Cursor</h3>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="code-lang">bash</span><div class="code-actions"><div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div><button class="copy-btn" data-target="code-fonts">COPY</button></div></div>
+      <pre id="code-fonts"><span class="t-fn">yay</span> -S ttf-firacode-nerd papirus-icon-theme bibata-cursor-theme noto-fonts noto-fonts-emoji
+<span class="t-fn">fc-cache</span> -fv</pre>
+    </div>
+
+    <h3 class="subsection">4. Shell</h3>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="code-lang">bash — ~/.zshrc</span><div class="code-actions"><div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div><button class="copy-btn" data-target="code-zsh">COPY</button></div></div>
+      <pre id="code-zsh">HISTFILE=~/.zsh_history
+HISTSIZE=<span class="t-nu">10000</span>
+SAVEHIST=<span class="t-nu">10000</span>
+<span class="t-fn">setopt</span> APPEND_HISTORY SHARE_HISTORY HIST_IGNORE_DUPS HIST_IGNORE_SPACE
+
+<span class="t-fn">source</span> /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+<span class="t-fn">source</span> /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+<span class="t-fn">eval</span> <span class="t-st">"$(starship init zsh)"</span></pre>
+    </div>
+  </section>
+
+  <!-- ══════════════════ S5 ══════════════════ -->
+  <section class="section" id="s5">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2 class="section-title">Monitor Setup</h2>
+    </div>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="code-lang">ini — hyprland.conf</span><div class="code-actions"><div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div><button class="copy-btn" data-target="code-mon">COPY</button></div></div>
+      <pre id="code-mon"><span class="t-cm"># Laptop — 15", HiDPI needs 1.5x for comfortable reading</span>
+<span class="t-vr">monitor</span> = eDP-1, 1920x1080@60, 0x0, <span class="t-nu">1.5</span>
+
+<span class="t-cm"># External — 21", no scaling</span>
+<span class="t-cm"># Offset = 1920 ÷ 1.5 = 1280 LOGICAL px (NOT 1920px)</span>
+<span class="t-vr">monitor</span> = HDMI-A-1, 1920x1080@60, <span class="t-st">1280x0</span>, <span class="t-nu">1.0</span>
+
+<span class="t-kw">xwayland</span> {
+    force_zero_scaling = <span class="t-nu">true</span>  <span class="t-cm"># fixes blurry XWayland apps on external monitor</span>
+}
+<span class="t-vr">env</span> = GDK_SCALE, <span class="t-nu">1</span>
+<span class="t-vr">env</span> = XDG_SESSION_TYPE, wayland</pre>
+    </div>
+    <div class="callout warn">
+      <div class="callout-label">⚠ THE OFFSET TRAP — READ THIS</div>
+      <p>Hyprland uses <strong>logical</strong> pixels for monitor positioning, not physical ones. At 1.5x scale the laptop's logical width is 1280px — not 1920px. Put the external at <code>1920x0</code> and you get a 640px invisible dead zone where your mouse just disappears. I spent an evening convinced I had a compositor bug. I did not.</p>
+    </div>
+    <div class="callout info">
+      <div class="callout-label">// SINGLE MONITOR</div>
+      <p>Delete the <code>HDMI-A-1</code> monitor line and the monitor focus/move keybinds. Everything else applies exactly the same.</p>
+    </div>
+  </section>
+
+  <!-- ══════════════════ S6 ══════════════════ -->
+  <section class="section" id="s6">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <h2 class="section-title">Animations &amp; Window Polish</h2>
+    </div>
+    <p>The defaults are serviceable. These are better. Custom bezier curves inspired by Material Design 3 — much more expressive motion:</p>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="code-lang">ini — animations</span><div class="code-actions"><div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div><button class="copy-btn" data-target="code-anim">COPY</button></div></div>
+      <pre id="code-anim"><span class="t-vr">bezier</span> = emphasizedDecel, <span class="t-nu">0.05</span>, <span class="t-nu">0.7</span>, <span class="t-nu">0.1</span>, <span class="t-nu">1.0</span>
+<span class="t-vr">bezier</span> = menu_decel,      <span class="t-nu">0.1</span>,  <span class="t-nu">1</span>,   <span class="t-nu">0.0</span>, <span class="t-nu">1.0</span>
+
+<span class="t-vr">animation</span> = windowsIn,  <span class="t-nu">1</span>, <span class="t-nu">3</span>, emphasizedDecel, popin 80%
+<span class="t-vr">animation</span> = windowsOut, <span class="t-nu">1</span>, <span class="t-nu">2</span>, quick,           popin 90%
+<span class="t-vr">animation</span> = workspaces, <span class="t-nu">1</span>, <span class="t-nu">7</span>, menu_decel,      slide</pre>
+    </div>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="code-lang">ini — decoration + general</span><div class="code-actions"><div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div><button class="copy-btn" data-target="code-deco">COPY</button></div></div>
+      <pre id="code-deco"><span class="t-kw">decoration</span> {
+    rounding = <span class="t-nu">12</span>
+    dim_inactive = <span class="t-nu">true</span>    <span class="t-cm"># unfocused windows darken slightly</span>
+    dim_strength = <span class="t-nu">0.07</span>   <span class="t-cm"># subtle — makes active window pop</span>
+
+    <span class="t-kw">shadow</span> {
+        range = <span class="t-nu">20</span>
+        color = <span class="t-st">rgba(1a1a1a99)</span>
+        offset = <span class="t-nu">0 4</span>
+    }
+
+    <span class="t-kw">blur</span> {
+        enabled = <span class="t-nu">true</span>
+        size = <span class="t-nu">6</span>
+        passes = <span class="t-nu">3</span>         <span class="t-cm"># HARD MAX on Vega 3</span>
+        vibrancy = <span class="t-nu">0.1696</span>
+    }
+}
+
+<span class="t-kw">general</span> {
+    gaps_in = <span class="t-nu">5</span>; gaps_out = <span class="t-nu">20</span>; border_size = <span class="t-nu">2</span>
+    col.active_border   = <span class="t-st">rgba(33ccffee)</span> <span class="t-st">rgba(00ff99ee)</span> 45deg
+    col.inactive_border = <span class="t-st">rgba(595959aa)</span>
+
+    <span class="t-kw">snap</span> { enabled = <span class="t-nu">true</span>; window_gap = <span class="t-nu">8</span>; monitor_gap = <span class="t-nu">8</span> }
+}</pre>
+    </div>
+    <p><code>dim_inactive</code> is the feature I didn't know I needed. Focus is visually obvious at a glance without any aggressive highlighting.</p>
+  </section>
+
+  <!-- ══════════════════ S7 ══════════════════ -->
+  <section class="section" id="s7">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <h2 class="section-title">Keybindings</h2>
+    </div>
+    <p>All i3-style. Coming from i3, your muscle memory settles in within 20 minutes.</p>
+    <div class="kb-grid">
+      <div class="kb-item"><span class="kb-action">Terminal</span><div class="kb-keys"><span class="key">Super</span><span class="key">↵</span></div></div>
+      <div class="kb-item"><span class="kb-action">Close window</span><div class="kb-keys"><span class="key">Super</span><span class="key">Q</span></div></div>
+      <div class="kb-item"><span class="kb-action">App launcher</span><div class="kb-keys"><span class="key">Super</span><span class="key">D</span></div></div>
+      <div class="kb-item"><span class="kb-action">File manager</span><div class="kb-keys"><span class="key">Super</span><span class="key">E</span></div></div>
+      <div class="kb-item"><span class="kb-action">Workspace overview</span><div class="kb-keys"><span class="key">Super</span><span class="key">Tab</span></div></div>
+      <div class="kb-item"><span class="kb-action">Clipboard picker</span><div class="kb-keys"><span class="key">Super</span><span class="key">⇧</span><span class="key">V</span></div></div>
+      <div class="kb-item"><span class="kb-action">Screenshot region</span><div class="kb-keys"><span class="key">Super</span><span class="key">⇧</span><span class="key">S</span></div></div>
+      <div class="kb-item"><span class="kb-action">Active window shot</span><div class="kb-keys"><span class="key">Print</span></div></div>
+      <div class="kb-item"><span class="kb-action">Full monitor shot</span><div class="kb-keys"><span class="key">Super</span><span class="key">Print</span></div></div>
+      <div class="kb-item"><span class="kb-action">Lock screen</span><div class="kb-keys"><span class="key">Super</span><span class="key">L</span></div></div>
+      <div class="kb-item"><span class="kb-action">Notifications</span><div class="kb-keys"><span class="key">Super</span><span class="key">N</span></div></div>
+      <div class="kb-item"><span class="kb-action">Audio visualizer</span><div class="kb-keys"><span class="key">Super</span><span class="key">C</span></div></div>
+      <div class="kb-item"><span class="kb-action">Calculator</span><div class="kb-keys"><span class="key">Super</span><span class="key">=</span></div></div>
+      <div class="kb-item"><span class="kb-action">Audio sink picker</span><div class="kb-keys"><span class="key">Super</span><span class="key">⇧</span><span class="key">A</span></div></div>
+      <div class="kb-item"><span class="kb-action">Toggle monitor</span><div class="kb-keys"><span class="key">Super</span><span class="key">⇧</span><span class="key">M</span></div></div>
+      <div class="kb-item"><span class="kb-action">Random wallpaper</span><div class="kb-keys"><span class="key">Super</span><span class="key">⇧</span><span class="key">W</span></div></div>
+      <div class="kb-item"><span class="kb-action">Power menu</span><div class="kb-keys"><span class="key">Super</span><span class="key">⇧</span><span class="key">E</span></div></div>
+      <div class="kb-item"><span class="kb-action">Reload config</span><div class="kb-keys"><span class="key">Super</span><span class="key">⇧</span><span class="key">R</span></div></div>
+      <div class="kb-item"><span class="kb-action">Focus window</span><div class="kb-keys"><span class="key">Super</span><span class="key">h/j/k/l</span></div></div>
+      <div class="kb-item"><span class="kb-action">Switch workspace</span><div class="kb-keys"><span class="key">Super</span><span class="key">1–0</span></div></div>
+    </div>
+    <p style="margin-top:10px;font-size:13px;">Plus <code>Super+Shift+hjkl</code> to move windows, <code>Super+Ctrl+hjkl</code> to resize, and <code>Super+,/.</code> to focus monitors.</p>
+  </section>
+
+  <!-- ══════════════════ S8 ══════════════════ -->
+  <section class="section" id="s8">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <h2 class="section-title">Components</h2>
+    </div>
+
+    <h3 class="subsection">Waybar — Floating Pill Bar</h3>
+    <div class="ss-cover ss-cover--natural">
+      <img src="/images/waybar_display1.png" alt="Waybar floating pill bar on display 1" loading="lazy">
+    </div>
+    <div class="ss-cover ss-cover--natural">
+      <img src="/images/waybar_display2.png" alt="Waybar floating pill bar on display 2" loading="lazy">
+    </div>
+    <p class="ss-desc">Waybar on both displays with the floating pill layout.</p>
+    <p>Floats 10px above the top edge with margins on both sides — three sections: CPU · RAM · Battery · active window title on the left, workspace pills center (blue when active), media · volume · network · clock right.</p>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="code-lang">jsonc — waybar config</span><div class="code-actions"><div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div><button class="copy-btn" data-target="code-wb">COPY</button></div></div>
+      <pre id="code-wb">{
+    <span class="t-st">"layer"</span>:        <span class="t-st">"top"</span>,
+    <span class="t-st">"height"</span>:       <span class="t-nu">40</span>,
+    <span class="t-st">"margin-top"</span>:   <span class="t-nu">10</span>,
+    <span class="t-st">"margin-left"</span>:  <span class="t-nu">14</span>,
+    <span class="t-st">"margin-right"</span>: <span class="t-nu">14</span>,
+    <span class="t-st">"modules-left"</span>:   [<span class="t-st">"cpu"</span>, <span class="t-st">"memory"</span>, <span class="t-st">"battery"</span>, <span class="t-st">"hyprland/window"</span>],
+    <span class="t-st">"modules-center"</span>: [<span class="t-st">"hyprland/workspaces"</span>],
+    <span class="t-st">"modules-right"</span>:  [<span class="t-st">"custom/media"</span>, <span class="t-st">"pulseaudio"</span>, <span class="t-st">"network"</span>, <span class="t-st">"clock"</span>, <span class="t-st">"tray"</span>]
+}</pre>
+    </div>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="code-lang">css — floating pill style</span><div class="code-actions"><div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div><button class="copy-btn" data-target="code-wbcss">COPY</button></div></div>
+      <pre id="code-wbcss"><span class="t-kw">window#waybar</span> {
+    background:    <span class="t-st">rgba(30, 30, 46, 0.82)</span>;
+    border-radius: <span class="t-nu">14px</span>;
+    border:        <span class="t-nu">1px</span> solid <span class="t-st">rgba(137, 180, 250, 0.10)</span>;
+}</pre>
+    </div>
+    <div class="callout warn">
+      <div class="callout-label">⚠ SILENT SHADOW BUG</div>
+      <p>Old <code>~/.config/waybar/config</code> file from a previous setup? Waybar loads it <em>before</em> <code>config.jsonc</code>, silently ignoring your new config. Nothing works, no error. Fix: <code>rm ~/.config/waybar/config</code>.</p>
+    </div>
+
+    <h3 class="subsection">Screenshot — Hyprshot, Not grim+slurp</h3>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="code-lang">ini — 6 screenshot keybinds</span><div class="code-actions"><div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div><button class="copy-btn" data-target="code-ss">COPY</button></div></div>
+      <pre id="code-ss"><span class="t-cm"># Region → clipboard (most used — drag to select)</span>
+<span class="t-vr">bind</span> = $mainMod SHIFT, S, exec, hyprshot -m region --clipboard-only
+<span class="t-cm"># Active window → clipboard</span>
+<span class="t-vr">bind</span> = , Print,            exec, hyprshot -m window -m active --clipboard-only
+<span class="t-cm"># Full monitor → clipboard</span>
+<span class="t-vr">bind</span> = $mainMod, Print,    exec, hyprshot -m output --clipboard-only
+<span class="t-cm"># Region → save file</span>
+<span class="t-vr">bind</span> = $mainMod CTRL, S,   exec, hyprshot -m region -o ~/Pictures/Screenshots/
+<span class="t-cm"># Active window → save file</span>
+<span class="t-vr">bind</span> = SHIFT, Print,       exec, hyprshot -m window -m active -o ~/Pictures/Screenshots/
+<span class="t-cm"># Full monitor → save file</span>
+<span class="t-vr">bind</span> = CTRL, Print,        exec, hyprshot -m output -o ~/Pictures/Screenshots/</pre>
+    </div>
+    <div class="callout warn">
+      <div class="callout-label">⚠ WHY NOT grim+slurp?</div>
+      <p><code>grim -g "$(slurp)" - | wl-copy</code> grabs input before the compositor releases it. Windows stop responding — workspaces freeze — until you click something. You'll think your rice is broken. Switch to Hyprshot, which handles the Wayland input grab correctly.</p>
+    </div>
+
+    <h3 class="subsection">Workspace Overview — Hyprexpo</h3>
+    <div class="ss-cover">
+      <img src="/images/workspaces.jpg" alt="Hyprexpo workspace overview grid (Super+Tab)" loading="lazy">
+    </div>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="code-lang">bash — install + config</span><div class="code-actions"><div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div><button class="copy-btn" data-target="code-expo">COPY</button></div></div>
+      <pre id="code-expo"><span class="t-cm"># Install build deps FIRST — hyprpm fails silently without these</span>
+<span class="t-fn">yay</span> -S cmake cpio pkgconf
+
+<span class="t-fn">hyprpm</span> add https://github.com/hyprwm/hyprland-plugins
+<span class="t-fn">hyprpm</span> enable hyprexpo</pre>
+    </div>
+
+    <h3 class="subsection">Clipboard History</h3>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="code-lang">ini — hyprland.conf</span><div class="code-actions"><div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div><button class="copy-btn" data-target="code-clip">COPY</button></div></div>
+      <pre id="code-clip"><span class="t-cm"># Autostart — must be running or history won't accumulate</span>
+<span class="t-vr">exec-once</span> = wl-paste --watch cliphist store
+
+<span class="t-cm"># Keybind — searchable Rofi picker</span>
+<span class="t-vr">bind</span> = $mainMod SHIFT, V, exec, cliphist list | rofi -dmenu -p <span class="t-st">"Clipboard"</span> | cliphist decode | wl-copy</pre>
+    </div>
+
+    <h3 class="subsection">Audio Sink Picker (Dynamic — No Hardcoded MACs)</h3>
+    <p>The old toggle script had a hardcoded Bluetooth MAC. Every new device broke it. The new version uses <code>pactl list sinks</code> to discover all outputs dynamically and presents them in Rofi. Select any device, all active streams follow automatically.</p>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="code-lang">rofi picker — example output</span><div class="code-actions"><div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div></div></div>
+      <pre>󰍹  HDMI Monitor
+   USB Headset
+   Bluetooth Headphones  ✓ current</pre>
+    </div>
+
+    <h3 class="subsection">File Manager — Nautilus + GTK4</h3>
+    <div class="ss-cover">
+      <img src="/images/nautilus.png" alt="Nautilus file manager themed with Catppuccin Mocha (GTK4)" loading="lazy">
+    </div>
+    <div class="callout warn">
+      <div class="callout-label">⚠ GTK4 IGNORES gtk-theme-name</div>
+      <p><code>settings.ini</code> alone does nothing for GTK4 apps. You must symlink the CSS directly into <code>~/.config/gtk-4.0/gtk.css</code>. Skip this and Nautilus looks completely default, regardless of what settings.ini says.</p>
+    </div>
+
+    <h3 class="subsection">Calculator — Python via Rofi</h3>
+    <p><code>rofi-calc</code> needs the X11 build. The Wayland fork strips plugin support entirely and fails silently. Replaced with a 15-line bash script using Python's <code>math</code> module:</p>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="code-lang">bash — rofi-calc.sh</span><div class="code-actions"><div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div><button class="copy-btn" data-target="code-calc">COPY</button></div></div>
+      <pre id="code-calc">#!/bin/bash
+expr=$(<span class="t-fn">rofi</span> -dmenu -p <span class="t-st">"  "</span> -l 0 -theme-str <span class="t-st">'window {width: 420px;}'</span>)
+[ -z <span class="t-st">"$expr"</span> ] &amp;&amp; exit
+
+result=$(<span class="t-fn">python3</span> -c <span class="t-st">"from math import *; print($expr)"</span> 2>/dev/null || echo <span class="t-st">"Error"</span>)
+
+selected=$(echo <span class="t-st">"$result"</span> | <span class="t-fn">rofi</span> -dmenu -p <span class="t-st">"  $expr ="</span> -l 1 \
+    -theme-str <span class="t-st">'window {width: 420px;}'</span> \
+    -theme-str <span class="t-st">'element-text {text-color: #a6e3a1;}'</span>)
+
+[ -n <span class="t-st">"$selected"</span> ] &amp;&amp; echo -n <span class="t-st">"$selected"</span> | <span class="t-fn">wl-copy</span></pre>
+    </div>
+    <div class="ss-cover">
+      <img src="/images/calc.png" alt="Rofi calculator showing expression and result" loading="lazy">
+    </div>
+
+    <h3 class="subsection">Hyprlock — Lock Screen</h3>
+    <div class="ss-cover">
+      <img src="/images/hyprlock.jpeg" alt="Hyprlock lock screen with blurred wallpaper and clock (Super+L)" loading="lazy">
+    </div>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="code-lang">ini — hyprlock.conf</span><div class="code-actions"><div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div><button class="copy-btn" data-target="code-lock">COPY</button></div></div>
+      <pre id="code-lock"><span class="t-kw">background</span> {
+    path = /home/anurag/wallpapers/1.jpg  <span class="t-cm"># absolute path — no ~/</span>
+    blur_passes = <span class="t-nu">4</span>; blur_size = <span class="t-nu">8</span>; brightness = <span class="t-nu">0.4</span>
+}
+<span class="t-kw">label</span> {
+    text = cmd[update:1000] echo <span class="t-st">"&lt;b&gt;$(date +"%H:%M")&lt;/b&gt;"</span>
+    font_size = <span class="t-nu">80</span>; font_family = FiraCode Nerd Font Bold
+    position = <span class="t-nu">0, 40</span>; halign = center; valign = center
+}
+<span class="t-kw">input-field</span> {
+    size = <span class="t-nu">300, 52</span>
+    outer_color = <span class="t-st">rgb(89b4fa)</span>; inner_color = <span class="t-st">rgb(1e1e2e)</span>
+    rounding = <span class="t-nu">12</span>; position = <span class="t-nu">0, -190</span>
+    halign = center; valign = center
+}</pre>
+    </div>
+
+    <h3 class="subsection">Swaync · Wlogout · Cava · SDDM</h3>
+    <div class="ss-cover">
+      <img src="/images/swaync.png" alt="Swaync notification center (Super+N)" loading="lazy">
+    </div>
+    <div class="ss-cover">
+      <img src="/images/wlogout.png" alt="Wlogout power menu (Super+Shift+E)" loading="lazy">
+    </div>
+    <div class="ss-cover">
+      <img src="/images/cava.png" alt="Cava audio visualizer in Ghostty (Super+C)" loading="lazy">
+    </div>
+    <div class="ss-cover">
+      <img src="/images/sddmlock.jpeg" alt="SDDM login screen with Catppuccin Mocha theme" loading="lazy">
+    </div>
+  </section>
+
+  <!-- ══════════════════ S9 ══════════════════ -->
+  <section class="section" id="s9">
+    <div class="section-header">
+      <span class="section-num">09</span>
+      <h2 class="section-title">Idle Management + Wallpaper</h2>
+    </div>
+
+    <h3 class="subsection">Hypridle — Auto Dim → Lock → Suspend</h3>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="code-lang">ini — hypridle.conf</span><div class="code-actions"><div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div><button class="copy-btn" data-target="code-idle">COPY</button></div></div>
+      <pre id="code-idle"><span class="t-kw">general</span> {
+    lock_cmd         = pidof hyprlock || hyprlock
+    before_sleep_cmd = loginctl lock-session
+    after_sleep_cmd  = hyprctl dispatch dpms on
+}
+
+<span class="t-cm"># 2.5 min → dim screen</span>
+<span class="t-kw">listener</span> { timeout = <span class="t-nu">150</span>;  on-timeout = brightnessctl -s set 20%; on-resume = brightnessctl -r }
+<span class="t-cm"># 5 min → lock</span>
+<span class="t-kw">listener</span> { timeout = <span class="t-nu">300</span>;  on-timeout = loginctl lock-session }
+<span class="t-cm"># 5.5 min → display off</span>
+<span class="t-kw">listener</span> { timeout = <span class="t-nu">330</span>;  on-timeout = hyprctl dispatch dpms off; on-resume = hyprctl dispatch dpms on }
+<span class="t-cm"># 30 min → suspend</span>
+<span class="t-kw">listener</span> { timeout = <span class="t-nu">1800</span>; on-timeout = systemctl suspend }</pre>
+    </div>
+
+    <h3 class="subsection">Random Wallpaper Picker</h3>
+    <p>Drop images in <code>~/wallpapers/</code>. On boot, a random one is picked and applied to both monitors. <code>Super+Shift+W</code> re-rolls it live without reloading Hyprland.</p>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="code-lang">bash — set-wallpaper.sh</span><div class="code-actions"><div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div><button class="copy-btn" data-target="code-wall">COPY</button></div></div>
+      <pre id="code-wall">WALLPAPER_DIR=<span class="t-st">"/home/anurag/wallpapers"</span>
+[ <span class="t-st">"$1"</span> = <span class="t-st">"--startup"</span> ] &amp;&amp; sleep 3  <span class="t-cm"># wait for Wayland socket to be ready</span>
+
+wall=$(<span class="t-fn">find</span> <span class="t-st">"$WALLPAPER_DIR"</span> -type f \
+    \( -iname <span class="t-st">"*.jpg"</span> -o -iname <span class="t-st">"*.jpeg"</span> -o -iname <span class="t-st">"*.png"</span> -o -iname <span class="t-st">"*.webp"</span> \) \
+    | shuf -n 1)
+
+<span class="t-fn">hyprctl</span> hyprpaper preload <span class="t-st">"$wall"</span>
+<span class="t-fn">hyprctl</span> hyprpaper wallpaper <span class="t-st">"eDP-1,$wall"</span>
+<span class="t-fn">hyprctl</span> hyprpaper wallpaper <span class="t-st">"HDMI-A-1,$wall"</span></pre>
+    </div>
+    <div class="callout warn">
+      <div class="callout-label">⚠ CRITICAL — ABSOLUTE PATHS ONLY</div>
+      <p>Hyprpaper does not expand <code>~/</code>. The script uses full absolute paths — <code>/home/anurag/...</code> always. Never <code>~/...</code>. This one took hours to figure out from useless error output.</p>
+    </div>
+
+    <h3 class="subsection">Monitor Toggle</h3>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="code-lang">bash — toggle-monitor.sh</span><div class="code-actions"><div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div><button class="copy-btn" data-target="code-montog">COPY</button></div></div>
+      <pre id="code-montog">HDMI=<span class="t-st">"HDMI-A-1"</span>
+status=$(<span class="t-fn">hyprctl</span> monitors | grep -c <span class="t-st">"$HDMI"</span>)
+
+if [ <span class="t-st">"$status"</span> -gt 0 ]; then
+    <span class="t-fn">hyprctl</span> keyword monitor <span class="t-st">"$HDMI,disabled"</span>
+    <span class="t-fn">notify-send</span> <span class="t-st">"Monitor"</span> <span class="t-st">"Switched to laptop only"</span>
+else
+    <span class="t-fn">hyprctl</span> keyword monitor <span class="t-st">"$HDMI,1920x1080@60,1280x0,1.0"</span>
+    <span class="t-fn">notify-send</span> <span class="t-st">"Monitor"</span> <span class="t-st">"Dual monitor enabled"</span>
+fi</pre>
+    </div>
+  </section>
+
+  <!-- ══════════════════ S10 ══════════════════ -->
+  <section class="section" id="s10">
+    <div class="section-header">
+      <span class="section-num">10</span>
+      <h2 class="section-title">Colors + Fonts</h2>
+    </div>
+
+    <h3 class="subsection">One Color File, Everything in Sync</h3>
+    <p>Waybar, Swaync, Wlogout, Rofi — all import from a single shared file. Change one hex, every component updates.</p>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="code-lang">css — configs/colors/colors.css</span><div class="code-actions"><div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div><button class="copy-btn" data-target="code-colors">COPY</button></div></div>
+      <pre id="code-colors"><span class="t-fn">@define-color</span> background <span class="t-st">#1e1e2e</span>;
+<span class="t-fn">@define-color</span> foreground <span class="t-st">#cdd6f4</span>;
+<span class="t-fn">@define-color</span> blue       <span class="t-st">#89b4fa</span>;  <span class="t-cm">/* primary accent */</span>
+<span class="t-fn">@define-color</span> pink       <span class="t-st">#f38ba8</span>;
+<span class="t-fn">@define-color</span> green      <span class="t-st">#a6e3a1</span>;
+<span class="t-fn">@define-color</span> yellow     <span class="t-st">#f9e2af</span>;
+<span class="t-fn">@define-color</span> orange     <span class="t-st">#fab387</span>;
+<span class="t-fn">@define-color</span> purple     <span class="t-st">#cba6f7</span>;
+<span class="t-fn">@define-color</span> gray       <span class="t-st">#313244</span>;
+<span class="t-fn">@define-color</span> surface    <span class="t-st">#181825</span>;</pre>
+    </div>
+
+    <h3 class="subsection">Two Fonts, One Job Each</h3>
+    <p>FiraCode Nerd Font for terminal and UI. Noto Sans for browsers and GTK apps. FiraCode looks great in a terminal at 12px. It does not look great in browser tabs at 11px.</p>
+    <div class="code-wrap">
+      <div class="code-bar"><span class="code-lang">xml — fontconfig/fonts.conf</span><div class="code-actions"><div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div><button class="copy-btn" data-target="code-font">COPY</button></div></div>
+      <pre id="code-font"><span class="t-kw">&lt;alias&gt;</span>
+    <span class="t-kw">&lt;family&gt;</span>sans-serif<span class="t-kw">&lt;/family&gt;</span>
+    <span class="t-kw">&lt;prefer&gt;&lt;family&gt;</span>Noto Sans<span class="t-kw">&lt;/family&gt;&lt;/prefer&gt;</span>
+<span class="t-kw">&lt;/alias&gt;</span>
+<span class="t-kw">&lt;alias&gt;</span>
+    <span class="t-kw">&lt;family&gt;</span>monospace<span class="t-kw">&lt;/family&gt;</span>
+    <span class="t-kw">&lt;prefer&gt;&lt;family&gt;</span>FiraCode Nerd Font<span class="t-kw">&lt;/family&gt;&lt;/prefer&gt;</span>
+<span class="t-kw">&lt;/alias&gt;</span></pre>
+    </div>
+  </section>
+
+  <!-- ══════════════════ S11 ══════════════════ -->
+  <section class="section" id="s11">
+    <div class="section-header">
+      <span class="section-num">11</span>
+      <h2 class="section-title">The Gotchas</h2>
+    </div>
+    <p>These cost me real time. Read before you start.</p>
+    <div class="gotchas">
+      <div class="gotcha">
+        <span class="gotcha-num">#01</span>
+        <div>
+          <div class="gotcha-title">hyprpaper ignores <code>~/</code></div>
+          <div class="gotcha-desc">Always use <code>/home/username/</code>. The wallpaper silently doesn't load and the error messages give you nothing useful. Hours lost.</div>
+        </div>
+      </div>
+      <div class="gotcha">
+        <span class="gotcha-num">#02</span>
+        <div>
+          <div class="gotcha-title">rofi-wayland strips plugin support</div>
+          <div class="gotcha-desc"><code>rofi-calc</code> needs the X11 build. The Wayland fork drops it and fails silently. The Python bash script replacement is genuinely better.</div>
+        </div>
+      </div>
+      <div class="gotcha">
+        <span class="gotcha-num">#03</span>
+        <div>
+          <div class="gotcha-title">External monitor offset gap</div>
+          <div class="gotcha-desc">At 1.5x scale the laptop logical width is 1280px. External at <code>1920x0</code> = 640px dead zone. Use <code>1280x0</code>. Hyprland uses logical pixels for positioning.</div>
+        </div>
+      </div>
+      <div class="gotcha">
+        <span class="gotcha-num">#04</span>
+        <div>
+          <div class="gotcha-title">grim+slurp freezes workspaces</div>
+          <div class="gotcha-desc"><code>grim -g "$(slurp)" - | wl-copy</code> grabs input before the compositor releases it. Windows stop responding until you click. Use Hyprshot — it handles the input grab correctly.</div>
+        </div>
+      </div>
+      <div class="gotcha">
+        <span class="gotcha-num">#05</span>
+        <div>
+          <div class="gotcha-title">Waybar dies when terminal closes</div>
+          <div class="gotcha-desc">Running <code>waybar &amp;</code> in a terminal ties the process to that shell session. Always launch via <code>exec-once</code> in hyprland.conf only.</div>
+        </div>
+      </div>
+      <div class="gotcha">
+        <span class="gotcha-num">#06</span>
+        <div>
+          <div class="gotcha-title">Hyprexpo needs build deps first</div>
+          <div class="gotcha-desc"><code>yay -S cmake cpio pkgconf</code> before <code>hyprpm update</code>. Skip them and hyprpm fails silently with no useful error about what's missing.</div>
+        </div>
+      </div>
+      <div class="gotcha">
+        <span class="gotcha-num">#07</span>
+        <div>
+          <div class="gotcha-title">GTK4 ignores gtk-theme-name</div>
+          <div class="gotcha-desc"><code>settings.ini</code> alone does nothing for GTK4. Symlink the CSS directly into <code>~/.config/gtk-4.0/gtk.css</code>. Nautilus looks completely default otherwise.</div>
+        </div>
+      </div>
+      <div class="gotcha">
+        <span class="gotcha-num">#08</span>
+        <div>
+          <div class="gotcha-title">cliphist needs wl-paste running</div>
+          <div class="gotcha-desc"><code>exec-once = wl-paste --watch cliphist store</code> in autostart. Without it the clipboard picker opens empty every single time.</div>
+        </div>
+      </div>
+      <div class="gotcha">
+        <span class="gotcha-num">#09</span>
+        <div>
+          <div class="gotcha-title">FiraCode looks bad in browser tabs</div>
+          <div class="gotcha-desc">Use Noto Sans as the system sans-serif via fontconfig. Terminal stays FiraCode. Browsers and GTK apps get Noto Sans. Everything renders at its intended size.</div>
+        </div>
+      </div>
+      <div class="gotcha">
+        <span class="gotcha-num">#10</span>
+        <div>
+          <div class="gotcha-title">Waybar <code>config</code> shadows <code>config.jsonc</code></div>
+          <div class="gotcha-desc">Old <code>config</code> file from a previous setup? Waybar loads it first and silently ignores your new <code>config.jsonc</code>. Nothing works. No error. <code>rm ~/.config/waybar/config</code>.</div>
+        </div>
+      </div>
+      <div class="gotcha">
+        <span class="gotcha-num">#11</span>
+        <div>
+          <div class="gotcha-title">Brave signs out every restart</div>
+          <div class="gotcha-desc">gnome-keyring not starting. Add <code>exec-once = gnome-keyring-daemon --start --components=secrets,pkcs11</code> to autostart.</div>
+        </div>
+      </div>
+      <div class="gotcha">
+        <span class="gotcha-num">#12</span>
+        <div>
+          <div class="gotcha-title">yay -S swww installed awww</div>
+          <div class="gotcha-desc">yay matched a completely different package with a similar name. Ran with it for 20 minutes. Always verify what yay actually installed. Switched to Hyprpaper entirely.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ S12 ══════════════════ -->
+  <section class="section" id="s12">
+    <div class="section-header">
+      <span class="section-num">12</span>
+      <h2 class="section-title">Was It Worth It?</h2>
+    </div>
+    <p>Yes. Completely.</p>
+    <p>i3 was great. If it's working for you on X11, there's no urgency to move. But Hyprland gives you everything i3 gave you plus things that simply aren't possible on X11: real compositor blur, smooth animations that feel native, per-monitor fractional scaling that actually works, and a genuinely active development community pushing the project forward fast.</p>
+    <p>The two weeks debugging were time well spent. I understand the Wayland stack better now than I did going in, and the setup I landed on is exactly what I wanted.</p>
+  </section>
+
+  <div class="divider">// andromeda · anuragdevon</div>
+
+  <!-- CTA -->
+  <div class="cta">
+    <h3>Clone It. Break It. Make It Yours.</h3>
+    <p>Every config, script, and install automation in one repo. Star it if it helped — drop a comment if you've hit a gotcha I missed.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="https://github.com/anuragdevon/devon-rice">⭐ anuragdevon/devon-rice</a>
+      <a class="btn btn-ghost" href="https://github.com/anuragdevon/archrice">Previous i3 rice</a>
+      <a class="btn btn-ghost" href="https://github.com/ViegPhunt/Dotfiles">Visual inspiration</a>
+    </div>
+    <p class="cta-note">What's your setup? Still on i3, or have you made the jump? 👇</p>
+  </div>
+
+  <footer>
+    <p>
+      <a href="https://github.com/anuragdevon">anuragdevon</a> ·
+      <a href="https://github.com/anuragdevon/devon-rice">devon-rice</a> ·
+      Arch Linux + Hyprland 0.54.3 · Catppuccin Mocha
+    </p>
+  </footer>
+
+</div>
+
+<script>
+/* ── Progress bar ── */
+const fill = document.getElementById('progress-fill');
+window.addEventListener('scroll', () => {
+  const d = document.documentElement;
+  const pct = d.scrollTop / (d.scrollHeight - d.clientHeight);
+  fill.style.width = (pct * 100) + '%';
+}, { passive: true });
+
+/* ── Section reveal on scroll ── */
+const sections = document.querySelectorAll('.section');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.07, rootMargin: '0px 0px -40px 0px' });
+sections.forEach(s => observer.observe(s));
+
+/* ── TOC active highlight ── */
+const tocLinks = document.querySelectorAll('.toc-link');
+const sectionEls = Array.from(document.querySelectorAll('section[id]'));
+const tocObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      tocLinks.forEach(l => l.classList.remove('active'));
+      const active = document.querySelector(`.toc-link[href="#${e.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { threshold: 0.4 });
+sectionEls.forEach(s => tocObserver.observe(s));
+
+/* ── Copy-to-clipboard ── */
+document.querySelectorAll('.copy-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = document.getElementById(btn.dataset.target);
+    if (!target) return;
+    const text = target.innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = 'COPIED!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'COPY'; btn.classList.remove('copied'); }, 2000);
+    }).catch(() => {
+      /* fallback for older browsers */
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      btn.textContent = 'COPIED!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'COPY'; btn.classList.remove('copied'); }, 2000);
+    });
+  });
+});
+
+/* ── Smooth scroll for all anchor links ── */
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  });
+});
+</script>
+</body>
+</html>
