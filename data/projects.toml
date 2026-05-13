@@ -1,176 +1,139 @@
 [[project]]
+title = "grpcterm"
+date = "2026"
+sample = "Keyboard-driven terminal UI for interacting with gRPC servers — service discovery via reflection or .proto files, all 4 call types, persistent request history."
+link = "https://github.com/anuragdevon/grpcterm"
+tech = ["golang", "bubbletea", "grpc"]
+
+[[project]]
+title = "Subtrack"
+date = "2026"
+sample = "Mobile-first PWA to track every subscription — monthly burn, renewal alerts, category insights, dark/light theme, and real-time sync via Firebase."
+link = "https://github.com/anuragdevon/subtrack"
+tech = ["hugo", "firebase", "js"]
+
+[[project]]
+title = "kafkatui"
+date = "2025"
+sample = "Fast, keyboard-driven terminal UI for browsing and interacting with Apache Kafka clusters — topics, consumer groups, and live message tailing."
+link = "https://github.com/anuragdevon/kafkatui"
+tech = ["golang", "bubbletea", "kafka"]
+
+[[project]]
+title = "logq"
+date = "2025"
+sample = "Fast keyboard-driven CLI + TUI for querying structured logs — filter by level, service, time range, and field expressions without grep gymnastics."
+link = "https://github.com/anuragdevon/logq"
+tech = ["golang"]
+
+[[project]]
+title = "Timeboxing"
+date = "2025"
+sample = "Focus timer PWA built on Hugo — box library with custom emoji and durations, circular countdown ring, session log with monthly calendar, push notifications."
+link = "https://github.com/anuragdevon/timeboxing"
+tech = ["hugo", "firebase", "js"]
+
+[[project]]
+title = "Anuragika Routine"
+date = "2025"
+sample = "Shared routine, goals and todo PWA for two — flexible interval scheduling, coin reward system, friend sharing, and Firebase sync across devices."
+link = "https://github.com/anuragdevon/todo-routine-app"
+tech = ["hugo", "firebase", "js"]
+
+[[project]]
+title = "Auragika Universe"
+date = "2025"
+sample = "Anurag & Ruchika's shared landing page — travel destinations, recipes, productivity tools, and an about section with a glass-morphism design system."
+link = "https://github.com/anuragdevon/auragika-universe"
+tech = ["hugo", "css"]
+
+[[project]]
+title = "Finance Tracker"
+date = "2024"
+sample = "Shared expense tracker for two — 7 split modes, live settlement calculation, monthly grouping, yearly charts, and real-time Firebase sync."
+link = "https://github.com/anuragdevon/finance-tracker"
+tech = ["hugo", "firebase", "js"]
+
+[[project]]
 title = "CampusHire"
-date = "March 2023 - Ongoing"
-sample = "A Django-based REST API for managing student..."
+date = "2023"
+sample = "Django REST API for placement management — student profiles, job listings, application tracking, and recruiter dashboards."
 link = "https://github.com/anuragdevon/campus-hire"
 tech = ["python", "django"]
 
 [[project]]
-title = "DockerPress"
-date = "March 2023 - Ongoing"
-sample = "Set of scripts to automate the wordpress..."
-link = "https://github.com/anuragdevon/dockerpress"
-tech = ["bash", "docker"]
-
-[[project]]
-title = "LifePulse"
-date = "Jan 2023 - Ongoing"
-sample = "Live Heart Monitoring App developed using flutter and ..."
-link = "https://github.com/anuragdevon/lifepulse-repo"
-tech = ["flutter"]
-
-[[project]]
 title = "PassWarden"
-date = "Jan 2023"
-sample = "A Password Safe API streamlines password..."
+date = "2023"
+sample = "Password Safe API — secure credential storage, vault management, and access control built with Python, Django, and PostgreSQL."
 link = "https://github.com/anuragdevon/passwarden"
 tech = ["python", "django"]
 
 [[project]]
-title = "Authit-Python"
-date = "April 2022"
-sample = "Fast and Secure Authentication with Python..."
-link = "https://github.com/anuragdevon/authit-python"
-tech = ["python", "fastapi"]
+title = "Authit-Go"
+date = "2022"
+sample = "Generic authentication microservice in Go — JWT, refresh tokens, role-based access, and Firebase integration."
+link = "https://github.com/anuragdevon/authit-go"
+tech = ["golang", "firebase"]
 
 [[project]]
-title = "Authit-Go"
-date = "March 2022"
-sample = "A Genric authentication system in golang, can be integrated...."
-link = "https://github.com/anuragdevon/authit-go"
+title = "Authit-Python"
+date = "2022"
+sample = "Fast authentication module built with FastAPI and Firebase — drop-in auth layer for any Python service."
+link = "https://github.com/anuragdevon/authit-python"
+tech = ["python", "fastapi", "firebase"]
+
+[[project]]
+title = "API Gateway"
+date = "2022"
+sample = "gRPC API gateway in Go providing routing, auth middleware, and load balancing for a food-ordering microservices backend."
+link = "https://github.com/anuragdevon/api-gateway"
+tech = ["golang", "grpc"]
+
+[[project]]
+title = "Order Service"
+date = "2022"
+sample = "Order microservice in Go gRPC — handles cart, checkout, and order lifecycle for a food-ordering application."
+link = "https://github.com/anuragdevon/order"
+tech = ["golang", "grpc"]
+
+[[project]]
+title = "NikWallet"
+date = "2022"
+sample = "Simple wallet service in Go — account creation, deposits, withdrawals, and transfers with full transaction history."
+link = "https://github.com/anuragdevon/nikwallet"
 tech = ["golang"]
 
 [[project]]
-title = "ChatRoom"
-date = "February 2022 - Ongoing"
-sample = "Created a chatroom using django channels"
-link = "https://github.com/anuragdevon/chatroom"
-tech = ["django"]
+title = "Multiplayer Card Game"
+date = "2022"
+sample = "Command-line multiplayer card game in Go for 2–4 players — turn management, hand evaluation, and real-time game state over TCP."
+link = "https://github.com/anuragdevon/multiplayer_card_game"
+tech = ["golang"]
+
+[[project]]
+title = "Shortify"
+date = "2021"
+sample = "URL shortener in Go and Redis — fast redirect, click analytics, and custom slug support."
+link = "https://github.com/anuragdevon/Shortify"
+tech = ["golang", "redis"]
 
 [[project]]
 title = "GoPrompt"
-date = "December 2021 - Ongoing"
-sample = "A Custom interactive shell developed using golang..."
+date = "2021"
+sample = "Custom interactive shell in Go — command history, tab completion, piping, and built-in utilities."
 link = "https://github.com/anuragdevon/goprompt-repo"
 tech = ["golang"]
 
 [[project]]
-title = "CI-Toolbox"
-date = "November 2021"
-sample = "A minified CI tool to integrate in any small..."
-link = "https://github.com/anuragdevon/CI-tool"
-tech = ["python"]
-
-[[project]]
-title = "Tiny-i3bar"
-date = "October 2021"
-sample = "tiny-i3bar is a lightweight and customizable i3 status..."
-link = "https://github.com/anuragdevon/tiny-i3bar"
-tech = ["Bash"]
-
-[[project]]
-title = "SmartSocials"
-date = "August 2021"
-sample = "Contains automation bots for different social networking..."
-link = "https://github.com/anuragdevon/SmartSocials"
-tech = ["python"]
-
-[[project]]
-title = "Shortify"
-date = "August 2021"
-sample = "Shortify is a URL shortener developed in GoLang and..."
-link = "https://github.com/anuragdevon/Shortify"
-tech = ["golang"]
-
-[[project]]
-title = "WeatherWizard"
-date = "July 2021"
-sample = "Python Django web app and CLI tool that uses OpenWeather API..."
-link = "https://github.com/anuragdevon/WeatherWizard"
-tech = ["python", "django"]
-
-[[project]]
-title = "NetClon"
-date = "July 2021"
-sample = "A minimalist video management system, resembles that..."
-link = "https://github.com/anuragdevon/NetClon"
-tech = ["django", "python"]
-
-
-[[project]]
-title = "Personal Website"
-date = "June 2021"
-sample = "Earlier Website modified and rebuilt using hugo framework."
-link = "https://anuragkar.netlify.app/"
-tech = ["hugo"]
-
-[[project]]
-title = "Positively"
-date = "May 2021"
-sample = "Android-AI app made using Flutter SDK as a part of Hackathon."
-link = "https://github.com/Hack-IIITDM/Positively"
-tech = ["flutter", "tensor"]
+title = "LifePulse"
+date = "2021"
+sample = "Flutter app that reads live heart-rate data from a Bluetooth module, displays it as real-time graphs, and alerts on anomalies."
+link = "https://github.com/anuragdevon/lifepulse-repo"
+tech = ["flutter", "dart"]
 
 [[project]]
 title = "Virtual Car Automation"
-date = "April 2021"
-sample = "Using bash scripting and python creating a real-time simulation of..."
+date = "2021"
+sample = "Real-time virtual car simulation using Python sockets and Termux — remote control over a local network with live telemetry."
 link = "https://github.com/anuragdevon/virtual-car-automation"
 tech = ["python", "bash"]
-
-[[project]]
-title = "HostelMaven"
-date = "Mar 2021 - Apr 2021"
-sample = "A web application made using django framework which can make..."
-link = "https://github.com/anuragdevon/hostelmaven-repo"
-tech = ["django", "postgresql", "bootstrap"]
-
-[[project]]
-title = "Mars Rover Club, Website"
-date = "Feb 2021 - Apr 2021"
-sample = "Website developed for the mars rover society, IIITDM, as a part of their ..."
-link = "https://marsroversociety.netlify.app/"
-tech = ["hugo"]
-
-[[project]]
-title = "Vidhai Website"
-date = "Dec 2020 - Jan 2021"
-sample = "Our Team modified and polished the website for Vidhai, which is a NPO, helping..."
-link = "https://vidhai.netlify.app/"
-tech = ["html", "css", "js"]
-
-[[project]]
-title = "Static Graph Generator"
-date = "Jun 2020"
-sample = "Using OpenGL to create a static graph generator."
-link = "https://github.com/anuragdevon/Static-Graph"
-tech = ["cpp"]
-
-[[project]]
-title = "The Dark Shadow"
-date = "May 2020 - Jul 2020"
-sample = "Created a 3d-Adventure semi-Open World (Story-Driven) game using Unreal Engine 4."
-link = "https://www.youtube.com/watch?v=E-uwamSdH4c"
-tech = ["unreal", "cpp"]
-
-[[project]]
-title = "IDHA Labs Product Design"
-date = "Aug 2020"
-sample = "Created a innovative product using the concepts of ancient India and space ..."
-link = "https://drive.google.com/file/d/1ZEJ0zSZnzQxm7oDVnn6fZiCxms3FvuZ7/view?usp=sharing"
-tech = ["fusion"]
-
-[[project]]
-title = "Robocon 2020"
-date = "Jan 2020 - Jun 2020"
-sample = "Asian Terrestial Robotics Competition. Designed two rugby playing robots."
-link = "https://github.com/TARC-IIITDM"
-tech = ["fusion", "c"]
-
-[[project]]
-title = "PSP Model"
-date = "Jun 2020"
-sample = "Created a modified model of Play sation portable."
-link = "https://www.behance.net/gallery/98661545/PSP%28Fusion-Model%29"
-tech = ["fusion"]
-
