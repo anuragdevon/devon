@@ -137,3 +137,122 @@ date = "2021"
 sample = "Real-time virtual car simulation using Python sockets and Termux — remote control over a local network with live telemetry."
 link = "https://github.com/anuragdevon/virtual-car-automation"
 tech = ["python", "bash"]
+
+[[project]]
+title = "DockerPress"
+date = "March 2023"
+sample = "Set of scripts to automate the wordpress setup and deployment using Docker containers."
+link = "https://github.com/anuragdevon/dockerpress"
+tech = ["bash", "docker"]
+
+[[project]]
+title = "CI-Toolbox"
+date = "November 2021"
+sample = "A minified CI tool to integrate in any small project, can be extended to make it aligned to individual needs."
+link = "https://github.com/anuragdevon/CI-Toolbox"
+tech = ["python"]
+
+[[project]]
+title = "ChatRoom"
+date = "February 2022"
+sample = "Created a chatroom using django channels — real-time messaging with WebSocket support."
+link = "https://github.com/anuragdevon/chatroom"
+tech = ["django", "python"]
+
+[[project]]
+title = "Tiny-i3bar"
+date = "October 2021"
+sample = "tiny-i3bar is a lightweight and customizable i3 status bar written in Bash."
+link = "https://github.com/anuragdevon/tiny-i3bar"
+tech = ["bash"]
+
+[[project]]
+title = "SmartSocials"
+date = "August 2021"
+sample = "Contains automation bots for different social networking platforms."
+link = "https://github.com/anuragdevon/SmartSocials"
+tech = ["python"]
+
+[[project]]
+title = "WeatherWizard"
+date = "July 2021"
+sample = "Python Django web app and CLI tool that uses OpenWeather API to provide weather forecasts."
+link = "https://github.com/anuragdevon/WeatherWizard"
+tech = ["python", "django"]
+
+[[project]]
+title = "NetClon"
+date = "July 2021"
+sample = "A minimalist video management system resembling Netflix's video handling, built with Django."
+link = "https://github.com/anuragdevon/NetClon"
+tech = ["django", "python"]
+
+[[project]]
+title = "Personal Website"
+date = "June 2021"
+sample = "Earlier website modified and rebuilt using the Hugo framework."
+link = "https://anuragkar.netlify.app/"
+tech = ["hugo"]
+
+[[project]]
+title = "Positively"
+date = "May 2021"
+sample = "Android AI app made using Flutter SDK as a part of Hackathon."
+link = "https://github.com/Hack-IIITDM/Positively"
+tech = ["flutter", "tensorflow"]
+
+[[project]]
+title = "HostelMaven"
+date = "Mar 2021 - Apr 2021"
+sample = "A web application made using Django framework which can make the college hostel management much easier."
+link = "https://github.com/anuragdevon/hostelmaven-repo"
+tech = ["django", "postgresql", "bootstrap"]
+
+[[project]]
+title = "Mars Rover Club, Website"
+date = "Feb 2021 - Apr 2021"
+sample = "Website developed for the Mars Rover Society, IIITDM, as a part of their digital presence initiative."
+link = "https://marsroversociety.netlify.app/"
+tech = ["hugo"]
+
+[[project]]
+title = "Vidhai Website"
+date = "Dec 2020 - Jan 2021"
+sample = "Modified and polished the website for Vidhai, a non-profit organisation helping underprivileged students."
+link = "https://vidhai.netlify.app/"
+tech = ["html", "css", "js"]
+
+[[project]]
+title = "Static Graph Generator"
+date = "Jun 2020"
+sample = "Using OpenGL to create a static 2D graph generator."
+link = "https://github.com/anuragdevon/Static-Graph"
+tech = ["cpp", "opengl"]
+
+[[project]]
+title = "The Dark Shadow"
+date = "May 2020 - Jul 2020"
+sample = "Created a 3D adventure semi-open world story-driven game using Unreal Engine 4."
+link = "https://www.youtube.com/watch?v=E-uwamSdH4c"
+tech = ["unreal", "cpp"]
+
+[[project]]
+title = "IDHA Labs Product Design"
+date = "Aug 2020"
+sample = "Created an innovative product using the concepts of ancient India and space exploration."
+link = "https://drive.google.com/file/d/1ZEJ0zSZnzQxm7oDVnn6fZiCxms3FvuZ7/view?usp=sharing"
+tech = ["fusion360"]
+
+[[project]]
+title = "Robocon 2020"
+date = "Jan 2020 - Jun 2020"
+sample = "Asian Terrestrial Robotics Competition. Designed two rugby-playing robots."
+link = "https://github.com/TARC-IIITDM"
+tech = ["fusion360", "c"]
+
+[[project]]
+title = "PSP Model"
+date = "Jun 2020"
+sample = "Created a modified model of PlayStation Portable using Fusion 360."
+link = "https://www.behance.net/gallery/98661545/PSP%28Fusion-Model%29"
+tech = ["fusion360"]
