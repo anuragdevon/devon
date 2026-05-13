@@ -3,7 +3,7 @@ title = "grpcterm"
 date = "2026"
 sample = "Keyboard-driven terminal UI for interacting with gRPC servers — service discovery via reflection or .proto files, all 4 call types, persistent request history."
 link = "https://github.com/anuragdevon/grpcterm"
-tech = ["golang", "bubbletea", "grpc"]
+tech = ["golang"]
 
 [[project]]
 title = "Subtrack"
@@ -17,7 +17,7 @@ title = "kafkatui"
 date = "2025"
 sample = "Fast, keyboard-driven terminal UI for browsing and interacting with Apache Kafka clusters — topics, consumer groups, and live message tailing."
 link = "https://github.com/anuragdevon/kafkatui"
-tech = ["golang", "bubbletea", "kafka"]
+tech = ["golang"]
 
 [[project]]
 title = "logq"
@@ -87,14 +87,14 @@ title = "API Gateway"
 date = "2022"
 sample = "gRPC API gateway in Go providing routing, auth middleware, and load balancing for a food-ordering microservices backend."
 link = "https://github.com/anuragdevon/api-gateway"
-tech = ["golang", "grpc"]
+tech = ["golang"]
 
 [[project]]
 title = "Order Service"
 date = "2022"
 sample = "Order microservice in Go gRPC — handles cart, checkout, and order lifecycle for a food-ordering application."
 link = "https://github.com/anuragdevon/order"
-tech = ["golang", "grpc"]
+tech = ["golang"]
 
 [[project]]
 title = "NikWallet"
@@ -115,7 +115,7 @@ title = "Shortify"
 date = "2021"
 sample = "URL shortener in Go and Redis — fast redirect, click analytics, and custom slug support."
 link = "https://github.com/anuragdevon/Shortify"
-tech = ["golang", "redis"]
+tech = ["golang"]
 
 [[project]]
 title = "GoPrompt"
@@ -199,7 +199,7 @@ title = "Positively"
 date = "May 2021"
 sample = "Android AI app made using Flutter SDK as a part of Hackathon."
 link = "https://github.com/Hack-IIITDM/Positively"
-tech = ["flutter", "tensorflow"]
+tech = ["flutter", "tensor"]
 
 [[project]]
 title = "HostelMaven"
@@ -227,7 +227,7 @@ title = "Static Graph Generator"
 date = "Jun 2020"
 sample = "Using OpenGL to create a static 2D graph generator."
 link = "https://github.com/anuragdevon/Static-Graph"
-tech = ["cpp", "opengl"]
+tech = ["cpp"]
 
 [[project]]
 title = "The Dark Shadow"
@@ -241,18 +241,18 @@ title = "IDHA Labs Product Design"
 date = "Aug 2020"
 sample = "Created an innovative product using the concepts of ancient India and space exploration."
 link = "https://drive.google.com/file/d/1ZEJ0zSZnzQxm7oDVnn6fZiCxms3FvuZ7/view?usp=sharing"
-tech = ["fusion360"]
+tech = ["fusion"]
 
 [[project]]
 title = "Robocon 2020"
 date = "Jan 2020 - Jun 2020"
 sample = "Asian Terrestrial Robotics Competition. Designed two rugby-playing robots."
 link = "https://github.com/TARC-IIITDM"
-tech = ["fusion360", "c"]
+tech = ["fusion", "c"]
 
 [[project]]
 title = "PSP Model"
 date = "Jun 2020"
 sample = "Created a modified model of PlayStation Portable using Fusion 360."
 link = "https://www.behance.net/gallery/98661545/PSP%28Fusion-Model%29"
-tech = ["fusion360"]
+tech = ["fusion"]
