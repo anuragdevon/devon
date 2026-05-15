@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>One Service Was Slow. Five Were Down. — The Cascade</title>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ═══════════ HERO ═══════════ -->
+  <header class="hero">
+    <div class="hero-eyebrow">DISTRIBUTED SYSTEMS · RESILIENCE · CASCADING FAILURES</div>
+    <h1>One Service Was Slow.<br><em>Five Were Down.</em></h1>
+    <p class="hero-lead">Nobody changed anything. No deployment, no config update, no infra event. A Tuesday afternoon, normal traffic — and then checkout stopped working. The root cause wasn't in checkout at all. It was three hops away. This is the story of how one slow service collapsed an entire platform, and the patterns that would have stopped it.</p>
+    <div class="hero-meta">
+      <span data-icon="✍">anuragdevon</span>
+      <span data-icon="📅">15th May 2026</span>
+      <span data-icon="⏱">12 min read</span>
+      <span data-icon="📌">Part 2 — Production Debugging Playbook</span>
+    </div>
+  </header>
+
+  <!-- ═══════════ TOC ═══════════ -->
+  <nav class="toc">
+    <div class="toc-label">// TABLE OF CONTENTS</div>
+    <div class="toc-grid">
+      <a class="toc-link" href="#s1"><span class="toc-n">01</span>The Tuesday Call</a>
+      <a class="toc-link" href="#s2"><span class="toc-n">02</span>Why Cascades Are Different</a>
+      <a class="toc-link" href="#s3"><span class="toc-n">03</span>System Architecture</a>
+      <a class="toc-link" href="#s4"><span class="toc-n">04</span>What Started It</a>
+      <a class="toc-link" href="#s5"><span class="toc-n">05</span>The Mechanism — Goroutine Exhaustion</a>
+      <a class="toc-link" href="#s6"><span class="toc-n">06</span>How Retries Made It 10x Worse</a>
+      <a class="toc-link" href="#s7"><span class="toc-n">07</span>Timeline of Destruction</a>
+      <a class="toc-link" href="#s8"><span class="toc-n">08</span>The Debugging Journey</a>
+      <a class="toc-link" href="#s9"><span class="toc-n">09</span>Fix 1 — Timeouts Everywhere</a>
+      <a class="toc-link" href="#s10"><span class="toc-n">10</span>Fix 2 — Circuit Breakers</a>
+      <a class="toc-link" href="#s11"><span class="toc-n">11</span>Fix 3 — Bulkheads &amp; Backoff</a>
+      <a class="toc-link" href="#s12"><span class="toc-n">12</span>Production Checklist</a>
+      <a class="toc-link" href="#s13"><span class="toc-n">13</span>Key Takeaways</a>
+      <a class="toc-link" href="#s14"><span class="toc-n">14</span>What's Next</a>
+    </div>
+  </nav>
+
+  <!-- ═══════════ S1 ═══════════ -->
+  <section class="section" id="s1">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2 class="section-title">The Tuesday Call</h2>
+    </div>
+    <p>It was 3:40 PM on a Tuesday. Normal traffic. No deployments in the last 6 hours. Then the first message landed in the incident channel.</p>
+    <p><em>"Checkout is broken. Users can't place orders."</em></p>
+    <p>I opened the checkout service dashboard. Everything was green. CPU at 22%. Memory fine. No error spikes. No 5xx responses. All pods running.</p>
+    <p>But the latency graph told a different story. P99 was climbing — 200ms, 800ms, 2 seconds, 4 seconds — in a near-perfect straight line. Requests weren't failing. They were just... waiting.</p>
+
+    <div class="spec-card">
+      <div class="spec-row"><span class="spec-key">Checkout CPU</span><span class="spec-val">22% — Normal</span></div>
+      <div class="spec-row"><span class="spec-key">Checkout errors</span><span class="spec-val">0.00%</span></div>
+      <div class="spec-row"><span class="spec-key">Checkout pods</span><span class="spec-val">8/8 running</span></div>
+      <div class="spec-row"><span class="spec-key">Checkout p99 latency</span><span class="spec-val">4,200ms ↑ and climbing</span></div>
+      <div class="spec-row"><span class="spec-key">User-facing errors</span><span class="spec-val">Timeouts everywhere</span></div>
+    </div>
+
+    <p>The system wasn't crashing. It was drowning. And the reason wasn't anywhere near checkout.</p>
+
+    <div class="callout warn">
+      <div class="callout-label">⚠ THE TRAP</div>
+      <p>When a cascade hits, you will look at the service that's visibly broken first. That service is almost never the root cause. The root cause is the slow dependency it's waiting on — and that dependency looks completely healthy.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════ S2 ═══════════ -->
+  <section class="section" id="s2">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2 class="section-title">Why Cascades Are Different</h2>
+    </div>
+    <p>A regular outage has a clear shape: something crashes, alerts fire, you fix the thing. Cascading failures are structurally different and significantly harder.</p>
+
+    <div class="spec-card">
+      <div class="spec-row"><span class="spec-key">Regular failure</span><span class="spec-val">Service A crashes → alert fires → fix A</span></div>
+      <div class="spec-row"><span class="spec-key">Cascade</span><span class="spec-val">Service D slows → A, B, C, E all exhaust → everything broken, D looks fine</span></div>
+    </div>
+
+    <p>Three things make cascades uniquely brutal:</p>
+    <ul>
+      <li><strong>The broken service isn't the cause.</strong> You'll spend the first 20 minutes debugging the wrong thing.</li>
+      <li><strong>Each service's metrics look healthy in isolation.</strong> The failure lives in the relationship between services, not within any single one.</li>
+      <li><strong>Retry logic turns a degradation into a full collapse.</strong> Well-intentioned retries amplify the load on the already-struggling service. Every retry makes the problem worse.</li>
+    </ul>
+
+    <div class="callout info">
+      <div class="callout-label">// THE CORE INSIGHT</div>
+      <p>In a distributed system, <strong>your service's health is bounded by the health of every service you call</strong>. You can write perfect code and still be completely broken because of a service three hops away you don't own.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════ S3 ═══════════ -->
+  <section class="section" id="s3">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2 class="section-title">System Architecture</h2>
+    </div>
+    <p>Simplified from production. Five services participate in the checkout flow. Each synchronous call is a potential cascade vector.</p>
+
+    <div class="arch-flow" style="flex-wrap:wrap; gap:6px;">
+      <div class="arch-node">
+        <div class="arch-icon">📱</div>
+        <div class="arch-label">API Gateway</div>
+        <div class="arch-sub">routes &amp; auth</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node">
+        <div class="arch-icon">🛒</div>
+        <div class="arch-label">Checkout Svc</div>
+        <div class="arch-sub">orchestrates</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <div class="arch-node arch-node--broken">
+          <div class="arch-icon">💰</div>
+          <div class="arch-label">Pricing Svc</div>
+          <div class="arch-sub">compute totals</div>
+          <div class="arch-bug-tag">🐛 slow here</div>
+        </div>
+        <div class="arch-node">
+          <div class="arch-icon">📦</div>
+          <div class="arch-label">Inventory Svc</div>
+          <div class="arch-sub">check stock</div>
+        </div>
+        <div class="arch-node">
+          <div class="arch-icon">👤</div>
+          <div class="arch-label">User Svc</div>
+          <div class="arch-sub">fetch profile</div>
+        </div>
+      </div>
+    </div>
+
+    <p>Checkout makes three synchronous HTTP calls — pricing, inventory, and user profile — before it can respond. All three must succeed. If any one hangs, checkout hangs. And every goroutine waiting on a hanging checkout call is a goroutine that can't serve anything else.</p>
+
+    <div class="callout warn">
+      <div class="callout-label">⚠ SYNCHRONOUS CALLS ARE LOAD TRANSFER</div>
+      <p>When you make a synchronous HTTP call with no timeout, you're not just calling a service — you're transferring your fate to it. If it degrades, you degrade. If it hangs, you hang. Your goroutine pool becomes a direct mirror of the upstream's problems.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════ S4 ═══════════ -->
+  <section class="section" id="s4">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2 class="section-title">What Started It</h2>
+    </div>
+    <p>Pricing service had a DB query that worked perfectly under normal load. On this Tuesday, a merchant updated their entire catalog in a single batch — roughly 40,000 items — while Tuesday lunch-hour traffic was peaking.</p>
+    <p>The pricing DB was fine. No OOM. No CPU spike. One long-running read query on an unindexed column started taking 2.8 seconds per call instead of the usual 40ms. That's it. 70x slower, but still completing. No errors, no alerts.</p>
+
+    <div class="spec-card">
+      <div class="spec-row"><span class="spec-key">Pricing p50 (baseline)</span><span class="spec-val">38ms</span></div>
+      <div class="spec-row"><span class="spec-key">Pricing p50 (incident)</span><span class="spec-val">2,840ms</span></div>
+      <div class="spec-row"><span class="spec-key">Pricing error rate</span><span class="spec-val">0.00%</span></div>
+      <div class="spec-row"><span class="spec-key">Pricing pod health</span><span class="spec-val">All healthy</span></div>
+      <div class="spec-row"><span class="spec-key">Pricing alert fired</span><span class="spec-val">None — latency alert threshold was 5s</span></div>
+    </div>
+
+    <p>The latency alert was set to 5 seconds. 2.8 seconds was painful enough to collapse the whole stack, but not high enough to trigger a single alert in pricing itself. We were flying blind.</p>
+
+    <div class="callout warn">
+      <div class="callout-label">⚠ ALERT THRESHOLDS ARE NOT BLAST RADIUSES</div>
+      <p>An alert threshold of 5s means you get paged when pricing is <em>very</em> broken. But 2.8s is already enough to exhaust your caller's goroutine pool. You need latency alerts at <strong>P95 &gt; 500ms</strong> for any synchronous dependency — not just when things are catastrophically bad.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════ S5 ═══════════ -->
+  <section class="section" id="s5">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2 class="section-title">The Mechanism — Goroutine Exhaustion</h2>
+    </div>
+    <p>This is the technical core of every cascade. Understanding it will make you a better distributed systems engineer.</p>
+    <p>In Go, every incoming HTTP request is served by a goroutine. When that goroutine calls an upstream service with no timeout, it blocks — waiting — for however long the upstream takes. The goroutine can't be reused until the call returns.</p>
+
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="code-lang">go — the broken caller (no timeout)</span>
+        <div class="code-actions">
+          <div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div>
+          <button class="copy-btn" data-target="code-bad">COPY</button>
+        </div>
+      </div>
+      <pre id="code-bad"><span class="t-kw">func</span> <span class="t-fn">handleCheckout</span>(w http.ResponseWriter, r *http.Request) {
+    <span class="t-cm">// This goroutine will block here for however long pricing takes.</span>
+    <span class="t-cm">// No timeout. No escape. Just waiting.</span>
+    price, err := <span class="t-fn">pricingClient.GetTotal</span>(r.Context(), cart)
+    <span class="t-kw">if</span> err != <span class="t-vr">nil</span> {
+        http.<span class="t-fn">Error</span>(w, <span class="t-st">"pricing failed"</span>, <span class="t-nu">500</span>)
+        <span class="t-kw">return</span>
+    }
+    <span class="t-cm">// ... rest of checkout ...</span>
+}</pre>
+    </div>
+
+    <p>When pricing takes 2.8 seconds per call, here's the math at 200 req/s:</p>
+
+    <div class="spec-card">
+      <div class="spec-row"><span class="spec-key">Requests per second</span><span class="spec-val">200 req/s</span></div>
+      <div class="spec-row"><span class="spec-key">Pricing call duration</span><span class="spec-val">2,800ms (was 38ms)</span></div>
+      <div class="spec-row"><span class="spec-key">Goroutines blocked per second</span><span class="spec-val">200 new goroutines stuck waiting</span></div>
+      <div class="spec-row"><span class="spec-key">After 3 seconds</span><span class="spec-val">600 goroutines all blocked on pricing</span></div>
+      <div class="spec-row"><span class="spec-key">New requests after pool exhaustion</span><span class="spec-val">Queued — can't be served</span></div>
+      <div class="spec-row"><span class="spec-key">User experience</span><span class="spec-val">Timeout. Checkout broken.</span></div>
+    </div>
+
+    <p>The goroutine pool doesn't fail loudly. It fills up silently. CPU stays low because the goroutines aren't doing work — they're waiting. Memory stays low. No errors. Just an ever-growing queue of stuck requests, until the whole service effectively stops.</p>
+
+    <div class="callout warn">
+      <div class="callout-label">⚠ WHY CPU LOOKS FINE</div>
+      <p>A waiting goroutine consumes almost no CPU. It's parked by the scheduler. So you get a service that looks completely idle on CPU while being completely overwhelmed — all its goroutines blocked on a slow upstream. The CPU metric, the one everyone looks at first, tells you nothing.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════ S6 ═══════════ -->
+  <section class="section" id="s6">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <h2 class="section-title">How Retries Made It 10x Worse</h2>
+    </div>
+    <p>Here's where it got catastrophically bad. Checkout had retry logic. Reasonable, right? If a pricing call fails, retry it.</p>
+    <p>Except the calls weren't failing. They were just slow. And our retry logic triggered on timeout — with a timeout of 3 seconds.</p>
+
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="code-lang">go — the retry that amplified everything</span>
+        <div class="code-actions">
+          <div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div>
+          <button class="copy-btn" data-target="code-retry-bad">COPY</button>
+        </div>
+      </div>
+      <pre id="code-retry-bad"><span class="t-kw">func</span> <span class="t-fn">getPriceWithRetry</span>(ctx context.Context, cart Cart) (Price, <span class="t-kw">error</span>) {
+    <span class="t-kw">for</span> i := <span class="t-nu">0</span>; i < <span class="t-nu">3</span>; i++ {
+        <span class="t-cm">// 3 second timeout — pricing is taking 2.8s.</span>
+        <span class="t-cm">// First call times out at 3s. Retry immediately.</span>
+        <span class="t-cm">// Second call times out at 3s. Retry immediately.</span>
+        <span class="t-cm">// Third call times out at 3s. Return error.</span>
+        <span class="t-cm">// Total time held: 9 seconds per checkout request.</span>
+        tCtx, cancel := context.<span class="t-fn">WithTimeout</span>(ctx, <span class="t-nu">3</span>*time.Second)
+        price, err := pricingClient.<span class="t-fn">GetTotal</span>(tCtx, cart)
+        <span class="t-fn">cancel</span>()
+        <span class="t-kw">if</span> err == <span class="t-vr">nil</span> { <span class="t-kw">return</span> price, <span class="t-vr">nil</span> }
+    }
+    <span class="t-kw">return</span> Price{}, errors.<span class="t-fn">New</span>(<span class="t-st">"pricing unavailable"</span>)
+}</pre>
+    </div>
+
+    <p>Pricing was taking 2.8 seconds. Our timeout was 3 seconds. So most calls would <em>just</em> succeed — until they didn't. When they timed out, we'd immediately retry. Three times. With no delay.</p>
+    <p>Each checkout request was now making up to <strong>3 calls to an already-overloaded pricing service</strong> instead of 1. Our 200 req/s became 600 req/s hitting pricing. Which made pricing slower. Which caused more timeouts. Which caused more retries. Which made pricing slower still.</p>
+
+    <div class="callout warn">
+      <div class="callout-label">⚠ RETRY STORM</div>
+      <p>Retries without backoff and jitter are a positive feedback loop. When an upstream is degraded, retrying immediately hits it again before it can recover — generating more load, slowing it further, causing more timeouts, generating more retries. You turn a degraded service into a completely failed one.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════ S7 ═══════════ -->
+  <section class="section" id="s7">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <h2 class="section-title">Timeline of Destruction</h2>
+    </div>
+    <p>Here is exactly how eight minutes turned into a P0.</p>
+
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-time">T+0:00</div>
+        <div class="timeline-body">
+          <div class="timeline-title">Pricing DB query slows — 38ms → 2,800ms</div>
+          <div class="timeline-desc">Merchant batch update triggers an unindexed read. Pricing still responding. No alerts.</div>
+        </div>
+        <span class="timeline-status timeline-status--warn">DEGRADED</span>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-time">T+0:45</div>
+        <div class="timeline-body">
+          <div class="timeline-title">Checkout goroutines start accumulating</div>
+          <div class="timeline-desc">Each pricing call holds a goroutine for 2.8s instead of 38ms. Pool filling at 200/s.</div>
+        </div>
+        <span class="timeline-status timeline-status--warn">FILLING</span>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-time">T+2:00</div>
+        <div class="timeline-body">
+          <div class="timeline-title">Retry storm begins</div>
+          <div class="timeline-desc">First timeouts fire (3s threshold). Checkout retries immediately — 3x load on pricing. Pricing slows further.</div>
+        </div>
+        <span class="timeline-status timeline-status--fail">STORM</span>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-time">T+3:30</div>
+        <div class="timeline-body">
+          <div class="timeline-title">Checkout goroutine pool exhausted</div>
+          <div class="timeline-desc">New requests queue. P99 latency: 8 seconds. User-facing timeouts begin.</div>
+        </div>
+        <span class="timeline-status timeline-status--fail">DOWN</span>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-time">T+4:15</div>
+        <div class="timeline-body">
+          <div class="timeline-title">Order service starts timing out</div>
+          <div class="timeline-desc">Order service calls checkout synchronously. Checkout is hanging. Order goroutines start piling up too.</div>
+        </div>
+        <span class="timeline-status timeline-status--fail">SPREADING</span>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-time">T+5:30</div>
+        <div class="timeline-body">
+          <div class="timeline-title">Order history &amp; notification services affected</div>
+          <div class="timeline-desc">Two more services calling order service start degrading. The blast radius is now 5 services.</div>
+        </div>
+        <span class="timeline-status timeline-status--fail">CASCADING</span>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-time">T+7:00</div>
+        <div class="timeline-body">
+          <div class="timeline-title">API Gateway starts returning 504s at scale</div>
+          <div class="timeline-desc">End users see checkout, order history, and notifications all broken. Incident declared P0.</div>
+        </div>
+        <span class="timeline-status timeline-status--fail">P0</span>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-time">T+8:00</div>
+        <div class="timeline-body">
+          <div class="timeline-title">Root cause finally found — pricing DB</div>
+          <div class="timeline-desc">Only after manual tracing through each service. Pricing metrics still look "healthy" to automated tooling.</div>
+        </div>
+        <span class="timeline-status timeline-status--warn">FOUND</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ S8 ═══════════ -->
+  <section class="section" id="s8">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <h2 class="section-title">The Debugging Journey</h2>
+    </div>
+    <p>Under incident pressure, the temptation is to fix the most visibly broken service first. Resist that instinct. Cascades require you to <em>trace backward</em>, not fix forward.</p>
+
+    <div class="gotchas">
+      <div class="gotcha">
+        <span class="gotcha-num">01</span>
+        <div>
+          <div class="gotcha-title">Start at the user-facing service, look at its dependencies</div>
+          <div class="gotcha-desc">Checkout is broken. Not the cause. What does checkout call? Pricing, inventory, user profile. Check each one's latency, not just its error rate.</div>
+        </div>
+      </div>
+      <div class="gotcha">
+        <span class="gotcha-num">02</span>
+        <div>
+          <div class="gotcha-title">Check upstream latency, not just errors</div>
+          <div class="gotcha-desc">Pricing error rate: 0%. But p95 latency: 2,800ms. A slow upstream with no errors is harder to spot than a broken one. Always check latency histograms on your dependencies, not just their health endpoints.</div>
+        </div>
+      </div>
+      <div class="gotcha">
+        <span class="gotcha-num">03</span>
+        <div>
+          <div class="gotcha-title">Look at active goroutines / thread count</div>
+          <div class="gotcha-desc">Go's <code>/debug/pprof/goroutine</code> endpoint shows exactly how many goroutines are blocked and on what. This is the fastest way to confirm goroutine exhaustion — you'll see hundreds waiting on the same HTTP call.</div>
+        </div>
+      </div>
+      <div class="gotcha">
+        <span class="gotcha-num">04</span>
+        <div>
+          <div class="gotcha-title">Check outbound call duration, not inbound</div>
+          <div class="gotcha-desc">Most latency dashboards show inbound request latency. You need <em>outbound</em> call duration — how long your service waits on each dependency. These are different metrics and most teams only instrument one of them.</div>
+        </div>
+      </div>
+    </div>
+
+    <p>We found the root cause 8 minutes in by pulling pprof data from the checkout pod. 547 goroutines, all blocking on the same call: <code>pricingClient.GetTotal</code>. That pointed us straight to pricing, where a manual DB query showed a long-running read on an unindexed column.</p>
+
+    <div class="callout tip">
+      <div class="callout-label">// DEBUG TOOL</div>
+      <p>Add <code>_ "net/http/pprof"</code> to every service. Under incident, <code>curl localhost:6060/debug/pprof/goroutine?debug=1</code> gives you a full goroutine dump in seconds. It's the fastest way to confirm a cascade — you'll see exactly what every goroutine is blocked waiting for.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════ S9 ═══════════ -->
+  <section class="section" id="s9">
+    <div class="section-header">
+      <span class="section-num">09</span>
+      <h2 class="section-title">Fix 1 — Timeouts Everywhere</h2>
+    </div>
+    <p>The foundational rule: <strong>every outbound call must have a timeout</strong>. Not "most calls." Not "the important ones." Every single one. Without a timeout, you have handed your goroutine to the upstream service indefinitely.</p>
+
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="code-lang">go — before: no timeout</span>
+        <div class="code-actions">
+          <div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div>
+          <button class="copy-btn" data-target="code-before">COPY</button>
+        </div>
+      </div>
+      <pre id="code-before"><span class="t-cm">// This HTTP client has no timeout. One slow upstream = goroutine held forever.</span>
+var pricingClient = &amp;http.Client{}</pre>
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="code-lang">go — after: explicit timeouts at every layer</span>
+        <div class="code-actions">
+          <div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div>
+          <button class="copy-btn" data-target="code-after">COPY</button>
+        </div>
+      </div>
+      <pre id="code-after"><span class="t-cm">// Timeout at the HTTP client level (hard ceiling)</span>
+var pricingClient = &amp;http.Client{
+    Timeout: <span class="t-nu">800</span> * time.Millisecond,
+}
+
+<span class="t-cm">// AND propagate the request context with a per-call deadline</span>
+<span class="t-kw">func</span> <span class="t-fn">getPrice</span>(ctx context.Context, cart Cart) (Price, <span class="t-kw">error</span>) {
+    callCtx, cancel := context.<span class="t-fn">WithTimeout</span>(ctx, <span class="t-nu">600</span>*time.Millisecond)
+    <span class="t-kw">defer</span> <span class="t-fn">cancel</span>()
+
+    <span class="t-kw">return</span> pricingClient.<span class="t-fn">GetTotal</span>(callCtx, cart)
+}</pre>
+    </div>
+
+    <p>Two timeouts, not one — the client-level timeout is the hard ceiling that can't be bypassed even if context propagation is wrong. The per-call context timeout is tighter and carries cancellation semantics upstream.</p>
+
+    <div class="callout info">
+      <div class="callout-label">// PICKING THE TIMEOUT VALUE</div>
+      <p>Set your timeout at <strong>2× the P99 latency of the dependency at normal load</strong>. If pricing normally responds in 40ms at p99, your timeout should be 80–100ms. Not 3 seconds. A 3-second timeout means you accumulate 3 seconds of blocked goroutines per failure, which at 200 req/s fills your pool in under 2 seconds.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════ S10 ═══════════ -->
+  <section class="section" id="s10">
+    <div class="section-header">
+      <span class="section-num">10</span>
+      <h2 class="section-title">Fix 2 — Circuit Breakers</h2>
+    </div>
+    <p>Timeouts protect individual calls. Circuit breakers protect the system from making calls at all when an upstream is degraded. It's the difference between a fuse and a fire suppression system.</p>
+    <p>A circuit breaker has three states:</p>
+
+    <div class="spec-card">
+      <div class="spec-row"><span class="spec-key">CLOSED</span><span class="spec-val">Normal. All calls go through.</span></div>
+      <div class="spec-row"><span class="spec-key">OPEN</span><span class="spec-val">Too many failures/timeouts. Calls short-circuit immediately — no waiting.</span></div>
+      <div class="spec-row"><span class="spec-key">HALF-OPEN</span><span class="spec-val">Probing. Let a small percentage through to test if upstream recovered.</span></div>
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="code-lang">go — circuit breaker with gobreaker</span>
+        <div class="code-actions">
+          <div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div>
+          <button class="copy-btn" data-target="code-cb">COPY</button>
+        </div>
+      </div>
+      <pre id="code-cb"><span class="t-kw">import</span> <span class="t-st">"github.com/sony/gobreaker"</span>
+
+<span class="t-kw">var</span> pricingBreaker = gobreaker.<span class="t-fn">NewCircuitBreaker</span>(gobreaker.Settings{
+    Name:        <span class="t-st">"pricing"</span>,
+    MaxRequests: <span class="t-nu">5</span>,                <span class="t-cm">// max in HALF-OPEN state</span>
+    Interval:    <span class="t-nu">30</span> * time.Second, <span class="t-cm">// rolling window</span>
+    Timeout:     <span class="t-nu">10</span> * time.Second, <span class="t-cm">// how long to stay OPEN</span>
+    ReadyToTrip: <span class="t-kw">func</span>(counts gobreaker.Counts) <span class="t-kw">bool</span> {
+        <span class="t-cm">// Open the breaker after 5 consecutive failures</span>
+        <span class="t-kw">return</span> counts.ConsecutiveFailures > <span class="t-nu">5</span>
+    },
+    OnStateChange: <span class="t-kw">func</span>(name <span class="t-kw">string</span>, from, to gobreaker.State) {
+        log.<span class="t-fn">Warn</span>(<span class="t-st">"circuit_breaker_state_change"</span>,
+            <span class="t-st">"service"</span>, name, <span class="t-st">"from"</span>, from, <span class="t-st">"to"</span>, to)
+        metrics.<span class="t-fn">Increment</span>(<span class="t-st">"circuit_breaker.state_change"</span>, <span class="t-st">"service"</span>, name)
+    },
+})
+
+<span class="t-kw">func</span> <span class="t-fn">getPrice</span>(ctx context.Context, cart Cart) (Price, <span class="t-kw">error</span>) {
+    result, err := pricingBreaker.<span class="t-fn">Execute</span>(<span class="t-kw">func</span>() (interface{}, <span class="t-kw">error</span>) {
+        <span class="t-kw">return</span> pricingClient.<span class="t-fn">GetTotal</span>(ctx, cart)
+    })
+    <span class="t-kw">if</span> err != <span class="t-vr">nil</span> {
+        <span class="t-kw">return</span> Price{}, err <span class="t-cm">// includes gobreaker.ErrOpenState</span>
+    }
+    <span class="t-kw">return</span> result.(Price), <span class="t-vr">nil</span>
+}</pre>
+    </div>
+
+    <p>When the breaker is OPEN, calls fail immediately with <code>ErrOpenState</code> — no goroutine held, no timeout waited, no retry needed. Your service can degrade gracefully (return a cached price, show an error, skip the call) instead of hanging.</p>
+
+    <div class="callout tip">
+      <div class="callout-label">// ALWAYS INSTRUMENT YOUR BREAKER</div>
+      <p>Log every state transition. <code>CLOSED → OPEN</code> means your dependency is degraded right now — that's an immediate page-worthy event. <code>OPEN → HALF-OPEN → CLOSED</code> means recovery — you want to track that too. A circuit breaker that fires silently is almost as bad as not having one.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════ S11 ═══════════ -->
+  <section class="section" id="s11">
+    <div class="section-header">
+      <span class="section-num">11</span>
+      <h2 class="section-title">Fix 3 — Bulkheads &amp; Backoff</h2>
+    </div>
+
+    <h3 class="subsection">Bulkhead — Isolate your dependencies</h3>
+    <p>Named after ship compartments — if one floods, it doesn't sink the whole vessel. In code: each external dependency gets its own goroutine pool (semaphore). When pricing is degraded and its pool fills up, it can't consume goroutines meant for inventory or user-profile calls.</p>
+
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="code-lang">go — semaphore-based bulkhead</span>
+        <div class="code-actions">
+          <div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div>
+          <button class="copy-btn" data-target="code-bulkhead">COPY</button>
+        </div>
+      </div>
+      <pre id="code-bulkhead"><span class="t-cm">// Separate semaphore per dependency — pricing can't steal slots from inventory</span>
+<span class="t-kw">var</span> (
+    pricingSem   = make(<span class="t-kw">chan</span> <span class="t-kw">struct</span>{}, <span class="t-nu">20</span>) <span class="t-cm">// max 20 concurrent pricing calls</span>
+    inventorySem = make(<span class="t-kw">chan</span> <span class="t-kw">struct</span>{}, <span class="t-nu">30</span>) <span class="t-cm">// max 30 concurrent inventory calls</span>
+)
+
+<span class="t-kw">func</span> <span class="t-fn">getPriceIsolated</span>(ctx context.Context, cart Cart) (Price, <span class="t-kw">error</span>) {
+    <span class="t-kw">select</span> {
+    <span class="t-kw">case</span> pricingSem &lt;- <span class="t-kw">struct</span>{}{}:
+        <span class="t-kw">defer</span> <span class="t-kw">func</span>() { &lt;-pricingSem }()
+    <span class="t-kw">case</span> &lt;-ctx.<span class="t-fn">Done</span>():
+        <span class="t-kw">return</span> Price{}, ctx.<span class="t-fn">Err</span>()
+    <span class="t-kw">default</span>:
+        <span class="t-cm">// Pool full — fast-fail instead of queuing</span>
+        metrics.<span class="t-fn">Increment</span>(<span class="t-st">"pricing.bulkhead.rejected"</span>)
+        <span class="t-kw">return</span> Price{}, ErrPricingUnavailable
+    }
+    <span class="t-kw">return</span> pricingClient.<span class="t-fn">GetTotal</span>(ctx, cart)
+}</pre>
+    </div>
+
+    <h3 class="subsection">Exponential backoff with jitter — don't synchronise your retries</h3>
+    <p>Retries without jitter cause <strong>thundering herd</strong>: every caller that timed out at the same time retries at the same time, creating a synchronized spike. Adding random jitter spreads the retries out, giving the upstream breathing room to recover.</p>
+
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="code-lang">go — retry with exponential backoff + jitter</span>
+        <div class="code-actions">
+          <div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div>
+          <button class="copy-btn" data-target="code-retry">COPY</button>
+        </div>
+      </div>
+      <pre id="code-retry"><span class="t-kw">func</span> <span class="t-fn">retryWithBackoff</span>(ctx context.Context, fn <span class="t-kw">func</span>() <span class="t-kw">error</span>) <span class="t-kw">error</span> {
+    base := <span class="t-nu">100</span> * time.Millisecond
+    <span class="t-kw">for</span> attempt := <span class="t-nu">0</span>; attempt < <span class="t-nu">3</span>; attempt++ {
+        err := <span class="t-fn">fn</span>()
+        <span class="t-kw">if</span> err == <span class="t-vr">nil</span> { <span class="t-kw">return</span> <span class="t-vr">nil</span> }
+
+        <span class="t-kw">if</span> attempt == <span class="t-nu">2</span> { <span class="t-kw">return</span> err } <span class="t-cm">// last attempt</span>
+
+        <span class="t-cm">// Exponential backoff: 100ms, 200ms, 400ms...</span>
+        <span class="t-cm">// Jitter: ±50% randomness to desynchronise retries</span>
+        backoff := base * time.<span class="t-fn">Duration</span>(<span class="t-nu">1</span>&lt;&lt;attempt)
+        jitter  := time.<span class="t-fn">Duration</span>(rand.<span class="t-fn">Int63n</span>(<span class="t-kw">int64</span>(backoff) / <span class="t-nu">2</span>))
+        wait    := backoff + jitter
+
+        <span class="t-kw">select</span> {
+        <span class="t-kw">case</span> &lt;-time.<span class="t-fn">After</span>(wait):
+        <span class="t-kw">case</span> &lt;-ctx.<span class="t-fn">Done</span>():
+            <span class="t-kw">return</span> ctx.<span class="t-fn">Err</span>()
+        }
+    }
+    <span class="t-kw">return</span> <span class="t-vr">nil</span>
+}</pre>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-label">// WHY JITTER MATTERS</div>
+      <p>Without jitter, 500 clients that all timed out at T=3s will all retry at T=3.1s, T=3.3s, T=3.7s — synchronized spikes that hammer an already-struggling service. With jitter, those retries spread across a window, giving the upstream a gentler recovery curve.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════ S12 ═══════════ -->
+  <section class="section" id="s12">
+    <div class="section-header">
+      <span class="section-num">12</span>
+      <h2 class="section-title">Production Checklist</h2>
+    </div>
+    <p>Before any service ships a new outbound dependency, every item on this list must be answered:</p>
+
+    <div class="checklist">
+      <div class="checklist-item">
+        <span class="check-icon">✅</span>
+        <div>
+          <div class="check-title">Every HTTP client has a timeout</div>
+          <div class="check-desc">Set at the client level <em>and</em> propagated via context. Timeout = 2× dependency's p99 at normal load. Not a round number you guessed.</div>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <span class="check-icon">✅</span>
+        <div>
+          <div class="check-title">Circuit breaker on every synchronous upstream</div>
+          <div class="check-desc">State transitions must be logged and alerted. A circuit breaker opening is an incident signal — treat it as one.</div>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <span class="check-icon">✅</span>
+        <div>
+          <div class="check-title">Bulkhead per dependency</div>
+          <div class="check-desc">Pricing's degradation should not consume goroutines that inventory and user service need. Separate pools, separate failure domains.</div>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <span class="check-icon">✅</span>
+        <div>
+          <div class="check-title">Retries use exponential backoff with jitter</div>
+          <div class="check-desc">No immediate retries. No fixed-interval retries. Exponential + jitter, bounded by the request context deadline.</div>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <span class="check-icon">✅</span>
+        <div>
+          <div class="check-title">Latency alerts on dependencies, not just self</div>
+          <div class="check-desc">Alert when any upstream's p95 latency exceeds 2× normal. Don't wait for your own error rate to spike — that's 3 minutes too late.</div>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <span class="check-icon">✅</span>
+        <div>
+          <div class="check-title">Graceful degradation path for every dependency</div>
+          <div class="check-desc">What does your service do if pricing returns an error? Cache, default, partial response? Define it. Don't let an upstream take you fully down.</div>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <span class="check-icon">✅</span>
+        <div>
+          <div class="check-title">pprof / goroutine dump available in prod</div>
+          <div class="check-desc">Add the pprof endpoint. When a cascade hits and goroutines are piling up, this cuts your debug time from 20 minutes to 30 seconds.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ S13 ═══════════ -->
+  <section class="section" id="s13">
+    <div class="section-header">
+      <span class="section-num">13</span>
+      <h2 class="section-title">Key Takeaways</h2>
+    </div>
+
+    <div class="gotchas">
+      <div class="gotcha">
+        <span class="gotcha-num">01</span>
+        <div>
+          <div class="gotcha-title">The broken service is rarely the root cause</div>
+          <div class="gotcha-desc">In a cascade, the noisiest failure is downstream of the actual problem. Train yourself to trace backward through dependencies before touching the service that's visibly broken.</div>
+        </div>
+      </div>
+      <div class="gotcha">
+        <span class="gotcha-num">02</span>
+        <div>
+          <div class="gotcha-title">A slow upstream is more dangerous than a crashed one</div>
+          <div class="gotcha-desc">A crashed upstream gives you a fast error. A slow upstream holds your goroutine for seconds, filling your pool silently. Slowness without timeouts is worse than failure.</div>
+        </div>
+      </div>
+      <div class="gotcha">
+        <span class="gotcha-num">03</span>
+        <div>
+          <div class="gotcha-title">Retries without backoff turn degradation into collapse</div>
+          <div class="gotcha-desc">Every immediate retry is another call to an already-struggling service. Backoff + jitter is not optional — it's the difference between a recoverable dip and an unrecoverable storm.</div>
+        </div>
+      </div>
+      <div class="gotcha">
+        <span class="gotcha-num">04</span>
+        <div>
+          <div class="gotcha-title">Resilience is designed, not discovered</div>
+          <div class="gotcha-desc">You don't find out your service has no circuit breaker when you're reviewing code. You find out at 3 PM on a Tuesday when five services are down. Design the failure mode before you ship the feature.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ S14 ═══════════ -->
+  <section class="section" id="s14">
+    <div class="section-header">
+      <span class="section-num">14</span>
+      <h2 class="section-title">What's Next</h2>
+    </div>
+
+    <div class="series-list">
+      <div class="series-item series-item--done">
+        <span class="series-badge series-badge--done">Part 1</span>
+        <div>
+          <div class="series-title">When Logs Lie — Silent failures &amp; observability gaps</div>
+          <div class="series-desc"><a href="/blogs/silent-failures/">Read it →</a></div>
+        </div>
+      </div>
+      <div class="series-item series-item--current">
+        <span class="series-badge series-badge--current">Part 2</span>
+        <div>
+          <div class="series-title">The Cascade — When one slow service takes down five others</div>
+          <div class="series-desc">This post.</div>
+        </div>
+      </div>
+      <div class="series-item series-item--next">
+        <span class="series-badge series-badge--next">Part 3</span>
+        <div>
+          <div class="series-title">The Phantom Bug — Reproducing production-only failures locally</div>
+          <div class="series-desc">Coming soon.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider">END OF PART 2</div>
+
+    <div class="cta">
+      <h3>Have you been hit by a cascade?</h3>
+      <p>What did your blast radius look like? Which pattern finally stopped it? Drop your story — I read every reply.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://dev.to/anuragdevon" target="_blank" rel="noopener">Read on Dev.to</a>
+        <a class="btn btn-ghost" href="https://github.com/anuragdevon" target="_blank" rel="noopener">GitHub ↗</a>
+      </div>
+      <p class="cta-note">Part 3 dropping soon — follow on Dev.to to get notified.</p>
+    </div>
+
+  </section>
+
+</div><!-- /page -->
+
+</body>
+</html>

@@ -805,6 +805,93 @@ $font-serif: 'DM Serif Display', Georgia, serif;
     .check-title { font-size: 13.5px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
     .check-desc  { font-size: 12.5px; color: var(--subtext); line-height: 1.55; }
 
+    // ── Timeline ─────────────────────────────────────────────────────────────
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin: 16px 0 20px;
+      position: relative;
+
+      &::before {
+        content: '';
+        position: absolute;
+        left: 62px;
+        top: 0;
+        bottom: 0;
+        width: 1px;
+        background: var(--border);
+      }
+    }
+
+    .timeline-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 14px 0;
+      position: relative;
+
+      &:not(:last-child) {
+        border-bottom: 1px solid rgba(20, 157, 221, 0.05);
+      }
+    }
+
+    .timeline-time {
+      font-family: $font-mono;
+      font-size: 10.5px;
+      color: var(--blue);
+      min-width: 46px;
+      padding-top: 2px;
+      flex-shrink: 0;
+      text-align: right;
+    }
+
+    .timeline-body {
+      flex: 1;
+      padding-left: 16px;
+    }
+
+    .timeline-title {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 3px;
+    }
+
+    .timeline-desc {
+      font-size: 12.5px;
+      color: var(--subtext);
+      line-height: 1.55;
+    }
+
+    .timeline-status {
+      font-family: $font-mono;
+      font-size: 9.5px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-top: 2px;
+
+      &--warn {
+        background: rgba(217, 119, 6, 0.1);
+        color: var(--yellow);
+        border: 1px solid rgba(217, 119, 6, 0.2);
+      }
+
+      &--fail {
+        background: rgba(243, 139, 168, 0.1);
+        color: var(--pink);
+        border: 1px solid rgba(243, 139, 168, 0.2);
+      }
+
+      &--ok {
+        background: rgba(22, 163, 74, 0.1);
+        color: var(--green);
+        border: 1px solid rgba(22, 163, 74, 0.2);
+      }
+    }
+
     // ── Series list ───────────────────────────────────────────────────────────
     .series-list {
       display: flex;
@@ -828,6 +915,11 @@ $font-serif: 'DM Serif Display', Georgia, serif;
       }
 
       &--next { opacity: 0.6; }
+
+      &--done {
+        border-color: rgba(22, 163, 74, 0.2);
+        background: rgba(22, 163, 74, 0.04);
+      }
     }
 
     .series-badge {
@@ -848,6 +940,12 @@ $font-serif: 'DM Serif Display', Georgia, serif;
         background: var(--surface1);
         color: var(--overlay0);
         border: 1px solid var(--border);
+      }
+
+      &--done {
+        background: rgba(22, 163, 74, 0.1);
+        color: var(--green);
+        border: 1px solid rgba(22, 163, 74, 0.2);
       }
     }
 
