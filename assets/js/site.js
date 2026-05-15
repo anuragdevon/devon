@@ -50,20 +50,13 @@ function scrollHandler() {
 }
 
 // ============================================================
-// Hero Typing — opacity reveal (CSS handles width animation)
+// Mobile Nav Toggle
 // ============================================================
-(function initHeroText() {
-  var timings = [
-    { id: 'hi',   delay: 0    },
-    { id: 'name', delay: 300  },
-    { id: 'tag',  delay: 1700 }
-  ];
-  timings.forEach(function (item) {
-    var el = document.getElementById(item.id);
-    if (!el) return;
-    setTimeout(function () { el.style.opacity = '1'; }, item.delay);
-  });
-}());
+function navToggle() {
+  var menu = document.getElementById('nav-mobile');
+  if (!menu) return;
+  menu.classList.toggle('hidden');
+}
 
 // ============================================================
 // Scroll-Reveal via IntersectionObserver

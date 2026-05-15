@@ -1,3 +1,13 @@
 {{ define "main" }}
-    {{ partial "intro" . }}
+  {{ partial "intro" . }}
+  <div class="container">
+    <section class="nav-cards">
+      <p class="nav-cards-label">— Navigate</p>
+      <div class="nav-cards-grid">
+        <a href="/about/"    class="nav-card animate-on-scroll stagger-1">About →</a>
+        <a href="/projects/" class="nav-card animate-on-scroll stagger-2">Projects →</a>
+        <a href="/blogs/"    class="nav-card animate-on-scroll stagger-3">Blogs →</a>
+      </div>
+    </section>
+  </div>
 {{ end }}

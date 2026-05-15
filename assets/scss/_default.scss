@@ -1,41 +1,41 @@
 // ============================================================
-// CSS Custom Properties — Light Mode (default)
+// CSS Custom Properties — Dark Mode (default)
 // ============================================================
 :root {
   // Backgrounds
-  --bg-primary:          #ffffff;
-  --bg-secondary:        #f8fafc;
-  --bg-tertiary:         #f1f5f9;
-  --bg-card:             rgba(255, 255, 255, 0.85);
-  --bg-card-hover:       rgba(255, 255, 255, 1);
-  --nav-bg:              rgba(255, 255, 255, 0.85);
-  --nav-bg-scrolled:     rgba(255, 255, 255, 0.98);
-  --footer-bg:           rgba(255, 255, 255, 0.95);
-  --form-bg:             rgba(255, 255, 255, 0.98);
-  --cookie-bg:           rgba(255, 255, 255, 0.98);
+  --bg-primary:         #0c0e14;
+  --bg-secondary:       #111520;
+  --bg-tertiary:        #161b2e;
+  --bg-card:            rgba(255, 255, 255, 0.04);
+  --bg-card-hover:      rgba(255, 255, 255, 0.07);
+  --nav-bg:             rgba(12, 14, 20, 0.82);
+  --nav-bg-scrolled:    rgba(12, 14, 20, 0.97);
+  --footer-bg:          rgba(12, 14, 20, 0.92);
+  --form-bg:            rgba(17, 21, 32, 0.92);
+  --cookie-bg:          rgba(17, 21, 32, 0.94);
 
   // Borders
-  --border-glass:        rgba(0, 0, 0, 0.08);
+  --border-glass:        rgba(255, 255, 255, 0.08);
   --border-glass-hover:  rgba(20, 157, 221, 0.45);
 
   // Text
-  --text-primary:        #0f172a;
-  --text-secondary:      rgba(15, 23, 42, 0.65);
-  --text-muted-custom:   rgba(15, 23, 42, 0.42);
+  --text-primary:        #e8edf5;
+  --text-secondary:      rgba(232, 237, 245, 0.65);
+  --text-muted-custom:   rgba(232, 237, 245, 0.4);
 
   // Accent
   --accent:              #149ddd;
   --accent-dark:         #0a7bc4;
-  --accent-light:        #3db8f0;
+  --accent-light:        #5ec8f0;
   --accent-glow:         rgba(20, 157, 221, 0.15);
   --accent-glow-strong:  rgba(20, 157, 221, 0.32);
 
-  // Shadows (lighter for light bg)
-  --shadow-card:         0 4px 20px rgba(0, 0, 0, 0.07), 0 1px 3px rgba(0, 0, 0, 0.05);
-  --shadow-card-hover:   0 12px 40px rgba(0, 0, 0, 0.12), 0 0 28px var(--accent-glow);
+  // Shadows
+  --shadow-card:         0 8px 32px rgba(0, 0, 0, 0.45);
+  --shadow-card-hover:   0 20px 56px rgba(0, 0, 0, 0.55), 0 0 40px var(--accent-glow);
 
   // Scrollbar
-  --scrollbar-track:     rgba(0, 0, 0, 0.05);
+  --scrollbar-track:     #111520;
 
   // Radii & layout
   --radius-card:         16px;
@@ -53,27 +53,27 @@
 }
 
 // ============================================================
-// Dark Mode Overrides
+// Light Mode Overrides
 // ============================================================
-[data-theme="dark"] {
-  --bg-primary:         #080c14;
-  --bg-secondary:       #0d1525;
-  --bg-tertiary:        #111827;
-  --bg-card:            rgba(255, 255, 255, 0.04);
-  --bg-card-hover:      rgba(255, 255, 255, 0.07);
-  --nav-bg:             rgba(8, 12, 20, 0.82);
-  --nav-bg-scrolled:    rgba(8, 12, 20, 0.97);
-  --footer-bg:          rgba(8, 12, 20, 0.92);
-  --form-bg:            rgba(13, 21, 37, 0.92);
-  --cookie-bg:          rgba(13, 21, 37, 0.94);
-  --border-glass:       rgba(255, 255, 255, 0.08);
-  --text-primary:       #e8edf5;
-  --text-secondary:     rgba(232, 237, 245, 0.65);
-  --text-muted-custom:  rgba(232, 237, 245, 0.4);
-  --accent-light:       #5ec8f0;
-  --scrollbar-track:    #0d1525;
-  --shadow-card:        0 8px 32px rgba(0, 0, 0, 0.45);
-  --shadow-card-hover:  0 20px 56px rgba(0, 0, 0, 0.55), 0 0 40px var(--accent-glow);
+[data-theme="light"] {
+  --bg-primary:          #ffffff;
+  --bg-secondary:        #f8fafc;
+  --bg-tertiary:         #f1f5f9;
+  --bg-card:             rgba(255, 255, 255, 0.85);
+  --bg-card-hover:       rgba(255, 255, 255, 1);
+  --nav-bg:              rgba(255, 255, 255, 0.85);
+  --nav-bg-scrolled:     rgba(255, 255, 255, 0.98);
+  --footer-bg:           rgba(255, 255, 255, 0.95);
+  --form-bg:             rgba(255, 255, 255, 0.98);
+  --cookie-bg:           rgba(255, 255, 255, 0.98);
+  --border-glass:        rgba(0, 0, 0, 0.08);
+  --text-primary:        #0f172a;
+  --text-secondary:      rgba(15, 23, 42, 0.65);
+  --text-muted-custom:   rgba(15, 23, 42, 0.42);
+  --accent-light:        #3db8f0;
+  --shadow-card:         0 4px 20px rgba(0, 0, 0, 0.07), 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-card-hover:   0 12px 40px rgba(0, 0, 0, 0.12), 0 0 28px var(--accent-glow);
+  --scrollbar-track:     rgba(0, 0, 0, 0.05);
 }
 
 // ============================================================
@@ -91,8 +91,8 @@ html {
   &::-webkit-scrollbar-thumb:hover { background: var(--accent-light); }
 }
 
-// Smooth theme transitions (toggling only — initial paint has no transition)
-body, nav, footer, .card, section {
+// Smooth theme transitions (toggling only)
+body, nav, footer, section {
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
@@ -103,7 +103,7 @@ body {
   overflow-x: hidden;
   box-sizing: border-box;
   overflow-y: scroll;
-  font-family: 'Inter', 'Open Sans', sans-serif;
+  font-family: 'DM Sans', 'Open Sans', sans-serif;
   background-color: var(--bg-primary);
   color: var(--text-primary);
   line-height: 1.75;
@@ -123,11 +123,6 @@ body {
 .text-muted       { color: var(--text-muted-custom) !important; }
 .border-top       { border-top-color:    var(--border-glass) !important; }
 .border-bottom    { border-bottom-color: var(--border-glass) !important; }
-.card-footer {
-  background: transparent !important;
-  border-top-color: var(--border-glass) !important;
-  color: var(--text-muted-custom);
-}
 
 // ============================================================
 // Section Base
@@ -147,13 +142,14 @@ section {
   padding-bottom: 2.5rem;
 
   h1, h2 {
+    font-family: 'DM Serif Display', Georgia, serif;
     font-size: 2rem;
-    font-weight: 700;
+    font-weight: 400;
     margin-bottom: 0.75rem;
     padding-bottom: 1rem;
     position: relative;
     color: var(--text-primary);
-    letter-spacing: -0.025em;
+    letter-spacing: -0.02em;
 
     @include media-breakpoint-down(md) { font-size: 1.6rem; }
 
@@ -203,7 +199,65 @@ section {
 }
 
 // ============================================================
-// Buttons
+// Hero Fade-in (auto-play, not scroll-triggered)
+// ============================================================
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.hero-animate {
+  opacity: 0;
+  animation: fadeSlideUp 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+// ============================================================
+// Buttons — Primary & Ghost (hero CTAs)
+// ============================================================
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.65rem 1.4rem;
+  background: var(--accent);
+  color: #fff !important;
+  border-radius: var(--radius-sm);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  border: none;
+  transition: var(--transition-base);
+
+  &:hover {
+    background: var(--accent-light);
+    box-shadow: 0 0 20px var(--accent-glow-strong);
+    transform: translateY(-2px);
+  }
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.65rem 1.4rem;
+  background: transparent;
+  color: var(--text-secondary) !important;
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-sm);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: var(--transition-base);
+
+  &:hover {
+    border-color: var(--accent);
+    color: var(--accent) !important;
+    background: var(--accent-glow);
+  }
+}
+
+// ============================================================
+// Buttons — Section-level (outline style)
 // ============================================================
 .custom-btn {
   white-space: nowrap;
@@ -226,7 +280,6 @@ section {
   overflow: hidden;
   text-transform: uppercase;
 
-  // Shimmer sweep via ::after
   &::after {
     content: '';
     position: absolute;
@@ -255,7 +308,6 @@ section {
   }
 }
 
-// Also target when the button sits inside an <a> and the <a> is hovered
 a:hover > .btn-11,
 a:hover .btn-11 {
   color: #fff !important;
@@ -304,15 +356,67 @@ a:hover .btn-11 {
   }
 }
 
-// Show/hide sun & moon icons based on theme
-// Default (light): show moon icon (clicking → go dark)
-.icon-sun  { display: none; }
-.icon-moon { display: block; }
+// Dark (default): show sun icon (click → go light)
+.icon-sun  { display: block; }
+.icon-moon { display: none; }
 
-[data-theme="dark"] {
-  // Dark: show sun icon (clicking → go light)
-  .icon-sun  { display: block; }
-  .icon-moon { display: none; }
+[data-theme="light"] {
+  // Light: show moon icon (click → go dark)
+  .icon-sun  { display: none; }
+  .icon-moon { display: block; }
+}
+
+// ============================================================
+// Nav Cards (homepage navigate section)
+// ============================================================
+.nav-cards {
+  padding: 0 0 4rem;
+
+  .nav-cards-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted-custom);
+    margin-bottom: 1rem;
+  }
+
+  .nav-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+
+    @include media-breakpoint-down(md) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .nav-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-card);
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: var(--transition-base);
+    backdrop-filter: var(--blur-sm);
+    -webkit-backdrop-filter: var(--blur-sm);
+
+    &:hover {
+      border-color: rgba(20, 157, 221, 0.35);
+      color: var(--text-primary);
+      background: var(--bg-card-hover);
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-card-hover);
+    }
+  }
 }
 
 // ============================================================
@@ -345,7 +449,7 @@ a:hover .btn-11 {
     scroll-behavior: auto !important;
   }
 
-  .animate-on-scroll, .animate-fade {
+  .animate-on-scroll, .animate-fade, .hero-animate {
     opacity: 1;
     transform: none;
   }

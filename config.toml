@@ -37,7 +37,7 @@ name = "Blogs"
 weight = 3
 
 [outputs]
-home = [ "HTML", "About", "Blog", "Project", "AndromedaBlog" ]
+home = [ "HTML", "About", "Blog", "Project", "AndromedaBlog", "SilentFailuresBlog" ]
 
 [outputFormats.About]
 path = "about"
@@ -62,6 +62,13 @@ notAlternative = true
 
 [outputFormats.AndromedaBlog]
 path = "blogs/andromeda-rice"
+mediaType = "text/html"
+isHTML = true
+permalinkable = true
+notAlternative = true
+
+[outputFormats.SilentFailuresBlog]
+path = "blogs/silent-failures"
 mediaType = "text/html"
 isHTML = true
 permalinkable = true

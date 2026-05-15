@@ -3,52 +3,59 @@
 <section id="blogs">
   <div class="container blog">
     <div class="section-title animate-on-scroll">
-      <h2>Blogs</h2>
+      <h2>Writing</h2>
+      <p>Notes on things I've done.</p>
     </div>
-    <div class="row g-3">
-      <div class="col-12 col-sm-10 col-md-6 col-lg-4 animate-on-scroll stagger-1">
-        <div class="card h-100">
-          <div class="card-body">
-            <h4 class="card-title">I Left i3wm. No Regrets.</h4>
-            <small class="text-muted">14 min read &middot; 26th Apr. 2026</small>
-            <p class="card-text">A full Andromeda Hyprland rice breakdown, including setup, tools, keybinds, and migration gotchas from i3wm.</p>
-            <a href="/blogs/andromeda-rice/" aria-label="I Left i3wm. No Regrets.">
-              <button class="custom-btn btn-11">Read</button>
-            </a>
-          </div>
-          <div class="card-footer d-flex justify-content-between align-items-center">
-            <span>26th Apr. 2026</span>
-            <div>
-              {{ partial "inline-svg" "github" }}
-            </div>
-          </div>
+
+    {{/* Pinned: Production Debugging — Silent Failures */}}
+    <a href="/blogs/silent-failures/" class="blog-card animate-on-scroll stagger-1">
+      <span class="blog-date">15th May 2026</span>
+      <div class="blog-body">
+        <h3 class="blog-title">Everything Was Green… But Production Was Broken.</h3>
+        <p class="blog-excerpt">0 errors. 0 alerts. 100% failure. The story of a silent skip that took down inventory updates — and what it taught me about observability.</p>
+        <div class="blog-meta">
+          <span>9 min read</span>
+          <span>·</span>
+          {{ partial "inline-svg" "github" }}
         </div>
       </div>
-      {{ range $i, $b := .blogs }}
-      <div class="col-12 col-sm-10 col-md-6 col-lg-4 animate-on-scroll stagger-{{ add (mod $i 6) 1 }}">
-        <div class="card h-100">
-          <div class="card-body">
-            <h4 class="card-title">{{ $b.title }}</h4>
-            <small class="text-muted">
-              {{ $b.time }} min read &middot; {{ $b.date }}
-            </small>
-            <p class="card-text">{{ $b.sample }}</p>
-            {{ $isExternal := or (hasPrefix $b.link "http://") (hasPrefix $b.link "https://") }}
-            <a href="{{ $b.link }}" {{ if $isExternal }}target="_blank" rel="noopener"{{ end }} aria-label="{{ $b.title }}">
-              <button class="custom-btn btn-11">Read</button>
-            </a>
-          </div>
-          <div class="card-footer d-flex justify-content-between align-items-center">
-            <span>{{ $b.date }}</span>
-            <div>
-              {{ $icon := $b.site }}
-              {{ partial "inline-svg" $icon }}
-            </div>
-          </div>
+      <span class="blog-arrow">→</span>
+    </a>
+
+    {{/* Pinned blog post — the Andromeda rice */}}
+    <a href="/blogs/andromeda-rice/" class="blog-card animate-on-scroll stagger-2">
+      <span class="blog-date">26th Apr. 2026</span>
+
+      <div class="blog-body">
+        <h3 class="blog-title">I Left i3wm. No Regrets.</h3>
+        <p class="blog-excerpt">A full Andromeda Hyprland rice breakdown, including setup, tools, keybinds, and migration gotchas from i3wm.</p>
+        <div class="blog-meta">
+          <span>14 min read</span>
+          <span>·</span>
+          {{ partial "inline-svg" "github" }}
         </div>
       </div>
-      {{ end }}
-    </div>
+      <span class="blog-arrow">→</span>
+    </a>
+
+    {{ range $i, $b := .blogs }}
+    {{ $isExternal := or (hasPrefix $b.link "http://") (hasPrefix $b.link "https://") }}
+    <a href="{{ $b.link }}" {{ if $isExternal }}target="_blank" rel="noopener"{{ end }}
+       class="blog-card animate-on-scroll stagger-{{ add (mod $i 8) 2 }}">
+      <span class="blog-date">{{ $b.date }}</span>
+      <div class="blog-body">
+        <h3 class="blog-title">{{ $b.title }}</h3>
+        <p class="blog-excerpt">{{ $b.sample }}</p>
+        <div class="blog-meta">
+          <span>{{ $b.time }} min read</span>
+          <span>·</span>
+          {{ partial "inline-svg" $b.site }}
+        </div>
+      </div>
+      <span class="blog-arrow">→</span>
+    </a>
+    {{ end }}
+
   </div>
 </section>
 {{ end }}

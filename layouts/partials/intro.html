@@ -1,23 +1,19 @@
 {{ with site.Data.intro }}
-{{ $image := resources.Get "/images/laptop.webp" }}
 <section id="hero" class="hero">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-4 text-center animate-fade">
-                <img src="{{ $image.RelPermalink }}"
-                     class="img-fluid laptop"
-                     alt="Laptop Coding"
-                     loading="eager"
-                     decoding="async">
-            </div>
-            <div class="col-lg-8 pt-4 pt-lg-0">
-                {{ range .display}}
-                <div class="wrapper animate-on-scroll">
-                    <div class="{{ .category }}" id="{{ .category }}">{{ .text }}</div>
-                </div>
-                {{ end }}
-            </div>
-        </div>
+  <div class="container">
+    <div class="hero-eyebrow hero-animate" style="animation-delay:0s">
+      <span class="eyebrow-dot"></span>anuragdevon
     </div>
+    <h1 class="hero-title hero-animate" style="animation-delay:0.12s">
+      Hello, I'm<br><span class="hero-name">Anurag Kar.</span>
+    </h1>
+    <p class="hero-sub hero-animate" style="animation-delay:0.26s">Backend engineer. Builder.</p>
+    <p class="hero-loc hero-animate" style="animation-delay:0.34s">Bengaluru, India.</p>
+    <div class="hero-cta hero-animate" style="animation-delay:0.44s">
+      <a href="/about/" class="btn-primary">About me →</a>
+      <a href="https://github.com/anuragdevon" target="_blank" rel="noopener" class="btn-ghost">GitHub ↗</a>
+      <a href="https://auragika.netlify.app/" target="_blank" rel="noopener" class="btn-ghost">Tinkering ↗</a>
+    </div>
+  </div>
 </section>
 {{ end }}

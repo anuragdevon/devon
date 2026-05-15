@@ -4,30 +4,25 @@
   <div class="container project">
     <div class="section-title animate-on-scroll">
       <h2>Projects</h2>
+      <p>Things I've built.</p>
     </div>
-    <div class="row g-3">
-      {{ range $i, $p := .project }}
-      <div class="col-12 col-sm-10 col-md-6 col-lg-4 animate-on-scroll stagger-{{ add (mod $i 6) 1 }}">
-        <div class="card h-100">
-          <div class="card-body">
-            <h4 class="card-title">{{ $p.title }}</h4>
-            <small class="text-muted cat">{{ $p.date }}</small>
-            <p class="card-text">{{ $p.sample }}</p>
-            <div class="d-flex justify-content-between align-items-center">
-              <div class="d-flex flex-wrap gap-1">
-                {{ range $p.tech }}
-                {{ partial "inline-svg" . }}
-                {{ end }}
-              </div>
-              <a href="{{ $p.link }}" target="_blank" rel="noopener" aria-label="{{ $p.title }}">
-                <button class="custom-btn btn-11">View</button>
-              </a>
-            </div>
-          </div>
-        </div>
+    {{ range $i, $p := .project }}
+    <div class="proj-card animate-on-scroll stagger-{{ add (mod $i 8) 1 }}">
+      <div class="proj-head">
+        <h3 class="proj-title">{{ $p.title }}</h3>
+        <span class="proj-date">{{ $p.date }}</span>
       </div>
-      {{ end }}
+      <p class="proj-desc">{{ $p.sample }}</p>
+      <div class="proj-foot">
+        <div class="proj-tech">
+          {{ range $p.tech }}
+          {{ partial "inline-svg" . }}
+          {{ end }}
+        </div>
+        <a href="{{ $p.link }}" target="_blank" rel="noopener" class="proj-link">View →</a>
+      </div>
     </div>
+    {{ end }}
   </div>
 </section>
 {{ end }}

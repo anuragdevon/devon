@@ -1,5 +1,5 @@
 // ============================================================
-// Hero Section (homepage only — scoped to #home)
+// Hero Section (homepage only — scoped to #hero)
 // ============================================================
 #hero.hero {
   position: relative;
@@ -8,9 +8,8 @@
   align-items: center;
   overflow: hidden;
 
-  // Light mode: very subtle dot grid
-  background-image: radial-gradient(rgba(20, 157, 221, 0.06) 1px, transparent 1px);
-  background-size: 36px 36px;
+  background-image: radial-gradient(rgba(20, 157, 221, 0.08) 1px, transparent 1px);
+  background-size: 40px 40px;
   background-position: center center;
 
   &::before {
@@ -18,12 +17,11 @@
     position: absolute;
     top: -20%;
     left: -10%;
-    width: 700px;
+    width: 650px;
     max-width: 80vw;
-    height: 700px;
+    height: 650px;
     max-height: 80vw;
-    // Light mode: subtle glow
-    background: radial-gradient(circle, rgba(20, 157, 221, 0.07) 0%, transparent 68%);
+    background: radial-gradient(circle, rgba(20, 157, 221, 0.10) 0%, transparent 68%);
     border-radius: 50%;
     pointer-events: none;
     animation: glow-pulse 8s ease-in-out infinite;
@@ -34,59 +32,29 @@
     position: absolute;
     bottom: -15%;
     right: -5%;
-    width: 500px;
+    width: 480px;
     max-width: 60vw;
-    height: 500px;
+    height: 480px;
     max-height: 60vw;
-    background: radial-gradient(circle, rgba(20, 157, 221, 0.05) 0%, transparent 68%);
+    background: radial-gradient(circle, rgba(20, 157, 221, 0.06) 0%, transparent 68%);
     border-radius: 50%;
     pointer-events: none;
     animation: glow-pulse 10s ease-in-out 2s infinite reverse;
   }
 
   .container { position: relative; z-index: 1; }
-  .row { align-items: center; }
-
-  .laptop {
-    height: 340px;
-    width: 340px;
-    filter: drop-shadow(0 16px 40px rgba(20, 157, 221, 0.18));
-    animation: float-laptop 7s ease-in-out infinite;
-    will-change: transform;
-
-    @include media-breakpoint-down(lg) {
-      height: 260px;
-      width: 260px;
-      margin-bottom: 1.5rem;
-    }
-
-    @include media-breakpoint-down(md) {
-      height: 220px;
-      width: 220px;
-    }
-  }
 }
 
-// Dark mode: stronger dots & orbs
-[data-theme="dark"] #hero.hero {
-  background-image: radial-gradient(rgba(20, 157, 221, 0.12) 1px, transparent 1px);
+[data-theme="light"] #hero.hero {
+  background-image: radial-gradient(rgba(20, 157, 221, 0.05) 1px, transparent 1px);
 
   &::before {
-    background: radial-gradient(circle, rgba(20, 157, 221, 0.10) 0%, transparent 68%);
+    background: radial-gradient(circle, rgba(20, 157, 221, 0.06) 0%, transparent 68%);
   }
 
   &::after {
-    background: radial-gradient(circle, rgba(20, 157, 221, 0.07) 0%, transparent 68%);
+    background: radial-gradient(circle, rgba(20, 157, 221, 0.04) 0%, transparent 68%);
   }
-
-  .laptop {
-    filter: drop-shadow(0 20px 60px rgba(20, 157, 221, 0.28));
-  }
-}
-
-@keyframes float-laptop {
-  0%, 100% { transform: translateY(0px); }
-  50%       { transform: translateY(-18px); }
 }
 
 @keyframes glow-pulse {
@@ -95,78 +63,77 @@
 }
 
 // ============================================================
-// Typing Text
+// Hero Typography
 // ============================================================
-.wrapper {
-  padding-top: 0.6rem;
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
-
-  @include media-breakpoint-down(lg) {
-    justify-content: center;
-  }
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--text-muted-custom);
+  background: rgba(20, 157, 221, 0.08);
+  border: 1px solid rgba(20, 157, 221, 0.18);
+  padding: 5px 14px;
+  border-radius: 100px;
+  margin-bottom: 1.5rem;
 }
 
-.hi {
-  opacity: 0;
-  transition: opacity 0.5s ease;
-  width: 3ch;
-  overflow: hidden;
-  white-space: nowrap;
-  font-family: 'JetBrains Mono', 'Fira Code', monospace;
-  font-size: 3rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  animation: typing 0.3s steps(3);
+.eyebrow-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+  animation: dot-pulse 2s ease-in-out infinite;
+}
 
-  @include media-breakpoint-down(md) { font-size: 2rem; }
+@keyframes dot-pulse {
+  0%, 100% { opacity: 1;    transform: scale(1); }
+  50%       { opacity: 0.45; transform: scale(0.72); }
+}
 
-  // Gradient accent
-  background: linear-gradient(135deg, var(--accent-light), var(--accent));
+.hero-title {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: clamp(2.6rem, 6vw, 4rem);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  color: var(--text-primary);
+  margin: 0 0 0.9rem;
+}
+
+.hero-name {
+  background: linear-gradient(135deg, var(--accent-light) 0%, var(--accent) 55%, #0a7bc4 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  display: inline;
 }
 
-.name {
-  opacity: 0;
-  transition: opacity 0.5s ease;
-  width: 14ch;
-  overflow: hidden;
-  white-space: nowrap;
-  font-family: 'JetBrains Mono', 'Fira Code', monospace;
-  font-size: 1.75rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  animation: typing 1.4s steps(14);
-  animation-delay: 0.3s;
-  letter-spacing: -0.01em;
-
-  @include media-breakpoint-down(md) { font-size: 1.2rem; }
-}
-
-.tag {
-  opacity: 0;
-  transition: opacity 0.5s ease;
-  width: 22ch;
-  overflow: hidden;
-  white-space: nowrap;
-  font-family: 'JetBrains Mono', 'Fira Code', monospace;
-  font-size: 1.1rem;
-  font-weight: 400;
+.hero-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.95rem;
   color: var(--text-secondary);
-  border-right: 2px solid var(--accent);
-  animation: typing 2s steps(22), blink 0.6s step-end infinite alternate;
-  animation-delay: 1.7s, 3.7s;
-
-  @include media-breakpoint-down(md) { font-size: 0.9rem; }
+  margin: 0 0 0.3rem;
 }
 
-@keyframes typing { from { width: 0; } }
-@keyframes blink  { 50% { border-color: transparent; } }
+.hero-loc {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82rem;
+  color: var(--text-muted-custom);
+  margin: 0 0 2rem;
+}
 
-@include media-breakpoint-down(lg) {
-  .hi, .name, .tag { text-align: center; }
-  .hero .row       { text-align: center; }
+.hero-cta {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+
+  @include media-breakpoint-down(sm) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
