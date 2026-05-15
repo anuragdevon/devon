@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Views in Django — FBV vs CBV</title>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ═══════════ HERO ═══════════ -->
+  <header class="hero">
+    <div class="hero-eyebrow">DJANGO · PYTHON · BACKEND ENGINEERING</div>
+    <h1>Views in Django —<br><em>FBV vs CBV.</em></h1>
+    <p class="hero-lead">What are Django views, how do function-based and class-based views differ, and — most importantly — when should you use each? This is the complete breakdown, with practical examples and the honest tradeoffs.</p>
+    <div class="hero-meta">
+      <span data-icon="✍">anuragdevon</span>
+      <span data-icon="📅">23rd May 2020</span>
+      <span data-icon="⏱">8 min read</span>
+      <span data-icon="📌">Django Deep Dive</span>
+    </div>
+  </header>
+
+  <!-- ═══════════ TOC ═══════════ -->
+  <nav class="toc">
+    <div class="toc-label">// TABLE OF CONTENTS</div>
+    <div class="toc-grid">
+      <a class="toc-link" href="#s1"><span class="toc-n">01</span>What Is a View?</a>
+      <a class="toc-link" href="#s2"><span class="toc-n">02</span>Function-Based Views</a>
+      <a class="toc-link" href="#s3"><span class="toc-n">03</span>Handling HTTP Methods</a>
+      <a class="toc-link" href="#s4"><span class="toc-n">04</span>Class-Based Views</a>
+      <a class="toc-link" href="#s5"><span class="toc-n">05</span>Generic CBVs</a>
+      <a class="toc-link" href="#s6"><span class="toc-n">06</span>Mixins</a>
+      <a class="toc-link" href="#s7"><span class="toc-n">07</span>URL Routing</a>
+      <a class="toc-link" href="#s8"><span class="toc-n">08</span>FBV vs CBV — When to Use</a>
+    </div>
+  </nav>
+
+  <!-- ═══════════ S1 ═══════════ -->
+  <section class="section" id="s1">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2 class="section-title">What Is a View?</h2>
+    </div>
+    <p>In Django, a <strong>view</strong> is a Python callable that receives an HTTP request and returns an HTTP response. That's the entire contract. What happens in between — querying the database, rendering a template, returning JSON — is up to you.</p>
+    <p>Every URL in a Django app maps to exactly one view. The URL dispatcher (<code>urls.py</code>) receives an incoming request, matches the URL pattern, and hands the request object to the corresponding view. The view does its work and returns a response.</p>
+    <div class="arch-flow">
+      <div class="arch-node">
+        <div class="arch-icon">🌐</div>
+        <div class="arch-label">Browser</div>
+        <div class="arch-sub">GET /posts/</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node">
+        <div class="arch-icon">🗺️</div>
+        <div class="arch-label">urls.py</div>
+        <div class="arch-sub">URL dispatcher</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node">
+        <div class="arch-icon">⚙️</div>
+        <div class="arch-label">View</div>
+        <div class="arch-sub">Your logic here</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node">
+        <div class="arch-icon">📄</div>
+        <div class="arch-label">Response</div>
+        <div class="arch-sub">HTML / JSON</div>
+      </div>
+    </div>
+    <p>Django gives you two ways to write views: as plain Python <strong>functions</strong> (function-based views, FBVs) or as Python <strong>classes</strong> (class-based views, CBVs). Both produce the same result — an HTTP response — but they have very different tradeoffs.</p>
+  </section>
+
+  <!-- ═══════════ S2 ═══════════ -->
+  <section class="section" id="s2">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2 class="section-title">Function-Based Views</h2>
+    </div>
+    <p>FBVs are the simplest possible views: a function that takes a <code>request</code> and returns a <code>response</code>. Here's a view that lists all blog posts:</p>
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="code-lang">PYTHON — views.py</span>
+        <div class="code-actions">
+          <div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div>
+          <button class="copy-btn" data-target="code-fbv-list">COPY</button>
+        </div>
+      </div>
+      <pre id="code-fbv-list"><span class="t-kw">from</span> django.shortcuts <span class="t-kw">import</span> render
+<span class="t-kw">from</span> .models <span class="t-kw">import</span> Post
+
+<span class="t-kw">def</span> <span class="t-fn">post_list</span>(request):
+    posts = Post.objects.all().order_by(<span class="t-st">'-created_at'</span>)
+    <span class="t-kw">return</span> render(request, <span class="t-st">'blog/post_list.html'</span>, {<span class="t-st">'posts'</span>: posts})</pre>
+    </div>
+    <p>And a view to show a single post by its ID:</p>
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="code-lang">PYTHON — views.py</span>
+        <div class="code-actions">
+          <div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div>
+          <button class="copy-btn" data-target="code-fbv-detail">COPY</button>
+        </div>
+      </div>
+      <pre id="code-fbv-detail"><span class="t-kw">from</span> django.shortcuts <span class="t-kw">import</span> render, get_object_or_404
+
+<span class="t-kw">def</span> <span class="t-fn">post_detail</span>(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    <span class="t-kw">return</span> render(request, <span class="t-st">'blog/post_detail.html'</span>, {<span class="t-st">'post'</span>: post})</pre>
+    </div>
+    <p>This is readable, obvious Python. You can trace every line. The entire flow — input, processing, output — is visible in one place. That's the core advantage of FBVs: <strong>explicit and easy to follow</strong>.</p>
+    <div class="callout info">
+      <div class="callout-label">// NOTE</div>
+      <p><code>get_object_or_404</code> queries the model and automatically returns an HTTP 404 response if the object doesn't exist. It's shorthand for the try/except you'd otherwise write.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════ S3 ═══════════ -->
+  <section class="section" id="s3">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2 class="section-title">Handling HTTP Methods</h2>
+    </div>
+    <p>Real views often need to handle multiple HTTP methods. A form page needs to handle both <code>GET</code> (show the form) and <code>POST</code> (process the submission). In FBVs, you branch on <code>request.method</code>:</p>
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="code-lang">PYTHON — views.py</span>
+        <div class="code-actions">
+          <div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div>
+          <button class="copy-btn" data-target="code-fbv-form">COPY</button>
+        </div>
+      </div>
+      <pre id="code-fbv-form"><span class="t-kw">from</span> django.shortcuts <span class="t-kw">import</span> render, redirect
+<span class="t-kw">from</span> .forms <span class="t-kw">import</span> PostForm
+
+<span class="t-kw">def</span> <span class="t-fn">post_create</span>(request):
+    <span class="t-kw">if</span> request.method == <span class="t-st">'POST'</span>:
+        form = PostForm(request.POST)
+        <span class="t-kw">if</span> form.is_valid():
+            post = form.save(commit=<span class="t-kw">False</span>)
+            post.author = request.user
+            post.save()
+            <span class="t-kw">return</span> redirect(<span class="t-st">'post_detail'</span>, pk=post.pk)
+    <span class="t-kw">else</span>:
+        form = PostForm()
+
+    <span class="t-kw">return</span> render(request, <span class="t-st">'blog/post_form.html'</span>, {<span class="t-st">'form'</span>: form})</pre>
+    </div>
+    <p>This pattern — <code>if POST: process; else: show form</code> — is the most common view in any Django project. It's straightforward. The logic lives in one place. You can read it top-to-bottom.</p>
+    <p>But notice what happens as you add more views like this: you repeat the same boilerplate constantly. Every list view queries a model and renders a template. Every detail view does a 404-safe lookup. Every create view checks POST vs GET, validates a form, saves, and redirects. <strong>This repetition is exactly the problem CBVs solve.</strong></p>
+  </section>
+
+  <!-- ═══════════ S4 ═══════════ -->
+  <section class="section" id="s4">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2 class="section-title">Class-Based Views</h2>
+    </div>
+    <p>CBVs are Django's answer to DRY view logic. Instead of a function, you write a class. Django maps HTTP methods to class methods: a GET request calls <code>get()</code>, a POST request calls <code>post()</code>.</p>
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="code-lang">PYTHON — views.py</span>
+        <div class="code-actions">
+          <div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div>
+          <button class="copy-btn" data-target="code-cbv-basic">COPY</button>
+        </div>
+      </div>
+      <pre id="code-cbv-basic"><span class="t-kw">from</span> django.views <span class="t-kw">import</span> View
+<span class="t-kw">from</span> django.shortcuts <span class="t-kw">import</span> render
+
+<span class="t-kw">class</span> <span class="t-fn">PostListView</span>(View):
+    <span class="t-kw">def</span> <span class="t-fn">get</span>(self, request):
+        posts = Post.objects.all().order_by(<span class="t-st">'-created_at'</span>)
+        <span class="t-kw">return</span> render(request, <span class="t-st">'blog/post_list.html'</span>, {<span class="t-st">'posts'</span>: posts})
+
+    <span class="t-kw">def</span> <span class="t-fn">post</span>(self, request):
+        <span class="t-cm"># handle POST — no if/else needed</span>
+        ...</pre>
+    </div>
+    <p>Cleaner separation: GET logic and POST logic are separate methods instead of branches of an <code>if</code> statement. But the real power of CBVs isn't in the base <code>View</code> class — it's in Django's <strong>generic views</strong>.</p>
+  </section>
+
+  <!-- ═══════════ S5 ═══════════ -->
+  <section class="section" id="s5">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2 class="section-title">Generic CBVs</h2>
+    </div>
+    <p>Django ships with generic class-based views that implement the most common CRUD patterns out of the box. You configure them with class attributes instead of writing logic. The boilerplate disappears.</p>
+
+    <h3 class="subsection">ListView — list all objects</h3>
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="code-lang">PYTHON — views.py</span>
+        <div class="code-actions">
+          <div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div>
+          <button class="copy-btn" data-target="code-listview">COPY</button>
+        </div>
+      </div>
+      <pre id="code-listview"><span class="t-kw">from</span> django.views.generic <span class="t-kw">import</span> ListView
+
+<span class="t-kw">class</span> <span class="t-fn">PostListView</span>(ListView):
+    model = Post
+    template_name = <span class="t-st">'blog/post_list.html'</span>
+    context_object_name = <span class="t-st">'posts'</span>
+    ordering = [<span class="t-st">'-created_at'</span>]
+    paginate_by = <span class="t-nu">10</span></pre>
+    </div>
+    <p>That's the entire view. Django handles the queryset, the template context, pagination, and the response. Compare to the FBV equivalent — this is dramatically less code.</p>
+
+    <h3 class="subsection">DetailView — show one object</h3>
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="code-lang">PYTHON — views.py</span>
+        <div class="code-actions">
+          <div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div>
+          <button class="copy-btn" data-target="code-detailview">COPY</button>
+        </div>
+      </div>
+      <pre id="code-detailview"><span class="t-kw">from</span> django.views.generic <span class="t-kw">import</span> DetailView
+
+<span class="t-kw">class</span> <span class="t-fn">PostDetailView</span>(DetailView):
+    model = Post
+    template_name = <span class="t-st">'blog/post_detail.html'</span>
+    <span class="t-cm"># Automatically 404s if pk not found</span>
+    <span class="t-cm"># Passes `post` to template context automatically</span></pre>
+    </div>
+
+    <h3 class="subsection">CreateView — handle a creation form</h3>
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="code-lang">PYTHON — views.py</span>
+        <div class="code-actions">
+          <div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div>
+          <button class="copy-btn" data-target="code-createview">COPY</button>
+        </div>
+      </div>
+      <pre id="code-createview"><span class="t-kw">from</span> django.views.generic.edit <span class="t-kw">import</span> CreateView
+<span class="t-kw">from</span> django.urls <span class="t-kw">import</span> reverse_lazy
+
+<span class="t-kw">class</span> <span class="t-fn">PostCreateView</span>(CreateView):
+    model = Post
+    fields = [<span class="t-st">'title'</span>, <span class="t-st">'content'</span>]
+    template_name = <span class="t-st">'blog/post_form.html'</span>
+    success_url = reverse_lazy(<span class="t-st">'post_list'</span>)
+
+    <span class="t-kw">def</span> <span class="t-fn">form_valid</span>(self, form):
+        <span class="t-cm"># Customise before save — set the author</span>
+        form.instance.author = self.request.user
+        <span class="t-kw">return</span> super().form_valid(form)</pre>
+    </div>
+    <p><code>CreateView</code> handles GET (show form), POST valid (save + redirect), and POST invalid (re-render with errors) — all in about ten lines. And <code>form_valid</code> is a hook you override only when you need to customise the save step.</p>
+    <div class="callout info">
+      <div class="callout-label">// GENERIC VIEW REFERENCE</div>
+      <p>Django ships <code>ListView</code>, <code>DetailView</code>, <code>CreateView</code>, <code>UpdateView</code>, <code>DeleteView</code>, <code>FormView</code>, <code>TemplateView</code>, <code>RedirectView</code>. Between them they cover the entire CRUD surface of a typical web app.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════ S6 ═══════════ -->
+  <section class="section" id="s6">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <h2 class="section-title">Mixins</h2>
+    </div>
+    <p>Mixins are the killer feature of CBVs. They're small classes you mix in to add a specific behaviour — without rewriting it in every view. The most common: <code>LoginRequiredMixin</code>.</p>
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="code-lang">PYTHON — views.py</span>
+        <div class="code-actions">
+          <div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div>
+          <button class="copy-btn" data-target="code-mixin">COPY</button>
+        </div>
+      </div>
+      <pre id="code-mixin"><span class="t-kw">from</span> django.contrib.auth.mixins <span class="t-kw">import</span> LoginRequiredMixin
+<span class="t-kw">from</span> django.views.generic.edit <span class="t-kw">import</span> CreateView
+
+<span class="t-kw">class</span> <span class="t-fn">PostCreateView</span>(LoginRequiredMixin, CreateView):
+    model = Post
+    fields = [<span class="t-st">'title'</span>, <span class="t-st">'content'</span>]
+    template_name = <span class="t-st">'blog/post_form.html'</span>
+    success_url = reverse_lazy(<span class="t-st">'post_list'</span>)
+    login_url = <span class="t-st">'/login/'</span>  <span class="t-cm"># redirect here if not authenticated</span></pre>
+    </div>
+    <p>One mixin, one line, and now this view redirects unauthenticated users to the login page automatically. No <code>if not request.user.is_authenticated</code> checks scattered through your view logic.</p>
+    <p>Other useful mixins:</p>
+    <div class="spec-card">
+      <div class="spec-row"><span class="spec-key">LoginRequiredMixin</span><span class="spec-val">Redirect to login if not authenticated</span></div>
+      <div class="spec-row"><span class="spec-key">PermissionRequiredMixin</span><span class="spec-val">Check for specific Django permission</span></div>
+      <div class="spec-row"><span class="spec-key">UserPassesTestMixin</span><span class="spec-val">Custom test function (e.g. is the author?)</span></div>
+      <div class="spec-row"><span class="spec-key">SuccessMessageMixin</span><span class="spec-val">Flash a success message after save</span></div>
+    </div>
+    <p>Mixin order matters: always put mixins <em>before</em> the base generic view in the class definition. Django's MRO (Method Resolution Order) resolves left-to-right, so mixins need to come first to override the base class's methods.</p>
+  </section>
+
+  <!-- ═══════════ S7 ═══════════ -->
+  <section class="section" id="s7">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <h2 class="section-title">URL Routing</h2>
+    </div>
+    <p>FBVs wire directly into <code>urls.py</code> — just reference the function:</p>
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="code-lang">PYTHON — urls.py</span>
+        <div class="code-actions">
+          <div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div>
+          <button class="copy-btn" data-target="code-fbv-url">COPY</button>
+        </div>
+      </div>
+      <pre id="code-fbv-url"><span class="t-kw">from</span> django.urls <span class="t-kw">import</span> path
+<span class="t-kw">from</span> . <span class="t-kw">import</span> views
+
+urlpatterns = [
+    path(<span class="t-st">'posts/'</span>, views.post_list, name=<span class="t-st">'post_list'</span>),
+    path(<span class="t-st">'posts/&lt;int:pk&gt;/'</span>, views.post_detail, name=<span class="t-st">'post_detail'</span>),
+    path(<span class="t-st">'posts/new/'</span>, views.post_create, name=<span class="t-st">'post_create'</span>),
+]</pre>
+    </div>
+    <p>CBVs need <code>.as_view()</code> — a class method that returns a callable view function Django's URL dispatcher can use:</p>
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="code-lang">PYTHON — urls.py</span>
+        <div class="code-actions">
+          <div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div>
+          <button class="copy-btn" data-target="code-cbv-url">COPY</button>
+        </div>
+      </div>
+      <pre id="code-cbv-url"><span class="t-kw">from</span> django.urls <span class="t-kw">import</span> path
+<span class="t-kw">from</span> .views <span class="t-kw">import</span> PostListView, PostDetailView, PostCreateView
+
+urlpatterns = [
+    path(<span class="t-st">'posts/'</span>, PostListView.as_view(), name=<span class="t-st">'post_list'</span>),
+    path(<span class="t-st">'posts/&lt;int:pk&gt;/'</span>, PostDetailView.as_view(), name=<span class="t-st">'post_detail'</span>),
+    path(<span class="t-st">'posts/new/'</span>, PostCreateView.as_view(), name=<span class="t-st">'post_create'</span>),
+]</pre>
+    </div>
+    <p>The <code>.as_view()</code> call is mandatory for CBVs. If you forget it, Django will raise a <code>TypeError</code> because a class isn't directly callable as a view.</p>
+  </section>
+
+  <!-- ═══════════ S8 ═══════════ -->
+  <section class="section" id="s8">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <h2 class="section-title">FBV vs CBV — When to Use</h2>
+    </div>
+    <p>This is the real question, and the honest answer is: <strong>it depends on what the view is doing.</strong></p>
+
+    <div class="obs-grid">
+      <div class="obs-item">
+        <div class="obs-icon">⚡</div>
+        <div>
+          <div class="obs-title">Use FBVs when the logic is custom or complex</div>
+          <div class="obs-desc">If your view doesn't map cleanly to list/detail/create/update/delete — if it combines queries, calls external APIs, or has branching logic — an FBV is often cleaner. You can see every line.</div>
+        </div>
+      </div>
+      <div class="obs-item">
+        <div class="obs-icon">♻️</div>
+        <div>
+          <div class="obs-title">Use CBVs for standard CRUD</div>
+          <div class="obs-desc">If you're listing model objects, showing a detail page, creating, editing, or deleting — use generic CBVs. You're not writing new logic; you're configuring existing logic.</div>
+        </div>
+      </div>
+      <div class="obs-item">
+        <div class="obs-icon">🔒</div>
+        <div>
+          <div class="obs-title">Use CBVs + Mixins for reusable cross-cutting behaviour</div>
+          <div class="obs-desc">Auth checks, permission checks, success messages — if the same behaviour applies to many views, put it in a mixin and mix it in once. In FBVs, this is a decorator, which is also fine.</div>
+        </div>
+      </div>
+      <div class="obs-item">
+        <div class="obs-icon">👁️</div>
+        <div>
+          <div class="obs-title">FBVs when you need the code to be obvious</div>
+          <div class="obs-desc">CBVs involve Django's MRO and method resolution. Tracing what <code>get()</code> actually does requires knowing which parent class provides it. FBVs show you everything in one function — great for code reviews and onboarding.</div>
+        </div>
+      </div>
+    </div>
+
+    <p>In practice, most Django projects use both. Generic CBVs for the standard CRUD pages, FBVs for anything custom — API endpoints, search views, dashboards with complex queries. There's no law saying you must pick one.</p>
+
+    <div class="spec-card">
+      <div class="spec-row"><span class="spec-key">FBV strengths</span><span class="spec-val">Explicit, readable, easy to debug, full control</span></div>
+      <div class="spec-row"><span class="spec-key">FBV weaknesses</span><span class="spec-val">Repetitive for standard CRUD, cross-cutting logic via decorators only</span></div>
+      <div class="spec-row"><span class="spec-key">CBV strengths</span><span class="spec-val">DRY, mixins, generic views eliminate boilerplate</span></div>
+      <div class="spec-row"><span class="spec-key">CBV weaknesses</span><span class="spec-val">Harder to trace, MRO complexity, overkill for simple views</span></div>
+      <div class="spec-row"><span class="spec-key">Remember</span><span class="spec-val">CBVs always need .as_view() in urls.py</span></div>
+    </div>
+
+    <div class="divider">END</div>
+
+    <div class="cta">
+      <h3>Building with Django?</h3>
+      <p>I write about Django internals, Python patterns, and backend architecture. More on Dev.to and GitHub.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://dev.to/anuragdevon" target="_blank" rel="noopener">Dev.to ↗</a>
+        <a class="btn btn-ghost" href="https://github.com/anuragdevon" target="_blank" rel="noopener">GitHub ↗</a>
+      </div>
+      <p class="cta-note">Written in May 2020 — part of my Django learning series.</p>
+    </div>
+
+  </section>
+
+</div><!-- /page -->
+
+</body>
+</html>

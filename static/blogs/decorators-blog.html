@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Decorators &amp; Wrappers — The Magic Behind @</title>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ═══════════ HERO ═══════════ -->
+  <header class="hero">
+    <div class="hero-eyebrow">PYTHON · ADVANCED PATTERNS · BACKEND</div>
+    <h1>Decorators &amp; Wrappers —<br><em>The Magic Behind @.</em></h1>
+    <p class="hero-lead">You've seen <code>@staticmethod</code>, <code>@property</code>, <code>@login_required</code>. But what's actually happening when Python sees that <code>@</code>? This is the complete mental model — from first-class functions all the way to decorators with arguments and class-based decorators.</p>
+    <div class="hero-meta">
+      <span data-icon="✍">anuragdevon</span>
+      <span data-icon="📅">23rd May 2020</span>
+      <span data-icon="⏱">12 min read</span>
+      <span data-icon="📌">Python Deep Dive</span>
+    </div>
+  </header>
+
+  <!-- ═══════════ TOC ═══════════ -->
+  <nav class="toc">
+    <div class="toc-label">// TABLE OF CONTENTS</div>
+    <div class="toc-grid">
+      <a class="toc-link" href="#s1"><span class="toc-n">01</span>What Is a Decorator?</a>
+      <a class="toc-link" href="#s2"><span class="toc-n">02</span>First-Class Functions</a>
+      <a class="toc-link" href="#s3"><span class="toc-n">03</span>Your First Decorator</a>
+      <a class="toc-link" href="#s4"><span class="toc-n">04</span>functools.wraps</a>
+      <a class="toc-link" href="#s5"><span class="toc-n">05</span>Decorators with Arguments</a>
+      <a class="toc-link" href="#s6"><span class="toc-n">06</span>Real Patterns</a>
+      <a class="toc-link" href="#s7"><span class="toc-n">07</span>Class Decorators</a>
+      <a class="toc-link" href="#s8"><span class="toc-n">08</span>Stacking &amp; Cheatsheet</a>
+    </div>
+  </nav>
+
+  <!-- ═══════════ S1 ═══════════ -->
+  <section class="section" id="s1">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2 class="section-title">What Is a Decorator?</h2>
+    </div>
+    <p>A decorator is a function that takes another function as input and returns a new function — usually one that does something extra before or after calling the original.</p>
+    <p>That's the whole idea. Everything else is implementation detail.</p>
+    <p>The <code>@decorator</code> syntax is just shorthand. These two blocks are identical:</p>
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="code-lang">PYTHON</span>
+        <div class="code-actions">
+          <div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div>
+          <button class="copy-btn" data-target="code-deco-syntax">COPY</button>
+        </div>
+      </div>
+      <pre id="code-deco-syntax"><span class="t-cm"># With @ syntax</span>
+<span class="t-kw">@my_decorator</span>
+<span class="t-kw">def</span> <span class="t-fn">greet</span>():
+    <span class="t-kw">print</span>(<span class="t-st">"Hello!"</span>)
+
+<span class="t-cm"># Without @ syntax — exactly equivalent</span>
+<span class="t-kw">def</span> <span class="t-fn">greet</span>():
+    <span class="t-kw">print</span>(<span class="t-st">"Hello!"</span>)
+
+greet = my_decorator(greet)</pre>
+    </div>
+    <p>The <code>@</code> sign is syntactic sugar. Python sees <code>@my_decorator</code> above a function definition and immediately executes <code>greet = my_decorator(greet)</code> after the function is defined. That's it. No magic.</p>
+    <p>To understand how <code>my_decorator</code> can receive a function and return another function, we need to understand <strong>first-class functions</strong>.</p>
+  </section>
+
+  <!-- ═══════════ S2 ═══════════ -->
+  <section class="section" id="s2">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2 class="section-title">First-Class Functions</h2>
+    </div>
+    <p>In Python, <strong>functions are objects</strong>. You can assign them to variables, store them in lists, pass them as arguments, and return them from other functions — the same way you'd handle a string or an integer.</p>
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="code-lang">PYTHON</span>
+        <div class="code-actions">
+          <div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div>
+          <button class="copy-btn" data-target="code-first-class">COPY</button>
+        </div>
+      </div>
+      <pre id="code-first-class"><span class="t-kw">def</span> <span class="t-fn">say_hello</span>():
+    <span class="t-kw">print</span>(<span class="t-st">"Hello!"</span>)
+
+<span class="t-cm"># Assign to a variable — no () means no call, just reference</span>
+<span class="t-vr">fn</span> = say_hello
+fn()  <span class="t-cm"># prints "Hello!"</span>
+
+<span class="t-cm"># Pass as an argument</span>
+<span class="t-kw">def</span> <span class="t-fn">run_twice</span>(func):
+    func()
+    func()
+
+run_twice(say_hello)  <span class="t-cm"># prints "Hello!" twice</span>
+
+<span class="t-cm"># Return from a function</span>
+<span class="t-kw">def</span> <span class="t-fn">get_greeter</span>():
+    <span class="t-kw">def</span> <span class="t-fn">inner</span>():
+        <span class="t-kw">print</span>(<span class="t-st">"Hi from inner!"</span>)
+    <span class="t-kw">return</span> inner  <span class="t-cm"># returning the function object, not calling it</span>
+
+<span class="t-vr">greeter</span> = get_greeter()
+greeter()  <span class="t-cm"># prints "Hi from inner!"</span></pre>
+    </div>
+    <p>The last example is key: <code>get_greeter</code> defines a function <em>inside itself</em> and returns it. The inner function is called a <strong>closure</strong> — it has access to variables from its enclosing scope even after the outer function has returned.</p>
+    <p>This is the mechanism decorators are built on.</p>
+  </section>
+
+  <!-- ═══════════ S3 ═══════════ -->
+  <section class="section" id="s3">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2 class="section-title">Your First Decorator</h2>
+    </div>
+    <p>Let's build a decorator that prints a log message before and after any function runs. This pattern is called a "wrapper" — you're wrapping the original function in new behaviour.</p>
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="code-lang">PYTHON</span>
+        <div class="code-actions">
+          <div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div>
+          <button class="copy-btn" data-target="code-first-deco">COPY</button>
+        </div>
+      </div>
+      <pre id="code-first-deco"><span class="t-kw">def</span> <span class="t-fn">log_calls</span>(func):
+    <span class="t-kw">def</span> <span class="t-fn">wrapper</span>(*args, **kwargs):
+        <span class="t-kw">print</span>(<span class="t-st">f"Calling {func.__name__}..."</span>)
+        <span class="t-vr">result</span> = func(*args, **kwargs)
+        <span class="t-kw">print</span>(<span class="t-st">f"{func.__name__} finished."</span>)
+        <span class="t-kw">return</span> result
+    <span class="t-kw">return</span> wrapper
+
+<span class="t-kw">@log_calls</span>
+<span class="t-kw">def</span> <span class="t-fn">add</span>(a, b):
+    <span class="t-kw">return</span> a + b
+
+result = add(<span class="t-nu">3</span>, <span class="t-nu">5</span>)
+<span class="t-cm"># Calling add...</span>
+<span class="t-cm"># add finished.</span>
+<span class="t-kw">print</span>(result)  <span class="t-cm"># 8</span></pre>
+    </div>
+    <p>Walk through what's happening:</p>
+    <ol>
+      <li><code>log_calls</code> receives the <code>add</code> function as <code>func</code></li>
+      <li>It defines a new function <code>wrapper</code> that calls <code>func</code> in the middle</li>
+      <li>It returns <code>wrapper</code> — <em>not</em> calling it, just returning the object</li>
+      <li>Python replaces <code>add</code> with the returned <code>wrapper</code></li>
+      <li>From now on, calling <code>add(3, 5)</code> actually calls <code>wrapper(3, 5)</code>, which calls the original <code>add</code></li>
+    </ol>
+    <p>The <code>*args, **kwargs</code> in <code>wrapper</code>'s signature is important — it means "accept any arguments and pass them through." This makes the decorator generic: it works on functions with any signature.</p>
+    <div class="callout info">
+      <div class="callout-label">// PATTERN</div>
+      <p>Every decorator follows this shape: outer function receives <code>func</code>, defines an inner <code>wrapper(*args, **kwargs)</code> that calls <code>func(*args, **kwargs)</code>, outer function returns <code>wrapper</code>. Memorise this skeleton — everything else is just adding logic before/after the <code>func()</code> call.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════ S4 ═══════════ -->
+  <section class="section" id="s4">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2 class="section-title">functools.wraps</h2>
+    </div>
+    <p>There's a subtle problem with the decorator above. When you decorate a function, Python replaces it with <code>wrapper</code>. That means the original function's metadata — its name, docstring, and module — is gone:</p>
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="code-lang">PYTHON</span>
+        <div class="code-actions">
+          <div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div>
+          <button class="copy-btn" data-target="code-meta-problem">COPY</button>
+        </div>
+      </div>
+      <pre id="code-meta-problem"><span class="t-kw">@log_calls</span>
+<span class="t-kw">def</span> <span class="t-fn">add</span>(a, b):
+    <span class="t-st">"""Adds two numbers."""</span>
+    <span class="t-kw">return</span> a + b
+
+<span class="t-kw">print</span>(add.__name__)   <span class="t-cm"># "wrapper" — not "add"!</span>
+<span class="t-kw">print</span>(add.__doc__)    <span class="t-cm"># None — docstring is gone!</span></pre>
+    </div>
+    <p>This breaks introspection tools, auto-generated docs, and debugging. The fix is <code>functools.wraps</code> — a decorator for your wrapper that copies the original function's metadata onto it:</p>
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="code-lang">PYTHON</span>
+        <div class="code-actions">
+          <div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div>
+          <button class="copy-btn" data-target="code-wraps">COPY</button>
+        </div>
+      </div>
+      <pre id="code-wraps"><span class="t-kw">import</span> functools
+
+<span class="t-kw">def</span> <span class="t-fn">log_calls</span>(func):
+    <span class="t-kw">@functools.wraps</span>(func)  <span class="t-cm"># ← add this always</span>
+    <span class="t-kw">def</span> <span class="t-fn">wrapper</span>(*args, **kwargs):
+        <span class="t-kw">print</span>(<span class="t-st">f"Calling {func.__name__}..."</span>)
+        <span class="t-vr">result</span> = func(*args, **kwargs)
+        <span class="t-kw">print</span>(<span class="t-st">f"{func.__name__} finished."</span>)
+        <span class="t-kw">return</span> result
+    <span class="t-kw">return</span> wrapper
+
+<span class="t-kw">@log_calls</span>
+<span class="t-kw">def</span> <span class="t-fn">add</span>(a, b):
+    <span class="t-st">"""Adds two numbers."""</span>
+    <span class="t-kw">return</span> a + b
+
+<span class="t-kw">print</span>(add.__name__)  <span class="t-cm"># "add" ✓</span>
+<span class="t-kw">print</span>(add.__doc__)   <span class="t-cm"># "Adds two numbers." ✓</span></pre>
+    </div>
+    <p><strong>Rule of thumb:</strong> always put <code>@functools.wraps(func)</code> on your wrapper function. No exceptions. The cost is one line; the benefit is that your decorator is invisible to everything that inspects function metadata.</p>
+  </section>
+
+  <!-- ═══════════ S5 ═══════════ -->
+  <section class="section" id="s5">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2 class="section-title">Decorators with Arguments</h2>
+    </div>
+    <p>What if you want to configure a decorator? Something like <code>@retry(times=3)</code> or <code>@cache(ttl=60)</code>? This requires one more layer of nesting — a function that creates and returns a decorator.</p>
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="code-lang">PYTHON</span>
+        <div class="code-actions">
+          <div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div>
+          <button class="copy-btn" data-target="code-deco-args">COPY</button>
+        </div>
+      </div>
+      <pre id="code-deco-args"><span class="t-kw">import</span> functools
+
+<span class="t-kw">def</span> <span class="t-fn">repeat</span>(times):
+    <span class="t-cm"># This is the "decorator factory" — it receives the config</span>
+    <span class="t-kw">def</span> <span class="t-fn">decorator</span>(func):
+        <span class="t-cm"># This is the actual decorator — it receives the function</span>
+        <span class="t-kw">@functools.wraps</span>(func)
+        <span class="t-kw">def</span> <span class="t-fn">wrapper</span>(*args, **kwargs):
+            <span class="t-cm"># This is the wrapper — it does the actual work</span>
+            <span class="t-kw">for</span> _ <span class="t-kw">in</span> <span class="t-fn">range</span>(times):
+                <span class="t-vr">result</span> = func(*args, **kwargs)
+            <span class="t-kw">return</span> result
+        <span class="t-kw">return</span> wrapper
+    <span class="t-kw">return</span> decorator
+
+<span class="t-kw">@repeat</span>(times=<span class="t-nu">3</span>)
+<span class="t-kw">def</span> <span class="t-fn">say_hi</span>():
+    <span class="t-kw">print</span>(<span class="t-st">"Hi!"</span>)
+
+say_hi()
+<span class="t-cm"># Hi!</span>
+<span class="t-cm"># Hi!</span>
+<span class="t-cm"># Hi!</span></pre>
+    </div>
+    <p>Three layers, three jobs:</p>
+    <ol>
+      <li><strong>Outermost function</strong> (<code>repeat</code>) — receives decorator arguments, returns the decorator</li>
+      <li><strong>Middle function</strong> (<code>decorator</code>) — receives the function to decorate, returns the wrapper</li>
+      <li><strong>Inner function</strong> (<code>wrapper</code>) — receives the call arguments, does the work</li>
+    </ol>
+    <p>When you write <code>@repeat(times=3)</code>, Python first calls <code>repeat(times=3)</code> to get a decorator, then applies that decorator to the function. The parentheses trigger the outer call; the <code>@</code> triggers the middle call.</p>
+    <div class="callout info">
+      <div class="callout-label">// MENTAL MODEL</div>
+      <p>Think of it as: <code>repeat(3)(say_hi)</code>. The first call returns a decorator. The second call applies it. The <code>@</code> syntax is doing both for you.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════ S6 ═══════════ -->
+  <section class="section" id="s6">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <h2 class="section-title">Real Patterns</h2>
+    </div>
+    <p>Here are three decorators you'll write or reach for constantly in real Python projects.</p>
+
+    <h3 class="subsection">@timer — measure execution time</h3>
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="code-lang">PYTHON</span>
+        <div class="code-actions">
+          <div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div>
+          <button class="copy-btn" data-target="code-timer">COPY</button>
+        </div>
+      </div>
+      <pre id="code-timer"><span class="t-kw">import</span> time, functools
+
+<span class="t-kw">def</span> <span class="t-fn">timer</span>(func):
+    <span class="t-kw">@functools.wraps</span>(func)
+    <span class="t-kw">def</span> <span class="t-fn">wrapper</span>(*args, **kwargs):
+        <span class="t-vr">start</span> = time.perf_counter()
+        <span class="t-vr">result</span> = func(*args, **kwargs)
+        <span class="t-vr">elapsed</span> = time.perf_counter() - start
+        <span class="t-kw">print</span>(<span class="t-st">f"{func.__name__} took {elapsed:.4f}s"</span>)
+        <span class="t-kw">return</span> result
+    <span class="t-kw">return</span> wrapper
+
+<span class="t-kw">@timer</span>
+<span class="t-kw">def</span> <span class="t-fn">slow_query</span>():
+    time.sleep(<span class="t-nu">0.5</span>)
+    <span class="t-kw">return</span> <span class="t-st">"done"</span>
+
+slow_query()  <span class="t-cm"># slow_query took 0.5002s</span></pre>
+    </div>
+
+    <h3 class="subsection">@retry — retry on exception</h3>
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="code-lang">PYTHON</span>
+        <div class="code-actions">
+          <div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div>
+          <button class="copy-btn" data-target="code-retry">COPY</button>
+        </div>
+      </div>
+      <pre id="code-retry"><span class="t-kw">import</span> functools, time
+
+<span class="t-kw">def</span> <span class="t-fn">retry</span>(times=<span class="t-nu">3</span>, delay=<span class="t-nu">1.0</span>, exceptions=(<span class="t-pr">Exception</span>,)):
+    <span class="t-kw">def</span> <span class="t-fn">decorator</span>(func):
+        <span class="t-kw">@functools.wraps</span>(func)
+        <span class="t-kw">def</span> <span class="t-fn">wrapper</span>(*args, **kwargs):
+            <span class="t-kw">for</span> attempt <span class="t-kw">in</span> <span class="t-fn">range</span>(times):
+                <span class="t-kw">try</span>:
+                    <span class="t-kw">return</span> func(*args, **kwargs)
+                <span class="t-kw">except</span> exceptions <span class="t-kw">as</span> e:
+                    <span class="t-kw">if</span> attempt == times - <span class="t-nu">1</span>:
+                        <span class="t-kw">raise</span>
+                    <span class="t-kw">print</span>(<span class="t-st">f"Attempt {attempt+1} failed: {e}. Retrying..."</span>)
+                    time.sleep(delay)
+        <span class="t-kw">return</span> wrapper
+    <span class="t-kw">return</span> decorator
+
+<span class="t-kw">@retry</span>(times=<span class="t-nu">3</span>, delay=<span class="t-nu">0.5</span>, exceptions=(<span class="t-pr">ConnectionError</span>,))
+<span class="t-kw">def</span> <span class="t-fn">fetch_data</span>(url):
+    <span class="t-cm"># might fail on flaky network</span>
+    <span class="t-kw">return</span> requests.get(url)</pre>
+    </div>
+
+    <h3 class="subsection">@cache — simple memoization</h3>
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="code-lang">PYTHON</span>
+        <div class="code-actions">
+          <div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div>
+          <button class="copy-btn" data-target="code-cache">COPY</button>
+        </div>
+      </div>
+      <pre id="code-cache"><span class="t-kw">import</span> functools
+
+<span class="t-kw">def</span> <span class="t-fn">cache</span>(func):
+    <span class="t-vr">store</span> = {}
+    <span class="t-kw">@functools.wraps</span>(func)
+    <span class="t-kw">def</span> <span class="t-fn">wrapper</span>(*args):
+        <span class="t-kw">if</span> args <span class="t-kw">not in</span> store:
+            store[args] = func(*args)
+        <span class="t-kw">return</span> store[args]
+    <span class="t-kw">return</span> wrapper
+
+<span class="t-kw">@cache</span>
+<span class="t-kw">def</span> <span class="t-fn">fibonacci</span>(n):
+    <span class="t-kw">if</span> n &lt;= <span class="t-nu">1</span>:
+        <span class="t-kw">return</span> n
+    <span class="t-kw">return</span> fibonacci(n - <span class="t-nu">1</span>) + fibonacci(n - <span class="t-nu">2</span>)
+
+<span class="t-cm"># fibonacci(40) without cache: ~40 seconds</span>
+<span class="t-cm"># fibonacci(40) with cache: instant</span></pre>
+    </div>
+    <div class="callout tip">
+      <div class="callout-label">// TIP</div>
+      <p>Python's standard library has <code>functools.lru_cache</code> and (since 3.9) <code>functools.cache</code> — both are production-grade memoization decorators. Use those in real code. Building your own is a great exercise for understanding how they work.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════ S7 ═══════════ -->
+  <section class="section" id="s7">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <h2 class="section-title">Class Decorators</h2>
+    </div>
+    <p>A decorator doesn't have to be a function. Any callable works — and a class with a <code>__call__</code> method is callable. Class decorators can be useful when your decorator needs to maintain state across multiple calls.</p>
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="code-lang">PYTHON</span>
+        <div class="code-actions">
+          <div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div>
+          <button class="copy-btn" data-target="code-class-deco">COPY</button>
+        </div>
+      </div>
+      <pre id="code-class-deco"><span class="t-kw">import</span> functools
+
+<span class="t-kw">class</span> <span class="t-fn">CountCalls</span>:
+    <span class="t-kw">def</span> <span class="t-fn">__init__</span>(self, func):
+        functools.update_wrapper(self, func)
+        self.func = func
+        self.call_count = <span class="t-nu">0</span>
+
+    <span class="t-kw">def</span> <span class="t-fn">__call__</span>(self, *args, **kwargs):
+        self.call_count += <span class="t-nu">1</span>
+        <span class="t-kw">print</span>(<span class="t-st">f"Call #{self.call_count}"</span>)
+        <span class="t-kw">return</span> self.func(*args, **kwargs)
+
+<span class="t-kw">@CountCalls</span>
+<span class="t-kw">def</span> <span class="t-fn">process</span>(x):
+    <span class="t-kw">return</span> x * <span class="t-nu">2</span>
+
+process(<span class="t-nu">5</span>)  <span class="t-cm"># Call #1</span>
+process(<span class="t-nu">5</span>)  <span class="t-cm"># Call #2</span>
+process(<span class="t-nu">5</span>)  <span class="t-cm"># Call #3</span>
+<span class="t-kw">print</span>(process.call_count)  <span class="t-cm"># 3</span></pre>
+    </div>
+    <p>When <code>@CountCalls</code> is applied, Python calls <code>CountCalls(process)</code> — which hits <code>__init__</code> and stores the function. Every subsequent call to <code>process(x)</code> hits <code>__call__</code>. The instance's <code>call_count</code> persists across all calls — something you'd need a closure variable to achieve with a function decorator.</p>
+    <p>Use class decorators when your decorator has meaningful state. Use function decorators for everything else — they're lighter and simpler.</p>
+  </section>
+
+  <!-- ═══════════ S8 ═══════════ -->
+  <section class="section" id="s8">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <h2 class="section-title">Stacking &amp; Cheatsheet</h2>
+    </div>
+    <p>You can stack decorators. They apply bottom-up — the decorator closest to the function definition applies first.</p>
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="code-lang">PYTHON</span>
+        <div class="code-actions">
+          <div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div>
+          <button class="copy-btn" data-target="code-stacking">COPY</button>
+        </div>
+      </div>
+      <pre id="code-stacking"><span class="t-kw">@timer</span>        <span class="t-cm"># applied second (outermost)</span>
+<span class="t-kw">@log_calls</span>   <span class="t-cm"># applied first (innermost)</span>
+<span class="t-kw">def</span> <span class="t-fn">my_func</span>():
+    ...
+
+<span class="t-cm"># Equivalent to:</span>
+my_func = timer(log_calls(my_func))</pre>
+    </div>
+    <p>Calling <code>my_func()</code> runs through <code>timer</code> first, then <code>log_calls</code>, then the original function, then back out.</p>
+    <p>Quick reference for everything we covered:</p>
+    <div class="spec-card">
+      <div class="spec-row"><span class="spec-key">Basic decorator</span><span class="spec-val">outer(func) → inner wrapper(*args, **kwargs)</span></div>
+      <div class="spec-row"><span class="spec-key">Always use</span><span class="spec-val">@functools.wraps(func) on wrapper</span></div>
+      <div class="spec-row"><span class="spec-key">Decorator with args</span><span class="spec-val">Add one more outer layer (factory → decorator → wrapper)</span></div>
+      <div class="spec-row"><span class="spec-key">Class decorator</span><span class="spec-val">__init__ receives func, __call__ is the wrapper</span></div>
+      <div class="spec-row"><span class="spec-key">Stacking order</span><span class="spec-val">Bottom decorator applies first, top applies last</span></div>
+      <div class="spec-row"><span class="spec-key">Built-in decorators</span><span class="spec-val">@property, @staticmethod, @classmethod, @functools.lru_cache</span></div>
+    </div>
+
+    <div class="divider">END</div>
+
+    <div class="cta">
+      <h3>Dig deeper into Python?</h3>
+      <p>I write about Python internals, Django patterns, and backend engineering. More on Dev.to and GitHub.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://dev.to/anuragdevon" target="_blank" rel="noopener">Dev.to ↗</a>
+        <a class="btn btn-ghost" href="https://github.com/anuragdevon" target="_blank" rel="noopener">GitHub ↗</a>
+      </div>
+      <p class="cta-note">Written in May 2020 — part of my Python deep-dive series.</p>
+    </div>
+
+  </section>
+
+</div><!-- /page -->
+
+</body>
+</html>

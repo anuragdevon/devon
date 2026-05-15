@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CTF Wireshark — Cracking the Capture</title>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ═══════════ HERO ═══════════ -->
+  <header class="hero">
+    <div class="hero-eyebrow">CTF · NETWORK FORENSICS · WIRESHARK</div>
+    <h1>Cracking the Capture —<br><em>My First Wireshark CTF.</em></h1>
+    <p class="hero-lead">A <code>.pcap</code> file, 1,412 packets, and one hidden flag. No hints. This is how I used Wireshark to crack my first network forensics challenge — and the mental model that made it click.</p>
+    <div class="hero-meta">
+      <span data-icon="✍">anuragdevon</span>
+      <span data-icon="📅">23rd May 2020</span>
+      <span data-icon="⏱">7 min read</span>
+      <span data-icon="📌">CTF Writeup — Network Forensics</span>
+    </div>
+  </header>
+
+  <!-- ═══════════ TOC ═══════════ -->
+  <nav class="toc">
+    <div class="toc-label">// TABLE OF CONTENTS</div>
+    <div class="toc-grid">
+      <a class="toc-link" href="#s1"><span class="toc-n">01</span>What Is a CTF?</a>
+      <a class="toc-link" href="#s2"><span class="toc-n">02</span>The Challenge</a>
+      <a class="toc-link" href="#s3"><span class="toc-n">03</span>First Look</a>
+      <a class="toc-link" href="#s4"><span class="toc-n">04</span>Narrowing Down</a>
+      <a class="toc-link" href="#s5"><span class="toc-n">05</span>Following Streams</a>
+      <a class="toc-link" href="#s6"><span class="toc-n">06</span>The Discovery</a>
+      <a class="toc-link" href="#s7"><span class="toc-n">07</span>Filter Cheatsheet</a>
+      <a class="toc-link" href="#s8"><span class="toc-n">08</span>Takeaways</a>
+    </div>
+  </nav>
+
+  <!-- ═══════════ S1 ═══════════ -->
+  <section class="section" id="s1">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2 class="section-title">What Is a CTF?</h2>
+    </div>
+    <p>CTF stands for <strong>Capture the Flag</strong>. It's a cybersecurity competition format where you solve puzzles to find hidden strings called "flags" — typically formatted as <code>CTF{some_string_here}</code>. Submit the flag, get the points.</p>
+    <p>Challenges are grouped by category: web exploitation, binary exploitation, cryptography, steganography, reverse engineering, and — the one we're doing today — <strong>network forensics</strong>.</p>
+    <p>Network forensics challenges give you a <code>.pcap</code> file: a raw recording of network traffic captured from a live interface. Your job is to dig through it and find what's hidden. The tool everyone uses for this is <strong>Wireshark</strong> — a free, open-source packet analyzer that lets you open a capture and inspect every single byte that went over the wire.</p>
+    <div class="callout info">
+      <div class="callout-label">// CONTEXT</div>
+      <p>This writeup is based on a challenge from a beginner CTF I participated in during college. The flag value is replaced — the techniques and packet structure are real.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════ S2 ═══════════ -->
+  <section class="section" id="s2">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2 class="section-title">The Challenge</h2>
+    </div>
+    <p>The challenge was called <strong>"Listen Closely"</strong>. The full description read:</p>
+    <div class="callout warn">
+      <div class="callout-label">// CHALLENGE</div>
+      <p>"We intercepted traffic on a compromised internal network. Someone transferred something they shouldn't have. Find it. <strong>Attachment: capture.pcap (1.2 MB)</strong>"</p>
+    </div>
+    <p>No category hints. No protocol hints. Just the file. I opened it in Wireshark and stared at the wall of packets.</p>
+    <div class="spec-card">
+      <div class="spec-row"><span class="spec-key">File</span><span class="spec-val">capture.pcap</span></div>
+      <div class="spec-row"><span class="spec-key">Size</span><span class="spec-val">1.2 MB</span></div>
+      <div class="spec-row"><span class="spec-key">Total packets</span><span class="spec-val">1,412</span></div>
+      <div class="spec-row"><span class="spec-key">Capture duration</span><span class="spec-val">4 minutes 22 seconds</span></div>
+      <div class="spec-row"><span class="spec-key">Protocols visible</span><span class="spec-val">TCP, HTTP, FTP, DNS, ARP</span></div>
+    </div>
+  </section>
+
+  <!-- ═══════════ S3 ═══════════ -->
+  <section class="section" id="s3">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2 class="section-title">First Look</h2>
+    </div>
+    <p>Raw packet view is overwhelming — colour-coded rows of TCP, HTTP, DNS, ARP packets with no obvious structure. The first thing a good network analyst does is not look at individual packets. They look at the <strong>big picture</strong>.</p>
+    <p>In Wireshark: <strong>Statistics → Protocol Hierarchy</strong>. This gives you a tree breakdown of every protocol in the capture, sorted by percentage of traffic.</p>
+    <div class="spec-card">
+      <div class="spec-row"><span class="spec-key">TCP</span><span class="spec-val">87.3% of packets</span></div>
+      <div class="spec-row"><span class="spec-key">HTTP</span><span class="spec-val">8.1%</span></div>
+      <div class="spec-row"><span class="spec-key">FTP</span><span class="spec-val">3.2%</span></div>
+      <div class="spec-row"><span class="spec-key">DNS</span><span class="spec-val">1.4%</span></div>
+    </div>
+    <p><strong>FTP.</strong> That was my signal. FTP — File Transfer Protocol — is a legacy protocol from the 1970s that was never designed with security in mind. It transmits everything in plaintext: usernames, passwords, and the files themselves. No encryption. None.</p>
+    <p>The presence of FTP in a capture described as "compromised internal network" is exactly the kind of thing a CTF challenge would use. I filtered for it immediately.</p>
+    <div class="callout warn">
+      <div class="callout-label">// SECURITY REALITY</div>
+      <p>FTP is still actively used in legacy enterprise environments today. Credentials sent over FTP are recoverable by anyone on the same network segment — no cracking required, just capture and read. Never use FTP for anything sensitive. Use SFTP (SSH File Transfer Protocol) instead.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════ S4 ═══════════ -->
+  <section class="section" id="s4">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2 class="section-title">Narrowing Down</h2>
+    </div>
+    <p>Wireshark display filters are the core skill in packet analysis. They don't delete packets — they temporarily hide anything that doesn't match, letting you focus on what you care about. Think of them as SQL <code>WHERE</code> clauses for network traffic.</p>
+    <p>I typed <code>ftp</code> into the filter bar and hit enter. Instantly the view collapsed to just the FTP control channel — the command conversation between client and server. Three things stood out immediately:</p>
+    <div class="flow-steps">
+      <div class="flow-step flow-step--ok">
+        <span class="flow-n">→</span>
+        <span><code>USER anonymous</code> — client logs in anonymously</span>
+        <span class="flow-status flow-status--ok">SENT</span>
+      </div>
+      <div class="flow-step flow-step--fail">
+        <span class="flow-n">→</span>
+        <span><code>PASS hunter2@local.net</code> — password in <strong>plain text</strong></span>
+        <span class="flow-status flow-status--fail">EXPOSED</span>
+      </div>
+      <div class="flow-step flow-step--ok">
+        <span class="flow-n">→</span>
+        <span><code>RETR secret.txt</code> — client retrieves a file called secret.txt</span>
+        <span class="flow-status flow-status--ok">SENT</span>
+      </div>
+    </div>
+    <p>There was the username, the password, and the filename — all readable without any decryption. But I still needed the <em>contents</em> of <code>secret.txt</code>.</p>
+    <p>FTP is interesting because it splits traffic across two channels: port 21 for commands (the control channel — what we just saw), and a dynamically assigned port for file data (the data channel). The <code>ftp</code> filter only shows commands. To see file contents, I needed:</p>
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="code-lang">WIRESHARK FILTER</span>
+        <div class="code-actions">
+          <div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div>
+          <button class="copy-btn" data-target="code-ftpdata">COPY</button>
+        </div>
+      </div>
+      <pre id="code-ftpdata">ftp-data</pre>
+    </div>
+    <p>Three packets appeared — the actual bytes of <code>secret.txt</code> being transferred over the wire. Small file. Now I needed to read it.</p>
+  </section>
+
+  <!-- ═══════════ S5 ═══════════ -->
+  <section class="section" id="s5">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2 class="section-title">Following Streams</h2>
+    </div>
+    <p>"Follow TCP Stream" is Wireshark's best feature for CTF work. It reassembles all packets belonging to one TCP connection and shows you the complete conversation — both directions, in order, as readable text.</p>
+    <p>Right-click any of the <code>ftp-data</code> packets → <strong>Follow → TCP Stream</strong>.</p>
+    <p>The stream window opens. Client data is shown in one colour, server data in another. For an FTP file download, the server's output <em>is</em> the file.</p>
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="code-lang">TCP STREAM — secret.txt CONTENTS</span>
+        <div class="code-actions">
+          <div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div>
+        </div>
+      </div>
+      <pre>To: CTF Admin
+Subject: Vault Access Credentials
+
+Here are the credentials you requested for the restricted vault.
+
+Username: vaultkeeper
+Password: CTF{ftp_cleartext_is_a_crime_0xdeadbeef}
+
+Rotate after first use. Do not forward this message.</pre>
+    </div>
+    <p>There it is. The flag, sitting in a plaintext file, transferred over an unencrypted protocol, visible to anyone who could see the network. No cracking. No decryption. Just read.</p>
+  </section>
+
+  <!-- ═══════════ S6 ═══════════ -->
+  <section class="section" id="s6">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <h2 class="section-title">The Discovery</h2>
+    </div>
+    <p>Submitting <code>CTF{ftp_cleartext_is_a_crime_0xdeadbeef}</code> gave me the points. But the more interesting thing was understanding <em>why this worked</em>.</p>
+    <p>The challenge had three layers of knowledge being tested:</p>
+    <ol>
+      <li><strong>FTP is plaintext</strong> — most people don't know this. They assume anything with a login screen is encrypted.</li>
+      <li><strong>FTP has two channels</strong> — the <code>ftp</code> filter shows commands; <code>ftp-data</code> shows actual file contents. You need both.</li>
+      <li><strong>Follow TCP Stream reconstructs files</strong> — you don't need to export packets manually; Wireshark assembles the file for you.</li>
+    </ol>
+    <p>Each layer filtered out people who didn't know the next piece. That's good challenge design: multiple small insights rather than one big one.</p>
+    <div class="callout tip">
+      <div class="callout-label">// METHODOLOGY</div>
+      <p>For any network forensics CTF: start with <strong>Statistics → Protocol Hierarchy</strong>. Look for protocols that are unusual for the context — FTP in a web-heavy capture, DNS in an internal network capture, Telnet anywhere. Unusual protocol presence is almost always the intended entry point.</p>
+    </div>
+    <p>I also checked the HTTP traffic out of curiosity. Nothing interesting there — just some GET requests to an internal wiki. But the technique is the same: filter <code>http.request.method == "POST"</code> to find form submissions, then follow the stream to see what was submitted. Credentials in login forms over plain HTTP are just as exposed as FTP passwords.</p>
+  </section>
+
+  <!-- ═══════════ S7 ═══════════ -->
+  <section class="section" id="s7">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <h2 class="section-title">Filter Cheatsheet</h2>
+    </div>
+    <p>Here's every Wireshark filter I've used repeatedly across network forensics challenges. Bookmark this — it covers 95% of what comes up in beginner and intermediate CTFs.</p>
+    <div class="spec-card">
+      <div class="spec-row"><span class="spec-key">ftp</span><span class="spec-val">FTP control channel (all commands)</span></div>
+      <div class="spec-row"><span class="spec-key">ftp-data</span><span class="spec-val">FTP data channel (file contents)</span></div>
+      <div class="spec-row"><span class="spec-key">ftp.request.command == "PASS"</span><span class="spec-val">Only FTP password packets</span></div>
+      <div class="spec-row"><span class="spec-key">http</span><span class="spec-val">All HTTP traffic</span></div>
+      <div class="spec-row"><span class="spec-key">http.request.method == "POST"</span><span class="spec-val">Form submissions, logins</span></div>
+      <div class="spec-row"><span class="spec-key">dns</span><span class="spec-val">DNS queries and responses</span></div>
+      <div class="spec-row"><span class="spec-key">tcp.stream eq 5</span><span class="spec-val">A specific TCP stream by its index</span></div>
+      <div class="spec-row"><span class="spec-key">ip.addr == 192.168.1.10</span><span class="spec-val">All traffic involving an IP</span></div>
+      <div class="spec-row"><span class="spec-key">frame contains "password"</span><span class="spec-val">Search all packets for a string</span></div>
+      <div class="spec-row"><span class="spec-key">tcp.flags.syn == 1 &amp;&amp; tcp.flags.ack == 0</span><span class="spec-val">New TCP connections only</span></div>
+    </div>
+    <p>And the menu shortcuts worth knowing:</p>
+    <div class="spec-card">
+      <div class="spec-row"><span class="spec-key">Statistics → Protocol Hierarchy</span><span class="spec-val">Protocol breakdown — start here</span></div>
+      <div class="spec-row"><span class="spec-key">Statistics → Conversations</span><span class="spec-val">Who is talking to whom, how much</span></div>
+      <div class="spec-row"><span class="spec-key">File → Export Objects → HTTP</span><span class="spec-val">Extract files transferred over HTTP</span></div>
+      <div class="spec-row"><span class="spec-key">Right-click → Follow → TCP Stream</span><span class="spec-val">Reconstruct full conversation</span></div>
+      <div class="spec-row"><span class="spec-key">Ctrl+F (Find Packet)</span><span class="spec-val">Search for string in packet content</span></div>
+    </div>
+  </section>
+
+  <!-- ═══════════ S8 ═══════════ -->
+  <section class="section" id="s8">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <h2 class="section-title">Takeaways</h2>
+    </div>
+    <p>What I took away from this challenge wasn't just the flag — it was a mental model for reading network traffic.</p>
+    <p><strong>Network traffic is a story.</strong> Every SYN is a conversation starting. Every FIN is a goodbye. The Protocol Hierarchy is the table of contents. Filters are your ctrl+F. Follow TCP Stream is "read this chapter end-to-end." Once you see it that way, Wireshark stops being a wall of data and becomes a narrative tool.</p>
+    <p>The security lesson is more sobering: <strong>plaintext protocols are a complete security failure</strong>. FTP, Telnet, basic HTTP — they weren't built with adversaries in mind. Anything that traverses these protocols is an open book to anyone on the network path. In a CTF, that's a fun puzzle. In production, it's a breach waiting to happen.</p>
+
+    <div class="divider">END</div>
+
+    <div class="cta">
+      <h3>Into security and systems?</h3>
+      <p>I write about network forensics, backend engineering, and production debugging. More writeups and deep dives on Dev.to.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://dev.to/anuragdevon" target="_blank" rel="noopener">Dev.to ↗</a>
+        <a class="btn btn-ghost" href="https://github.com/anuragdevon" target="_blank" rel="noopener">GitHub ↗</a>
+      </div>
+      <p class="cta-note">Written in May 2020 — part of my early security learning journey.</p>
+    </div>
+
+  </section>
+
+</div><!-- /page -->
+
+</body>
+</html>

@@ -37,7 +37,7 @@ name = "Blogs"
 weight = 3
 
 [outputs]
-home = [ "HTML", "About", "Blog", "Project", "AndromedaBlog", "SilentFailuresBlog", "CascadeBlog" ]
+home = [ "HTML", "About", "Blog", "Project", "AndromedaBlog", "SilentFailuresBlog", "CascadeBlog", "CtfBlog", "DecoratorsBlog", "DjangoBlog" ]
 
 [outputFormats.About]
 path = "about"
@@ -76,6 +76,27 @@ notAlternative = true
 
 [outputFormats.CascadeBlog]
 path = "blogs/cascade"
+mediaType = "text/html"
+isHTML = true
+permalinkable = true
+notAlternative = true
+
+[outputFormats.CtfBlog]
+path = "blogs/ctf-wireshark"
+mediaType = "text/html"
+isHTML = true
+permalinkable = true
+notAlternative = true
+
+[outputFormats.DecoratorsBlog]
+path = "blogs/decorators"
+mediaType = "text/html"
+isHTML = true
+permalinkable = true
+notAlternative = true
+
+[outputFormats.DjangoBlog]
+path = "blogs/views-django"
 mediaType = "text/html"
 isHTML = true
 permalinkable = true

@@ -1,26 +1,26 @@
 [[blogs]]
-title = "Ctf-Wireshark"
-time = "7min"
+title = "CTF Wireshark"
+time = "7"
 date = "23rd May 2020"
-sample = "What are django views and how to implement function and class based ..."
-link = ""
-site = "medium"
+sample = "A .pcap file, 1,400 packets, one hidden flag. How I used Wireshark to crack my first network forensics CTF — and the filters that made it click."
+link = "/blogs/ctf-wireshark/"
+site = "github"
 
 [[blogs]]
 title = "Decorators & Wrappers"
-time = "12min"
+time = "12"
 date = "23rd May 2020"
-sample = "What are django views and how to implement function and class based ..."
-link = ""
-site = "medium"
+sample = "How Python decorators actually work — from first-class functions and closures to @timer, @retry, class decorators, and stacking."
+link = "/blogs/decorators/"
+site = "github"
 
 [[blogs]]
 title = "Views in Django"
-time = "8min"
+time = "8"
 date = "23rd May 2020"
-sample = "What are django views and how to implement function and class based ..."
-link = ""
-site = "medium"
+sample = "Function-based vs class-based views in Django — what they are, how they differ, when to use each, and how mixins change the game."
+link = "/blogs/views-django/"
+site = "github"
 
 [[blogs]]
 title = "Color-Detection"
