@@ -64,7 +64,7 @@
       <li><strong>The game was live.</strong> People played every day. Every phase had to ship without stopping a single match, which meant old and new clients had to coexist for a while.</li>
       <li><strong>Free tiers, on purpose.</strong> The Firebase project stays on the free Spark plan. Anything we added had to cost nothing at our scale and have a hard cap on what it could cost.</li>
       <li><strong>No always-on process.</strong> A game loop that ticks every second needs a machine that is always awake. We wanted something that scales to zero.</li>
-      <li><strong>One engineer, one codebase.</strong> The rules of play already existed as tested JavaScript in the client. A second implementation would only be acceptable if it couldn't drift.</li>
+      <li><strong>One small team, one codebase.</strong> The rules of play already existed as tested JavaScript in the client. A second implementation would only be acceptable if it couldn't drift.</li>
     </ul>
     <p>The last point shaped everything. The client keeps its game logic in a <code>core/</code> folder of pure functions: scoring, phases, seats, timing. No DOM, no Firebase, every module unit-tested. That made it possible to port the rules to another language and <em>prove</em> they matched.</p>
   </section>
@@ -321,7 +321,7 @@ handler := <span class="t-fn">withCORS</span>(<span class="t-fn">withLogging</sp
       <div class="spec-row"><span class="spec-key">End to end</span><span class="spec-val">Three browser suites (smoke, 1v1, group of six) on the emulators and the real server</span></div>
       <div class="spec-row"><span class="spec-key">CI extras</span><span class="spec-val">govulncheck, go mod tidy check, coverage gate, golangci-lint</span></div>
     </div>
-    <p>And in production, the server logs one structured line per request with the matched route, plus game events with no user ids in them. That's where we'd see a reveal that never lands or a finish that times out. The monitoring setup is part of <a href="/blogs/one-engineer-five-apps/">Part 4</a>.</p>
+    <p>And in production, the server logs one structured line per request with the matched route, plus game events with no user ids in them. That's where we'd see a reveal that never lands or a finish that times out. The monitoring setup is part of <a href="/blogs/one-team-five-apps/">Part 4</a>.</p>
   </section>
 
   <section class="section" id="s10">
@@ -358,7 +358,7 @@ handler := <span class="t-fn">withCORS</span>(<span class="t-fn">withLogging</sp
       <div class="series-item series-item--current"><span class="series-badge series-badge--current">Part 1</span><div><div class="series-title">From a static quiz page to a game the client can't cheat</div><div class="series-desc">This post.</div></div></div>
       <div class="series-item"><span class="series-badge series-badge--done">Part 2</span><div><div class="series-title">Rooms that survive people leaving</div><div class="series-desc"><a href="/blogs/quizclash-rooms/">Read it →</a></div></div></div>
       <div class="series-item"><span class="series-badge series-badge--done">Part 3</span><div><div class="series-title">Testing a real-time app for real</div><div class="series-desc"><a href="/blogs/realtime-testing/">Read it →</a></div></div></div>
-      <div class="series-item"><span class="series-badge series-badge--done">Part 4</span><div><div class="series-title">One engineer, five apps</div><div class="series-desc"><a href="/blogs/one-engineer-five-apps/">Read it →</a></div></div></div>
+      <div class="series-item"><span class="series-badge series-badge--done">Part 4</span><div><div class="series-title">One team, five apps</div><div class="series-desc"><a href="/blogs/one-team-five-apps/">Read it →</a></div></div></div>
       <div class="series-item"><span class="series-badge series-badge--done">Part 5</span><div><div class="series-title">Bugs that erase data</div><div class="series-desc"><a href="/blogs/sync-data-loss/">Read it →</a></div></div></div>
     </div>
 

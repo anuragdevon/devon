@@ -82,7 +82,7 @@ async function assertClean(p, label) {
   assert.deepEqual(problems(p), [], `${label}: console errors`);
 }
 
-const SERIES = ['/blogs/quizclash-server/', '/blogs/quizclash-rooms/', '/blogs/realtime-testing/', '/blogs/one-engineer-five-apps/', '/blogs/sync-data-loss/'];
+const SERIES = ['/blogs/quizclash-server/', '/blogs/quizclash-rooms/', '/blogs/realtime-testing/', '/blogs/one-team-five-apps/', '/blogs/sync-data-loss/'];
 const PAGES = ['/', '/about/', '/projects/', '/blogs/', '/blogs/cascade/', '/blogs/andromeda-rice/', ...SERIES];
 
 for (const [size, width, height, mobile] of [['phone', 375, 812, true], ['desktop', 1280, 900, false]]) {

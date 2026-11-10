@@ -124,7 +124,7 @@ permalinkable = true
 notAlternative = true
 
 [outputFormats.FiveAppsBlog]
-path = "blogs/one-engineer-five-apps"
+path = "blogs/one-team-five-apps"
 mediaType = "text/html"
 isHTML = true
 permalinkable = true

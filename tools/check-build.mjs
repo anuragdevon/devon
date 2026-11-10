@@ -28,6 +28,16 @@ for (const f of ['index.html', '404.html', 'about/index.html', 'projects/index.h
   if (!exists(f)) problems.push(`${f} is missing`);
 }
 
+// ---- redirects: a renamed post keeps its old URL, and the target must be a built page
+if (exists('_redirects')) {
+  for (const line of read('_redirects').split('\n')) {
+    const m = line.match(/^\s*(\/\S+)\s+(\/\S+)\s+30[12]\b/);
+    if (m && !exists(m[2].replace(/^\//, '').replace(/\/?$/, '/index.html'))) {
+      problems.push(`_redirects: ${m[1]} points at ${m[2]}, which isn't built`);
+    }
+  }
+} else problems.push('_redirects is missing');
+
 // ---- headers
 if (exists('_headers')) {
   const headers = read('_headers');
