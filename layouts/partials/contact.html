@@ -1,23 +1,28 @@
-{{ with site.Data.contact }}
-<button class="open-button" id="contact" aria-label="contact" onclick="openForm()">
+{{/* Contact popup. Submissions go to Netlify Forms (detected at deploy from data-netlify),
+     posted by assets/js/site.js with fetch. No mail credentials ever reach the browser. */}}
+{{ with hugo.Data.contact }}
+<button type="button" class="open-button" id="contact" aria-label="Contact me" aria-controls="contact-popup" aria-expanded="false">
   {{ partial "in" "comment" }}
-</i></button>
+</button>
 
-<div class="form-popup" id="myForm" method="post">
-  <form class="form-container" id="contactme">
+<div class="form-popup" id="contact-popup">
+  <form class="form-container" id="contactme" name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+    <input type="hidden" name="form-name" value="contact">
+    <p class="visually-hidden"><label>Leave this empty <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
     <div class="row">
       <div class="col">
         <h3>Contact</h3>
       </div>
-      <div class="col text-end" onclick="closeForm()">
-        {{ partial "fa" "close" }}
+      <div class="col text-end">
+        <button type="button" id="contact-close" class="contact-close" aria-label="Close contact form">{{ partial "fa" "close" }}</button>
       </div>
     </div>
-    <label for="email"><b>{{ .emailid }}</b></label>
-    <input type="text" placeholder="{{ .emailPh }}" name="email" value="" required>
-    <label for="psw"><b>{{ .messege }}</b></label>
-    <input type="text" placeholder="{{ .messegePh }}" name="message" value="" required>
-    <button type="submit" value="Send Email" onclick="sendEmail()" class="custom-btn btn-11">{{ .send }}</button>
+    <label for="contact-email"><b>{{ .emailid }}</b></label>
+    <input type="email" id="contact-email" name="email" placeholder="{{ .emailPh }}" autocomplete="email" maxlength="254" required>
+    <label for="contact-message"><b>{{ .messege }}</b></label>
+    <input type="text" id="contact-message" name="message" placeholder="{{ .messegePh }}" maxlength="2000" required>
+    <button type="submit" class="custom-btn btn-11">{{ .send }}</button>
+    <p id="contact-status" class="contact-status" role="status" aria-live="polite"></p>
   </form>
 </div>
 {{ end }}

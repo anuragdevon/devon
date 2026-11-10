@@ -35,6 +35,8 @@
   z-index: 9999;
   border-radius: var(--radius-card) var(--radius-card) 0 0;
   overflow: hidden;
+
+  &.is-open { display: block; }
 }
 
 .form-container {
@@ -69,6 +71,22 @@
     .fa svg { fill: currentColor; }
   }
 
+  // Close control: a real <button> for keyboard users, styled as the plain icon it replaced
+  .contact-close {
+    background: none;
+    border: 0;
+    padding: 0;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .contact-status {
+    margin: 0.6rem 0 0;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    &:empty { display: none; }
+  }
+
   label {
     font-size: 0.78rem;
     font-weight: 600;
@@ -79,7 +97,8 @@
     display: block;
   }
 
-  input[type=text] {
+  input[type=text],
+  input[type=email] {
     width: 100%;
     padding: 0.65rem 0.9rem;
     margin: 0 0 1rem 0;

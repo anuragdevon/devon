@@ -1136,3 +1136,40 @@ $font-serif: 'DM Serif Display', Georgia, serif;
   .callout.info  { background: rgba(137, 180, 250, 0.055); }
   .callout.tip   { background: rgba(166, 227, 161, 0.055); }
 }
+
+// ============================================================
+// Inline SVG diagrams (Building Auragika series). Drawn with
+// classes, so they follow the post's light/dark tokens above.
+// ============================================================
+.andromeda-blog-host .andromeda-blog-content {
+  .diagram {
+    margin: 20px 0 6px;
+    padding: 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface0);
+    overflow-x: auto;
+
+    svg { display: block; width: 100%; height: auto; min-width: 600px; }
+
+    .box        { fill: var(--surface1); stroke: var(--border-strong); stroke-width: 1.2; }
+    .box-accent { fill: var(--surface2); stroke: var(--blue); stroke-width: 1.6; }
+    .box-warn   { fill: var(--surface1); stroke: var(--yellow); stroke-width: 1.4; }
+    .lbl  { fill: var(--text); font: 600 13px $font-mono; }
+    .sub  { fill: var(--subtext); font: 11px $font-mono; }
+    .head { fill: var(--blue); font: 700 11px $font-mono; letter-spacing: 0.08em; }
+    .ln   { stroke: var(--subtext); stroke-width: 1.4; fill: none; }
+    .ln-accent { stroke: var(--blue); stroke-width: 1.6; fill: none; }
+    .dash { stroke-dasharray: 5 4; }
+    .life { stroke: var(--border-mid); stroke-width: 1.2; stroke-dasharray: 3 4; }
+    .tip  { fill: var(--subtext); }
+    .tip-accent { fill: var(--blue); }
+  }
+
+  .diagram-caption {
+    margin: 0 0 22px;
+    font-size: 12.5px;
+    color: var(--subtext);
+    text-align: center;
+  }
+}

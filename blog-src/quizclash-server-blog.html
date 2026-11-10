@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>From a static quiz page to a game the client can't cheat</title>
+</head>
+<body>
+
+<div class="page">
+
+  <header class="hero">
+    <div class="hero-eyebrow">REAL-TIME SYSTEMS · TRUST BOUNDARIES · GO · FIREBASE</div>
+    <h1>From a static quiz page<br><em>to a game the client can't cheat.</em></h1>
+    <p class="hero-lead">QuizClash started as a static site where every browser wrote straight to the database, and the security rules were the only referee. That works until you remember that every player can edit the code running in their own tab. This is how we moved scoring, time and the game itself onto a small Go server, one phase at a time, without stopping live games.</p>
+    <div class="hero-meta">
+      <span data-icon="✍">anuragdevon</span>
+      <span data-icon="📅">10th Nov 2026</span>
+      <span data-icon="⏱">14 min read</span>
+      <span data-icon="📌">Building Auragika · Part 1 of 5</span>
+    </div>
+  </header>
+
+  <nav class="toc">
+    <div class="toc-label">// TABLE OF CONTENTS</div>
+    <div class="toc-grid">
+      <a class="toc-link" href="#s1"><span class="toc-n">01</span>The game, and the problem</a>
+      <a class="toc-link" href="#s2"><span class="toc-n">02</span>Constraints we worked inside</a>
+      <a class="toc-link" href="#s3"><span class="toc-n">03</span>Where the server could live</a>
+      <a class="toc-link" href="#s4"><span class="toc-n">04</span>Phase 1: the server owns the score</a>
+      <a class="toc-link" href="#s5"><span class="toc-n">05</span>Phase 2: answers and reveals</a>
+      <a class="toc-link" href="#s6"><span class="toc-n">06</span>Phase 3: the server runs the round</a>
+      <a class="toc-link" href="#s7"><span class="toc-n">07</span>What broke: n² transactions and a fake CORS error</a>
+      <a class="toc-link" href="#s8"><span class="toc-n">08</span>Rolling out without stopping games</a>
+      <a class="toc-link" href="#s9"><span class="toc-n">09</span>How we know it holds</a>
+      <a class="toc-link" href="#s10"><span class="toc-n">10</span>What we'd do differently</a>
+      <a class="toc-link" href="#s11"><span class="toc-n">11</span>Takeaways</a>
+    </div>
+  </nav>
+
+  <section class="section" id="s1">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2 class="section-title">The game, and the problem</h2>
+    </div>
+    <p><a href="https://quizclash.auragika.com/" target="_blank" rel="noopener">QuizClash</a> is a real-time quiz game. You play solo for a topic's leaderboard, challenge one friend, or fill a room of up to eight players. Each question is open for ten seconds; faster right answers score more, and everyone sees the reveal at the same moment.</p>
+    <p>The first version was a Hugo site talking to Firebase directly: the Realtime Database for live rooms, Firestore for profiles, history and leaderboards. No server code at all. The host's browser created the room, picked the questions, opened each one, read the answer key when the question closed and published it. Every player wrote their own pick, their own score and their own row on the leaderboard.</p>
+    <p>The security rules kept all of that <em>in shape</em>: a score had to be a number in range, a phase could only move one step forward, timestamps had to be the server's. But rules can't <em>recompute</em> anything. A client that edits its own JavaScript can write any score that passes a shape check. We wrote that down plainly in our first design record:</p>
+
+    <div class="callout warn">
+      <div class="callout-label">⚠ THE GAP</div>
+      <p>Rules can check shape, range and order. They can't tell you whether a perfect score was earned. Only code the player can't change can do that.</p>
+    </div>
+
+    <p>We had run a security audit over the app and filed the findings by severity. Three of them were the same problem seen from different sides: forged high scores, opponents' picks visible while a question was still open, and answer keys that a script could harvest. The fix for all three was the same: move trust out of the browser.</p>
+  </section>
+
+  <section class="section" id="s2">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2 class="section-title">Constraints we worked inside</h2>
+    </div>
+    <p>A real-time game with a server is not a new idea. What made this interesting were the constraints:</p>
+    <ul>
+      <li><strong>The game was live.</strong> People played every day. Every phase had to ship without stopping a single match, which meant old and new clients had to coexist for a while.</li>
+      <li><strong>Free tiers, on purpose.</strong> The Firebase project stays on the free Spark plan. Anything we added had to cost nothing at our scale and have a hard cap on what it could cost.</li>
+      <li><strong>No always-on process.</strong> A game loop that ticks every second needs a machine that is always awake. We wanted something that scales to zero.</li>
+      <li><strong>One engineer, one codebase.</strong> The rules of play already existed as tested JavaScript in the client. A second implementation would only be acceptable if it couldn't drift.</li>
+    </ul>
+    <p>The last point shaped everything. The client keeps its game logic in a <code>core/</code> folder of pure functions: scoring, phases, seats, timing. No DOM, no Firebase, every module unit-tested. That made it possible to port the rules to another language and <em>prove</em> they matched.</p>
+  </section>
+
+  <section class="section" id="s3">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2 class="section-title">Where the server could live</h2>
+    </div>
+    <p>We wrote the options into a decision record (an ADR) before writing any code. The short version:</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Option</th><th>Verdict</th></tr></thead>
+        <tbody>
+          <tr><td>Keep client writes, tighten the rules</td><td>Doesn't close the gap. Rules can't recompute a score.</td></tr>
+          <tr><td>Netlify Functions in JavaScript</td><td>Simplest, and could reuse <code>core/</code> directly. We wanted Go for the server.</td></tr>
+          <tr><td>Netlify Functions in Go</td><td>Go runs there only in a deprecated compatibility mode with an announced end date.</td></tr>
+          <tr><td>Firebase Cloud Functions</td><td>Needs billing enabled on the database project itself, which we wanted to keep on the free plan.</td></tr>
+          <tr><td><strong>Go on Cloud Run</strong></td><td>Native Go, scales to zero, generous free allowance, a hard cap on instances. Chosen.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Cloud Run lives in its own Google Cloud project with billing and a budget alert; the Firebase project stays on Spark. The service runs as a dedicated service account with roles on the Firebase project, so there is no key file anywhere: not in the repo, not in CI, not on disk.</p>
+
+    <div class="diagram">
+      <svg viewBox="0 0 760 300" role="img" aria-labelledby="d1t">
+        <title id="d1t">Before: browsers write directly to Firebase. After: browsers call the Go game server, which writes to Firebase; browsers only read the live room.</title>
+        <defs>
+          <marker id="d1a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="tip" d="M0,0 L10,5 L0,10 z"/></marker>
+          <marker id="d1b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="tip-accent" d="M0,0 L10,5 L0,10 z"/></marker>
+        </defs>
+        <text class="head" x="20" y="26">BEFORE</text>
+        <rect class="box" x="40" y="44" width="180" height="60" rx="10"/>
+        <text class="lbl" x="130" y="70" text-anchor="middle">Every browser</text>
+        <text class="sub" x="130" y="88" text-anchor="middle">host runs the game</text>
+        <rect class="box-warn" x="420" y="44" width="260" height="60" rx="10"/>
+        <text class="lbl" x="550" y="70" text-anchor="middle">Firebase</text>
+        <text class="sub" x="550" y="88" text-anchor="middle">rules check shape only</text>
+        <path class="ln" d="M220,74 L418,74" marker-end="url(#d1a)"/>
+        <text class="sub" x="320" y="64" text-anchor="middle">scores, picks, phases, keys</text>
+
+        <text class="head" x="20" y="156">AFTER</text>
+        <rect class="box" x="40" y="176" width="180" height="60" rx="10"/>
+        <text class="lbl" x="130" y="202" text-anchor="middle">Every browser</text>
+        <text class="sub" x="130" y="220" text-anchor="middle">shows, asks, never decides</text>
+        <rect class="box-accent" x="290" y="176" width="180" height="60" rx="10"/>
+        <text class="lbl" x="380" y="202" text-anchor="middle">Game server (Go)</text>
+        <text class="sub" x="380" y="220" text-anchor="middle">Cloud Run, scales to 0</text>
+        <rect class="box" x="540" y="176" width="180" height="60" rx="10"/>
+        <text class="lbl" x="630" y="202" text-anchor="middle">Firebase</text>
+        <text class="sub" x="630" y="220" text-anchor="middle">Admin SDK transactions</text>
+        <path class="ln-accent" d="M220,206 L288,206" marker-end="url(#d1b)"/>
+        <path class="ln-accent" d="M470,206 L538,206" marker-end="url(#d1b)"/>
+        <path class="ln dash" d="M630,236 L630,272 L130,272 L130,238" marker-end="url(#d1a)"/>
+        <text class="sub" x="380" y="290" text-anchor="middle">live room listener: read-only, no answers until the reveal</text>
+      </svg>
+    </div>
+    <p class="diagram-caption">The browsers keep their real-time listeners; they lose every write that decides an outcome.</p>
+
+    <p>Inside, the server is a plain ports-and-adapters layout. The domain package has the rules of play and imports nothing from the project. Use cases ("finish a match", "answer", "advance a round") declare the small interfaces they need. Firebase adapters implement them, and only the composition root knows the concrete types. Standard library first: <code>net/http</code> routing, <code>log/slog</code>, <code>context</code> on every I/O call, errors wrapped and matched with <code>errors.Is</code>, no globals.</p>
+    <p>That layout earned its keep immediately: every use case is tested against in-memory fakes, and the same tests run against the Firebase emulators with an integration build tag.</p>
+  </section>
+
+  <section class="section" id="s4">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2 class="section-title">Phase 1: the server owns the score</h2>
+    </div>
+    <p>The first step was the smallest one that closed the worst finding. The game still ran in the browsers, but at the end of a match every player's client asks the server to <em>finish</em> it. The server reads the room and the answer keys itself, checks the match really was played to the end, scores every answer from the server-stamped times, and records the result for every player. The rules now deny client writes to scores, stats, history, high scores and leaderboard entries; the server writes them with the Admin SDK, which the rules don't apply to.</p>
+    <p>Two details mattered more than the endpoint itself.</p>
+    <p><strong>Idempotency.</strong> Every player's client calls finish, concurrently. The per-player result is written in the same transaction as the stats and history it changes, so a second call for the same match changes nothing and returns what was stored. Retrying is always safe.</p>
+    <p><strong>The rules exist twice, so prove they agree.</strong> Until the whole game moved, the rules of play lived in JavaScript (<code>core/</code>) and Go. A small tool exports fixtures from the JavaScript (rooms, answers, timings and the expected outcomes) and the Go tests must produce identical results. Later changes regenerated the fixtures; the host hand-over logic alone is compared on 300 generated cases. If the two ever disagree, CI goes red.</p>
+
+    <div class="callout tip">
+      <div class="callout-label">// WHY THIS ORDER</div>
+      <p>Scoring first, because a forged score is permanent (it sits on a leaderboard) while a peeked answer only affects one question. Fix the finding with the longest-lived damage first.</p>
+    </div>
+  </section>
+
+  <section class="section" id="s5">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2 class="section-title">Phase 2: answers and reveals</h2>
+    </div>
+    <p>With scores safe, two findings were left in the live game. Each player wrote their pick into the room, which every member reads, so a modified client could watch an opponent's pick arrive while the question was still open. And the host's browser read the answer key when the question closed, which meant the key was readable by a client.</p>
+    <p>We considered tightening the read rules first. It doesn't work: a Realtime Database listener on a room reads the whole room, and rules can't hide some children from a reader they let read the parent. We considered commit-reveal (send a hash now, the pick later), which hides picks but leaves timing and keys on the client. Both were rejected in the ADR with those reasons.</p>
+    <p>The chosen design: players send their answer to the server. The server checks the question is open by <em>its own</em> clock, stamps the time, and stores the pick somewhere only that player can read. The room only learns <em>that</em> you answered and when, never what. When the question settles (timer over, or everyone answered), a reveal moves the room to the reveal phase, publishes the right answer and copies everyone's picks into the room, all in one transaction.</p>
+
+    <div class="diagram">
+      <svg viewBox="0 0 820 400" role="img" aria-labelledby="d2t">
+        <title id="d2t">Sequence of one question: a client asks to open it, the server writes the phase; players answer through the server; the reveal lands once, other calls are no-ops.</title>
+        <defs>
+          <marker id="d2a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="tip" d="M0,0 L10,5 L0,10 z"/></marker>
+          <marker id="d2b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="tip-accent" d="M0,0 L10,5 L0,10 z"/></marker>
+        </defs>
+        <rect class="box" x="30" y="14" width="120" height="34" rx="8"/><text class="lbl" x="90" y="36" text-anchor="middle">Host</text>
+        <rect class="box" x="220" y="14" width="120" height="34" rx="8"/><text class="lbl" x="280" y="36" text-anchor="middle">Player</text>
+        <rect class="box-accent" x="410" y="14" width="140" height="34" rx="8"/><text class="lbl" x="480" y="36" text-anchor="middle">Game server</text>
+        <rect class="box" x="680" y="14" width="120" height="34" rx="8"/><text class="lbl" x="740" y="36" text-anchor="middle">Realtime DB</text>
+        <line class="life" x1="90" y1="48" x2="90" y2="390"/>
+        <line class="life" x1="280" y1="48" x2="280" y2="390"/>
+        <line class="life" x1="480" y1="48" x2="480" y2="390"/>
+        <line class="life" x1="740" y1="48" x2="740" y2="390"/>
+
+        <path class="ln-accent" d="M90,80 L476,80" marker-end="url(#d2b)"/><text class="sub" x="285" y="72" text-anchor="middle">advance (when due by my clock)</text>
+        <path class="ln-accent" d="M480,104 L736,104" marker-end="url(#d2b)"/><text class="sub" x="610" y="96" text-anchor="middle">txn: open question, start = now</text>
+        <path class="ln dash" d="M740,134 L284,134" marker-end="url(#d2a)"/><path class="ln dash" d="M284,134 L94,134" marker-end="url(#d2a)"/><text class="sub" x="380" y="126" text-anchor="middle">room update (both players)</text>
+
+        <path class="ln-accent" d="M280,172 L476,172" marker-end="url(#d2b)"/><text class="sub" x="380" y="164" text-anchor="middle">answer(option)</text>
+        <path class="ln-accent" d="M480,196 L736,196" marker-end="url(#d2b)"/><text class="sub" x="610" y="188" text-anchor="middle">pick: private · room: "answered at t"</text>
+
+        <path class="ln-accent" d="M90,240 L476,240" marker-end="url(#d2b)"/><text class="sub" x="285" y="232" text-anchor="middle">advance (settled → reveal)</text>
+        <path class="ln-accent" d="M480,264 L736,264" marker-end="url(#d2b)"/><text class="sub" x="610" y="256" text-anchor="middle">txn: reveal key + copy all picks</text>
+        <path class="ln" d="M280,304 L476,304" marker-end="url(#d2a)"/><text class="sub" x="380" y="296" text-anchor="middle">advance (after a grace period)</text>
+        <path class="ln dash" d="M480,328 L284,328" marker-end="url(#d2a)"/><text class="sub" x="380" y="346" text-anchor="middle">already done → no-op</text>
+        <text class="sub" x="480" y="388" text-anchor="middle">every step: compare-and-set on (round, phase, question)</text>
+      </svg>
+    </div>
+    <p class="diagram-caption">One question. Any member can ask for the next step; the server only takes it when it's due, and only once.</p>
+
+    <p>The pick itself is stored in a transaction on its own path: the first answer wins, the same answer again succeeds (it's a retry), and a different answer is a conflict. The room marker is a merge, so a late retry can't erase a pick that was already revealed. And because answers are timed by the server and starts by the database (both Google-synced), there is exactly one clock that matters.</p>
+    <p>Moving the browser tests to the real stack in the same phase found three live bugs the offline demo could never have shown. One was in production: presence used <code>onDisconnect().update()</code> on an entry that didn't exist yet, which the rules refused, so a player's online status was never set up at all. That story belongs to <a href="/blogs/realtime-testing/">Part 3</a>.</p>
+  </section>
+
+  <section class="section" id="s6">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <h2 class="section-title">Phase 3: the server runs the round</h2>
+    </div>
+    <p>After phase 2 the host's browser still created rooms (choosing the question ids itself), enforced its own room-creation cooldown, and moved the round along: countdown, next question, finish. The rules kept each step in bounds, but a modified host could still pick which questions it plays, and a host who closed the tab froze the room.</p>
+    <p>The obvious design is a server-side game loop that ticks each room forward. We rejected it: it needs an always-on instance or a task queue, and Cloud Run scales to zero. The insight that made it cheap: <strong>clients already know when a step is due</strong>. They have the room's timestamps. So any member may ask the server to advance; the server checks its own clock, and takes the step only if it is due and only if the room is still where the caller saw it.</p>
+
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="code-lang">go — every phase change is a compare-and-set (simplified)</span>
+        <div class="code-actions">
+          <div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div>
+          <button class="copy-btn" data-target="code-cas">COPY</button>
+        </div>
+      </div>
+      <pre id="code-cas"><span class="t-kw">func</span> (s *Service) <span class="t-fn">Advance</span>(ctx context.Context, code RoomCode, round <span class="t-kw">int</span>) <span class="t-kw">error</span> {
+    room, err := s.rooms.<span class="t-fn">Read</span>(ctx, code)
+    <span class="t-kw">if</span> err != <span class="t-kw">nil</span> { <span class="t-kw">return</span> err }
+
+    step, ok := game.<span class="t-fn">Next</span>(room, s.clock.<span class="t-fn">Now</span>()) <span class="t-cm">// pure: what is due, if anything</span>
+    <span class="t-kw">if</span> !ok { <span class="t-kw">return</span> ErrNotDue }               <span class="t-cm">// early callers get a clear 409</span>
+
+    <span class="t-cm">// Apply only if the room is still at the step we decided from.</span>
+    err = s.phases.<span class="t-fn">Apply</span>(ctx, code, room.<span class="t-fn">Position</span>(), step)
+    <span class="t-kw">if</span> errors.<span class="t-fn">Is</span>(err, ErrStale) {
+        <span class="t-kw">return nil</span> <span class="t-cm">// someone else took this step: that's success, not an error</span>
+    }
+    <span class="t-kw">return</span> err
+}</pre>
+    </div>
+
+    <p>Every client schedules its own call for the moment the step is due by its clock. The host calls first; everyone else waits a short grace period and calls only if nothing happened. One call lands, the rest are no-ops. A host who disappears no longer freezes anything, because any other player's call does the same work.</p>
+    <p>Two more pieces moved to the server in this phase: room creation (the server draws the questions from the topic's index and generates codes from a cryptographic random source) and the per-player cooldown on creating rooms, which now lives in server-only data instead of in the rules.</p>
+    <p>A fourth phase moved AI question conversion (an admin or contributor pastes quiz text and Gemini turns it into questions) behind the server too, because a client calling the model directly could skip its own quota. Same principle, different feature.</p>
+  </section>
+
+  <section class="section" id="s7">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <h2 class="section-title">What broke: n² transactions and a fake CORS error</h2>
+    </div>
+    <p>Weeks later, CI on <code>main</code> failed in the group browser suite. The log said a player's finish call was <strong>blocked by CORS</strong>, then got a <code>409 round_mismatch</code> on retry. The same code had passed on the branch. Nothing about CORS had changed.</p>
+    <p>The root cause was three things stacked on top of each other (PR #37):</p>
+
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-time">1</div>
+        <div class="timeline-body">
+          <div class="timeline-title">Every player calls finish, and each call ran one transaction per player</div>
+          <div class="timeline-desc">That's n² contending Firestore transactions: 36 for six players, 64 for a full room of eight. Correct, idempotent, and slow under contention.</div>
+        </div>
+        <span class="timeline-status timeline-status--warn">SLOW</span>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-time">2</div>
+        <div class="timeline-body">
+          <div class="timeline-title">On a loaded CI runner, one call ran past the request time limit</div>
+          <div class="timeline-desc"><code>http.TimeoutHandler</code> answered with a 503, as designed.</div>
+        </div>
+        <span class="timeline-status timeline-status--warn">TIMEOUT</span>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-time">3</div>
+        <div class="timeline-body">
+          <div class="timeline-title">The timeout wrapped the whole handler, outside CORS</div>
+          <div class="timeline-desc">Its 503 had no <code>Access-Control-Allow-Origin</code> header, so the browser reported a CORS error instead of a timeout. The client retried; by then the room had moved on, hence the 409.</div>
+        </div>
+        <span class="timeline-status timeline-status--fail">MISLEADING</span>
+      </div>
+    </div>
+
+    <p>The fix had three parts, one per layer:</p>
+    <ul>
+      <li><strong>One transaction for all players.</strong> Recording a match writes every player's result in a single transaction, and a call that finds everyone already recorded returns without opening one.</li>
+      <li><strong>One in-flight recording per match per instance.</strong> Concurrent calls for the same match share one recording through <code>singleflight</code>. Across instances the store is still idempotent, so this is an optimisation, not a correctness crutch.</li>
+      <li><strong>The timeout moves inside CORS and logging.</strong> A timeout is now a readable, logged 503 with a body that says <code>timeout</code>.</li>
+    </ul>
+
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="code-lang">go — middleware order decides what the browser sees</span>
+        <div class="code-actions">
+          <div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div>
+          <button class="copy-btn" data-target="code-mw">COPY</button>
+        </div>
+      </div>
+      <pre id="code-mw"><span class="t-cm">// Before: the timeout is outermost, so its 503 skips CORS and logging.</span>
+handler := http.<span class="t-fn">TimeoutHandler</span>(<span class="t-fn">withCORS</span>(<span class="t-fn">withLogging</span>(mux)), limit, <span class="t-st">""</span>)
+
+<span class="t-cm">// After: CORS and logging wrap everything, including a timeout.</span>
+handler := <span class="t-fn">withCORS</span>(<span class="t-fn">withLogging</span>(
+    http.<span class="t-fn">TimeoutHandler</span>(mux, limit, <span class="t-st">`{"error":"timeout"}`</span>),
+))</pre>
+    </div>
+
+    <p>The tests for the fix are outcome-based, with no timing in them: an integration test where eight players finish concurrently and each is recorded exactly once, and a unit test that a timed-out request keeps its CORS headers. The group browser suite went from about 150 seconds on CI to about 124 locally.</p>
+
+    <div class="callout info">
+      <div class="callout-label">// THE LESSON WE KEPT</div>
+      <p>"Passed on the branch, failed on main, same code" doesn't mean the merge broke something. It means the test is sensitive to load, and load is telling you something true about production. Don't re-run until green; find out what the slow path is.</p>
+    </div>
+  </section>
+
+  <section class="section" id="s8">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <h2 class="section-title">Rolling out without stopping games</h2>
+    </div>
+    <p>Each phase changed who is allowed to write what. That makes deploy order part of the design, so every ADR and PR has a "going live" section. For each of the three phases the order was the same:</p>
+    <div class="flow-steps">
+      <div class="flow-step flow-step--ok"><span class="flow-n">1</span><span>Deploy the game server. Nothing calls the new endpoints yet.</span><span class="flow-status flow-status--ok">✓</span></div>
+      <div class="flow-step flow-step--ok"><span class="flow-n">2</span><span>Deploy the site. New clients call the server; the old rules still accept old clients.</span><span class="flow-status flow-status--ok">✓</span></div>
+      <div class="flow-step flow-step--ok"><span class="flow-n">3</span><span>Publish the new rules. Only now are the old client writes refused.</span><span class="flow-status flow-status--ok">✓</span></div>
+    </div>
+    <p>Publish the rules first and every open tab running the old site stops being able to play. Some later changes only <em>narrowed</em> what clients could write in a way the new client never used; for those the PR says "either order is safe", and says why. Writing that sentence forces you to check.</p>
+    <p>We also generate the Realtime Database rules from a source file instead of hand-editing JSON, and CI fails if the generated file is out of date. The rules got long enough that a hand edit in the wrong nesting level was a real risk.</p>
+  </section>
+
+  <section class="section" id="s9">
+    <div class="section-header">
+      <span class="section-num">09</span>
+      <h2 class="section-title">How we know it holds</h2>
+    </div>
+    <div class="spec-card">
+      <div class="spec-row"><span class="spec-key">Domain rules (Go)</span><span class="spec-val">Table-driven unit tests, plus fixtures generated from the JavaScript rules</span></div>
+      <div class="spec-row"><span class="spec-key">Use cases</span><span class="spec-val">In-memory fakes for every port; races and refusals covered</span></div>
+      <div class="spec-row"><span class="spec-key">Adapters</span><span class="spec-val">Integration tests on the Firebase emulators (concurrent finishes, concurrent advances)</span></div>
+      <div class="spec-row"><span class="spec-key">Rules</span><span class="spec-val">Emulator tests for the real writes and the abuse cases</span></div>
+      <div class="spec-row"><span class="spec-key">End to end</span><span class="spec-val">Three browser suites (smoke, 1v1, group of six) on the emulators and the real server</span></div>
+      <div class="spec-row"><span class="spec-key">CI extras</span><span class="spec-val">govulncheck, go mod tidy check, coverage gate, golangci-lint</span></div>
+    </div>
+    <p>And in production, the server logs one structured line per request with the matched route, plus game events with no user ids in them. That's where we'd see a reveal that never lands or a finish that times out. The monitoring setup is part of <a href="/blogs/one-engineer-five-apps/">Part 4</a>.</p>
+  </section>
+
+  <section class="section" id="s10">
+    <div class="section-header">
+      <span class="section-num">10</span>
+      <h2 class="section-title">What we'd do differently</h2>
+    </div>
+    <ul>
+      <li><strong>Start with the server owning the round.</strong> Three phases were the right way to migrate a live game. For a new game, start where we ended: clients ask, the server decides.</li>
+      <li><strong>Design the write path for n players from the first commit.</strong> "Each player records its own result" was idempotent and correct, and quadratic. Count the transactions per action when you design it, not when CI tells you.</li>
+      <li><strong>Put timeouts inside the middleware that shapes responses.</strong> Anything that can produce a response must sit inside CORS and logging, or its failures arrive disguised.</li>
+    </ul>
+  </section>
+
+  <section class="section" id="s11">
+    <div class="section-header">
+      <span class="section-num">11</span>
+      <h2 class="section-title">Takeaways</h2>
+    </div>
+    <div class="checklist">
+      <div class="checklist-item"><span class="check-icon">✅</span><div><div class="check-title">Rules validate; servers decide</div><div class="check-desc">If a value can be forged within its valid range, a shape check won't save you. Recompute it where the player can't edit the code.</div></div></div>
+      <div class="checklist-item"><span class="check-icon">✅</span><div><div class="check-title">"Any client may ask" beats a game loop</div><div class="check-desc">If clients know when something is due, let all of them ask and let the server take the step once. No idle cost, no single point of failure.</div></div></div>
+      <div class="checklist-item"><span class="check-icon">✅</span><div><div class="check-title">Compare-and-set every state change</div><div class="check-desc">Apply a step only if the state is still what you decided from, and treat "someone else did it" as success.</div></div></div>
+      <div class="checklist-item"><span class="check-icon">✅</span><div><div class="check-title">Two implementations need shared fixtures</div><div class="check-desc">Generate cases from one and assert identical results in the other, in CI.</div></div></div>
+      <div class="checklist-item"><span class="check-icon">✅</span><div><div class="check-title">Deploy order is part of the change</div><div class="check-desc">Server, then client, then the rules that refuse the old client. Write it in the PR.</div></div></div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-label">// HOW THIS WAS BUILT</div>
+      <p>Most of this code was written with an AI coding agent (Claude Code), working from ADRs, a house standard and reusable skills. The product and security decisions, the trade-offs and the review were ours.</p>
+    </div>
+
+    <div class="series-list">
+      <div class="series-item series-item--current"><span class="series-badge series-badge--current">Part 1</span><div><div class="series-title">From a static quiz page to a game the client can't cheat</div><div class="series-desc">This post.</div></div></div>
+      <div class="series-item"><span class="series-badge series-badge--done">Part 2</span><div><div class="series-title">Rooms that survive people leaving</div><div class="series-desc"><a href="/blogs/quizclash-rooms/">Read it →</a></div></div></div>
+      <div class="series-item"><span class="series-badge series-badge--done">Part 3</span><div><div class="series-title">Testing a real-time app for real</div><div class="series-desc"><a href="/blogs/realtime-testing/">Read it →</a></div></div></div>
+      <div class="series-item"><span class="series-badge series-badge--done">Part 4</span><div><div class="series-title">One engineer, five apps</div><div class="series-desc"><a href="/blogs/one-engineer-five-apps/">Read it →</a></div></div></div>
+      <div class="series-item"><span class="series-badge series-badge--done">Part 5</span><div><div class="series-title">Bugs that erase data</div><div class="series-desc"><a href="/blogs/sync-data-loss/">Read it →</a></div></div></div>
+    </div>
+
+    <div class="divider">END OF PART 1</div>
+
+    <div class="cta">
+      <h3>Play it</h3>
+      <p>QuizClash is live. Start a room, send the code to a friend, and try to get your answer in before the reveal.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://quizclash.auragika.com/" target="_blank" rel="noopener">Open QuizClash ↗</a>
+        <a class="btn btn-ghost" href="https://auragika.com/" target="_blank" rel="noopener">Auragika ↗</a>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+</body>
+</html>

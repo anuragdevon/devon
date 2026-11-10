@@ -1,4 +1,39 @@
 [[project]]
+title = "QuizClash"
+date = "2026"
+sample = "Real-time quiz battles — play solo for the leaderboard or challenge up to 7 friends with a room code; faster right answers score more. Hugo + Firebase front end with a server-authoritative Go game server on Cloud Run. Live with 300+ users."
+link = "https://quizclash.auragika.com/"
+tech = ["hugo", "firebase", "golang", "googlecloud"]
+
+[[project]]
+title = "Auragika"
+date = "2025"
+sample = "Home of Auragika, the self-hosted studio Anurag & Ruchika run — travel plans, kitchen experiments and the suite of apps we build, as an installable, offline-ready PWA."
+link = "https://auragika.com/"
+tech = ["hugo", "css", "js"]
+
+[[project]]
+title = "Cadence"
+date = "2025"
+sample = "Daily routines, habits and to-dos designed for two — flexible interval scheduling, coin reward system, friend sharing, and Firebase sync across devices."
+link = "https://cadence.auragika.com/"
+tech = ["hugo", "firebase", "js"]
+
+[[project]]
+title = "Pebble"
+date = "2024"
+sample = "Shared and personal expense tracker — 7 split modes, live settlement calculation, budgets, monthly grouping, yearly charts, and real-time Firebase sync."
+link = "https://pebble.auragika.com/"
+tech = ["hugo", "firebase", "js"]
+
+[[project]]
+title = "Grove"
+date = "2026"
+sample = "A private PWA for trusted circles — family, close friends, couples. A shared space to store the things that matter, track habits and mood, and talk about them in real time."
+link = "https://grove.auragika.com/"
+tech = ["hugo", "firebase", "js"]
+
+[[project]]
 title = "grpcterm"
 date = "2026"
 sample = "Keyboard-driven terminal UI for interacting with gRPC servers — service discovery via reflection or .proto files, all 4 call types, persistent request history."
@@ -31,27 +66,6 @@ title = "Timeboxing"
 date = "2025"
 sample = "Focus timer PWA built on Hugo — box library with custom emoji and durations, circular countdown ring, session log with monthly calendar, push notifications."
 link = "https://github.com/anuragdevon/timeboxing"
-tech = ["hugo", "firebase", "js"]
-
-[[project]]
-title = "Anuragika Routine"
-date = "2025"
-sample = "Shared routine, goals and todo PWA for two — flexible interval scheduling, coin reward system, friend sharing, and Firebase sync across devices."
-link = "https://github.com/anuragdevon/todo-routine-app"
-tech = ["hugo", "firebase", "js"]
-
-[[project]]
-title = "Auragika Universe"
-date = "2025"
-sample = "Anurag & Ruchika's shared landing page — travel destinations, recipes, productivity tools, and an about section with a glass-morphism design system."
-link = "https://github.com/anuragdevon/auragika-universe"
-tech = ["hugo", "css"]
-
-[[project]]
-title = "Finance Tracker"
-date = "2024"
-sample = "Shared expense tracker for two — 7 split modes, live settlement calculation, monthly grouping, yearly charts, and real-time Firebase sync."
-link = "https://github.com/anuragdevon/finance-tracker"
 tech = ["hugo", "firebase", "js"]
 
 [[project]]

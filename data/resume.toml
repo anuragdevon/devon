@@ -25,9 +25,21 @@ skill = "Softwares"
 items = ["ansible", "githubsoft", "git", "unreal", "blender", "fusion", "matlab"]
 
 [[experience]]
+name = "Auragika · Domain Partner"
+title = "Co-founder & Domain Partner"
+duration = "Jul 2026 – Present"
+location = "Self-hosted · Bengaluru, India"
+description = [
+  "Co-founded Auragika (auragika.com) — a self-hosted, independently run studio shipping a suite of installable, offline-ready PWAs.",
+  "QuizClash: real-time quiz battles, one-on-one or rooms of up to eight with answers landing live — 300+ users.",
+  "Pebble (shared & personal expenses and budgets), Cadence (routines, habits and to-dos synced for two) and Grove (habit & mood wellness companion); Ripple and Ember in beta.",
+  "Own the domain, hosting, releases and product roadmap end to end — Hugo + Firebase apps built on a shared dark-first design system."
+]
+
+[[experience]]
 name = "Swiggy · Instamart Supply Chain"
 title = "Software Development Engineer II"
-duration = "May 2023 – Present"
+duration = "May 2023 – Jun 2026"
 location = "Bengaluru, India"
 description = [
   "Rated Outstanding Performer · MVP Award ×3 (Dec, Mar & Nov).",

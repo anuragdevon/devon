@@ -2,7 +2,6 @@ title = "Anurag Kar"
 baseURL = "https://anuragkar.netlify.app/"
 relativeURLs = true
 disableKinds = ["page", "section", "taxonomy", "term"]
-googleAnalytics = "UA-200019838-1"
 
 enableEmoji = true
 enableGitInfo = true
@@ -11,13 +10,13 @@ canonifyURLs = true
 
 [languages]
   [languages.en]
-    languageName = "English"
-    languageCode = "en-us"
+    label = "English"
+    locale = "en-us"
     weight = 1
 
 [params]
 Author = "Anurag Kar"
-Description = "This is Anurag Kar's Personal Website"
+Description = "Anurag Kar: backend engineer in Bengaluru, and domain partner at Auragika."
 github = "https://github.com/anuragdevon"
 facebook = "https://www.facebook.com/anurag.kar.395"
 sitename = "anuragdevon"
@@ -37,7 +36,7 @@ name = "Blogs"
 weight = 3
 
 [outputs]
-home = [ "HTML", "About", "Blog", "Project", "AndromedaBlog", "SilentFailuresBlog", "CascadeBlog", "CtfBlog", "DecoratorsBlog", "DjangoBlog" ]
+home = [ "HTML", "About", "Blog", "Project", "AndromedaBlog", "SilentFailuresBlog", "CascadeBlog", "CtfBlog", "DecoratorsBlog", "DjangoBlog", "QuizclashServerBlog", "QuizclashRoomsBlog", "RealtimeTestingBlog", "FiveAppsBlog", "SyncDataLossBlog" ]
 
 [outputFormats.About]
 path = "about"
@@ -102,7 +101,38 @@ isHTML = true
 permalinkable = true
 notAlternative = true
 
-# [module]
-#   [[module.mounts]]
-#     source = "node_modules/bootstrap/dist/js/bootstrap.min.js"
-#     target = "assets/js/bootstrap.min.js"
+
+[outputFormats.QuizclashServerBlog]
+path = "blogs/quizclash-server"
+mediaType = "text/html"
+isHTML = true
+permalinkable = true
+notAlternative = true
+
+[outputFormats.QuizclashRoomsBlog]
+path = "blogs/quizclash-rooms"
+mediaType = "text/html"
+isHTML = true
+permalinkable = true
+notAlternative = true
+
+[outputFormats.RealtimeTestingBlog]
+path = "blogs/realtime-testing"
+mediaType = "text/html"
+isHTML = true
+permalinkable = true
+notAlternative = true
+
+[outputFormats.FiveAppsBlog]
+path = "blogs/one-engineer-five-apps"
+mediaType = "text/html"
+isHTML = true
+permalinkable = true
+notAlternative = true
+
+[outputFormats.SyncDataLossBlog]
+path = "blogs/sync-data-loss"
+mediaType = "text/html"
+isHTML = true
+permalinkable = true
+notAlternative = true

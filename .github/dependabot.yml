@@ -1,0 +1,12 @@
+# Monthly, grouped update PRs. npm only supplies Bootstrap's SCSS (pinned on purpose: the
+# site's look is built on 5.0.0-beta3), so only security updates matter there.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule: { interval: monthly }
+    groups: { actions: { patterns: ["*"] } }
+  - package-ecosystem: npm
+    directory: /
+    schedule: { interval: monthly }
+    open-pull-requests-limit: 0 # security updates still arrive; version bumps don't

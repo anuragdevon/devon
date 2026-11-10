@@ -1,7 +1,7 @@
 {{ $imageRaw := resources.Get "/images/profile/devon.webp" }}
 {{ $image    := $imageRaw.Fill "600x600 webp q90 Center" }}
 {{ $resume   := resources.Get "/pdfs/resume.pdf" }}
-{{ with site.Data.profile }}
+{{ with hugo.Data.profile }}
 <section id="about" class="about">
   <div class="container">
     <div class="section-title animate-on-scroll">

@@ -1,21 +1,14 @@
 <head>
-    {{ template "_internal/google_analytics.html" . }}
     {{ partial "meta" . }}
 
-    {{/* Anti-flash: apply saved theme before CSS paints — must be synchronous */}}
-    <script>
-      (function () {
-        var t = localStorage.getItem('theme') || 'dark';
-        document.documentElement.setAttribute('data-theme', t);
-      }());
-    </script>
+    {{/* Pre-paint theme: blocking on purpose so there's no flash. A file, not inline, for the CSP. */}}
+    {{ $themeInit := resources.Get "js/theme-init.js" | minify | fingerprint }}
+    <script src="{{ $themeInit.RelPermalink }}" integrity="{{ $themeInit.Data.Integrity }}"></script>
 
-    {{/* Performance: preconnect to font origins */}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-    {{ $styles := resources.Get "scss/site.scss" | resources.ExecuteAsTemplate "style.scss" . | toCSS | minify | fingerprint }}
-    <link rel="preload" as="style" href="{{ $styles.RelPermalink }}">
-    <link rel="stylesheet" type="text/css" href="{{ $styles.RelPermalink }}" media="all">
+    {{ $styles := resources.Get "scss/site.scss" | resources.ExecuteAsTemplate "css/style.scss" . | toCSS | minify | fingerprint }}
+    <link rel="stylesheet" href="{{ $styles.RelPermalink }}" integrity="{{ $styles.Data.Integrity }}">
 </head>

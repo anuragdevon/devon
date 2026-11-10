@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Bugs that erase data: sync lessons from four Firebase PWAs</title>
+</head>
+<body>
+
+<div class="page">
+
+  <header class="hero">
+    <div class="hero-eyebrow">DATA SAFETY · OFFLINE-FIRST · FIRESTORE · INCIDENT REVIEW</div>
+    <h1>Bugs that erase data.<br><em>Sync lessons from four Firebase PWAs.</em></h1>
+    <p class="hero-lead">One afternoon, a signed-in user's whole account was replaced by a blank one. Nothing crashed and no error was logged; the app simply saved an empty account over a full one, because it believed the full one didn't exist. We got every item back. Then we went looking for the same shape of bug in every other app, and found it twice more.</p>
+    <div class="hero-meta">
+      <span data-icon="✍">anuragdevon</span>
+      <span data-icon="📅">10th Nov 2026</span>
+      <span data-icon="⏱">12 min read</span>
+      <span data-icon="📌">Building Auragika · Part 5 of 5</span>
+    </div>
+  </header>
+
+  <nav class="toc">
+    <div class="toc-label">// TABLE OF CONTENTS</div>
+    <div class="toc-grid">
+      <a class="toc-link" href="#s1"><span class="toc-n">01</span>The afternoon an account went blank</a>
+      <a class="toc-link" href="#s2"><span class="toc-n">02</span>Getting it back</a>
+      <a class="toc-link" href="#s3"><span class="toc-n">03</span>Why get-then-set is a trap</a>
+      <a class="toc-link" href="#s4"><span class="toc-n">04</span>Three layers of fix</a>
+      <a class="toc-link" href="#s5"><span class="toc-n">05</span>Hunting the same bug elsewhere</a>
+      <a class="toc-link" href="#s6"><span class="toc-n">06</span>Sessions that end cleanly</a>
+      <a class="toc-link" href="#s7"><span class="toc-n">07</span>Writes that must land together</a>
+      <a class="toc-link" href="#s8"><span class="toc-n">08</span>Fast, but not at the cost of safety</a>
+      <a class="toc-link" href="#s9"><span class="toc-n">09</span>The offline cache that cached nothing</a>
+      <a class="toc-link" href="#s10"><span class="toc-n">10</span>The rules we now follow</a>
+    </div>
+  </nav>
+
+  <section class="section" id="s1">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2 class="section-title">The afternoon an account went blank</h2>
+    </div>
+    <p>Cadence is our routines and to-dos app. Each account's data lives in one Firestore document per user. On 31 October, a user cleared their browser's site data, signed in again, and found an empty app: no to-dos, no routines, no goals, no history, coins back to zero.</p>
+    <p>The data wasn't lost on the device. It had been overwritten on the server, by the app, on purpose, as far as the app was concerned.</p>
+    <p>The fingerprint gave it away. The document now held bare default settings and the account's Google display name. Only one code path in the app writes exactly that: new-user setup. That path did this:</p>
+
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="code-lang">js — the shape of the bug (simplified)</span>
+        <div class="code-actions">
+          <div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div>
+          <button class="copy-btn" data-target="code-bug">COPY</button>
+        </div>
+      </div>
+      <pre id="code-bug"><span class="t-kw">async function</span> <span class="t-fn">resolveAccount</span>(user) {
+  <span class="t-kw">const</span> ref = <span class="t-fn">doc</span>(db, <span class="t-st">'users'</span>, idFor(user));
+  <span class="t-kw">const</span> snap = <span class="t-kw">await</span> <span class="t-fn">getDoc</span>(ref);
+  <span class="t-kw">if</span> (!snap.<span class="t-fn">exists</span>()) {
+    <span class="t-cm">// "New user": write the defaults.</span>
+    <span class="t-cm">// If this read was wrong for any reason, this line replaces a real account.</span>
+    <span class="t-kw">await</span> <span class="t-fn">setDoc</span>(ref, <span class="t-fn">defaultData</span>(user));
+  }
+  <span class="t-kw">return</span> ref;
+}</pre>
+    </div>
+
+    <p>Right after the site data was cleared, that read reported the document as missing. It wasn't. We never reproduced exactly why the read was wrong at that moment, and that turned out not to matter: the code was built so that <em>any</em> wrong "missing" destroys an account.</p>
+  </section>
+
+  <section class="section" id="s2">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2 class="section-title">Getting it back</h2>
+    </div>
+    <p>Recovery came first. Firestore lets you read documents as they were at a recent point in time (point-in-time reads, within roughly the last hour). We read the document as it stood a few minutes before the overwrite, wrote it back, and compared every list item by item against the recovered copy. Everything was identical. A copy was also kept outside the database.</p>
+
+    <div class="timeline">
+      <div class="timeline-item"><div class="timeline-time">T+0</div><div class="timeline-body"><div class="timeline-title">Site data cleared, user signs in</div><div class="timeline-desc">New-user setup runs. Its read says "missing". Defaults are written over the account.</div></div><span class="timeline-status timeline-status--fail">OVERWRITE</span></div>
+      <div class="timeline-item"><div class="timeline-time">Minutes</div><div class="timeline-body"><div class="timeline-title">The fingerprint points at one code path</div><div class="timeline-desc">Bare defaults plus the Google display name: only new-user setup writes that combination.</div></div><span class="timeline-status timeline-status--warn">DIAGNOSE</span></div>
+      <div class="timeline-item"><div class="timeline-time">&lt; 1 hour</div><div class="timeline-body"><div class="timeline-title">Point-in-time read, write back, verify</div><div class="timeline-desc">The document as it was before the overwrite, restored and compared item by item.</div></div><span class="timeline-status timeline-status--ok">RECOVERED</span></div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-label">⚠ THE CLOCK IS PART OF THE RECOVERY</div>
+      <p>Point-in-time reads only reach back so far. We recovered because the user noticed straight away and we knew the feature existed. Know your database's recovery window, and how to use it, <em>before</em> you need it.</p>
+    </div>
+  </section>
+
+  <section class="section" id="s3">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2 class="section-title">Why get-then-set is a trap</h2>
+    </div>
+    <p>"Read, and if it's missing, create it" is a check-then-act. Between the check and the act, the world can change, and the check itself can be wrong. In an offline-capable client the check is wrong more often than you'd think: a read can be served from an empty local cache, from a fresh session with no data yet, or during a connection that hasn't settled.</p>
+
+    <div class="diagram">
+      <svg viewBox="0 0 760 230" role="img" aria-labelledby="x1t">
+        <title id="x1t">Get then set: a wrong "missing" read leads to a set that overwrites the server copy. A create-only transaction fails instead of overwriting.</title>
+        <defs>
+          <marker id="x1a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="tip" d="M0,0 L10,5 L0,10 z"/></marker>
+          <marker id="x1b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="tip-accent" d="M0,0 L10,5 L0,10 z"/></marker>
+        </defs>
+        <text class="head" x="20" y="24">GET, THEN SET</text>
+        <rect class="box" x="20" y="36" width="160" height="56" rx="10"/><text class="lbl" x="100" y="60" text-anchor="middle">get(user)</text><text class="sub" x="100" y="78" text-anchor="middle">says: missing</text>
+        <rect class="box" x="230" y="36" width="160" height="56" rx="10"/><text class="lbl" x="310" y="60" text-anchor="middle">set(defaults)</text><text class="sub" x="310" y="78" text-anchor="middle">unconditional</text>
+        <rect class="box-warn" x="440" y="36" width="300" height="56" rx="10"/><text class="lbl" x="590" y="60" text-anchor="middle">server copy replaced</text><text class="sub" x="590" y="78" text-anchor="middle">a wrong read is now permanent</text>
+        <path class="ln" d="M180,64 L228,64" marker-end="url(#x1a)"/>
+        <path class="ln" d="M390,64 L438,64" marker-end="url(#x1a)"/>
+        <text class="head" x="20" y="134">CREATE-ONLY TRANSACTION</text>
+        <rect class="box" x="20" y="146" width="160" height="56" rx="10"/><text class="lbl" x="100" y="170" text-anchor="middle">txn.get(user)</text><text class="sub" x="100" y="188" text-anchor="middle">read on the server</text>
+        <rect class="box" x="230" y="146" width="160" height="56" rx="10"/><text class="lbl" x="310" y="170" text-anchor="middle">create if missing</text><text class="sub" x="310" y="188" text-anchor="middle">else do nothing</text>
+        <rect class="box-accent" x="440" y="146" width="300" height="56" rx="10"/><text class="lbl" x="590" y="170" text-anchor="middle">exists by commit? → retry/fail</text><text class="sub" x="590" y="188" text-anchor="middle">it can never replace a document</text>
+        <path class="ln-accent" d="M180,174 L228,174" marker-end="url(#x1b)"/>
+        <path class="ln-accent" d="M390,174 L438,174" marker-end="url(#x1b)"/>
+      </svg>
+    </div>
+    <p class="diagram-caption">The difference isn't the read. It's whether a wrong read can turn into an overwrite.</p>
+
+    <p>The general lesson: <strong>a write's worst case should not depend on a read being right.</strong> If the safe outcome of a bad read is "we failed to create", that's a retry. If it's "we replaced a real account", that's an incident.</p>
+  </section>
+
+  <section class="section" id="s4">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2 class="section-title">Three layers of fix</h2>
+    </div>
+    <p>One fix would have closed this path. We wanted the <em>class</em> of bug closed, so the fix in Cadence PR #22 has three independent layers. Any one of them would have prevented the incident.</p>
+
+    <div class="flow-steps">
+      <div class="flow-step flow-step--ok"><span class="flow-n">1</span><span><strong>Create-only.</strong> New-user setup runs in a transaction that creates the document only if it is missing on the server, and fails if it exists by commit time.</span><span class="flow-status flow-status--ok">✓</span></div>
+      <div class="flow-step flow-step--ok"><span class="flow-n">2</span><span><strong>A blank-upload guard.</strong> The save path refuses to upload a completely blank account over a server copy that had real content, logs it, and tells the user to reload. Deleting items one at a time still saves normally.</span><span class="flow-status flow-status--ok">✓</span></div>
+      <div class="flow-step flow-step--ok"><span class="flow-n">3</span><span><strong>A session reset.</strong> Signing out, or losing auth any other way (cleared storage, another tab), stops listeners, marks the cloud copy as not ready and clears in-memory state. A later sign-in reads the server copy before anything can upload.</span><span class="flow-status flow-status--ok">✓</span></div>
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="code-lang">js — create-only, as a transaction (simplified)</span>
+        <div class="code-actions">
+          <div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div>
+          <button class="copy-btn" data-target="code-fix">COPY</button>
+        </div>
+      </div>
+      <pre id="code-fix"><span class="t-kw">async function</span> <span class="t-fn">ensureAccount</span>(user) {
+  <span class="t-kw">const</span> ref = <span class="t-fn">doc</span>(db, <span class="t-st">'users'</span>, idFor(user));
+  <span class="t-kw">await</span> <span class="t-fn">runTransaction</span>(db, <span class="t-kw">async</span> (tx) =&gt; {
+    <span class="t-kw">const</span> snap = <span class="t-kw">await</span> tx.<span class="t-fn">get</span>(ref);     <span class="t-cm">// a server read, inside the transaction</span>
+    <span class="t-kw">if</span> (snap.<span class="t-fn">exists</span>()) <span class="t-kw">return</span>;          <span class="t-cm">// existing account: touch nothing</span>
+    tx.<span class="t-fn">set</span>(ref, <span class="t-fn">defaultData</span>(user));       <span class="t-cm">// commit fails if it appeared meanwhile</span>
+  });
+  <span class="t-kw">return</span> ref;
+}</pre>
+    </div>
+
+    <p>Layer 2 is deliberately a heuristic. It doesn't try to be clever about what "blank" means; it only refuses the single most destructive save there is. The user sees "Not saved: reload to get your data back" instead of losing everything.</p>
+  </section>
+
+  <section class="section" id="s5">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2 class="section-title">Hunting the same bug elsewhere</h2>
+    </div>
+    <p>The same day, we audited every other app for the same shape: <em>a save that writes a whole thing, based on state that may not have loaded</em>.</p>
+    <p><strong>Pebble</strong> (expenses, PR #24) was partly safe already, for a reason worth copying. Its profile and Personal-space creation have the same get-then-set shape, but the security rules allow <strong>no update</strong> of a user's profile and only one field to change on a group. A wrong "missing" there produces a refused write, not an overwrite. The rules were the backstop.</p>
+    <p>It wasn't safe everywhere, though. Settlement history and subscriptions are saved as whole lists. If their first read failed (the error was caught and logged, and the group still opened), the in-memory list stayed empty, and the next settle-up saved a one-item list <strong>over the entire history</strong>. The rules allowed it, because a member saving the list is normal.</p>
+
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="code-lang">js — refuse to save what you never loaded (simplified)</span>
+        <div class="code-actions">
+          <div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div>
+          <button class="copy-btn" data-target="code-loaded">COPY</button>
+        </div>
+      </div>
+      <pre id="code-loaded"><span class="t-kw">let</span> settlementsLoaded = <span class="t-kw">false</span>;             <span class="t-cm">// reset whenever the group changes</span>
+
+<span class="t-kw">async function</span> <span class="t-fn">loadSettlements</span>(group) {
+  state.settlements = <span class="t-kw">await</span> <span class="t-fn">readSettlements</span>(group);
+  settlementsLoaded = <span class="t-kw">true</span>;                     <span class="t-cm">// only a successful read sets it</span>
+}
+
+<span class="t-kw">async function</span> <span class="t-fn">saveSettlements</span>(group) {
+  <span class="t-kw">if</span> (!settlementsLoaded) {
+    <span class="t-kw">throw new</span> Error(<span class="t-st">"Settlements haven't loaded yet. Reload and try again."</span>);
+  }
+  <span class="t-kw">await</span> <span class="t-fn">writeSettlements</span>(group, state.settlements);
+}</pre>
+    </div>
+
+    <p><strong>Grove</strong> (shared spaces) didn't have the whole-blob upload at all; its profile and personal space were already created only inside transactions that do nothing if they exist, and direct-message threads are create-only. It did have the session problem, which is next.</p>
+
+    <div class="callout tip">
+      <div class="callout-label">// AUDIT BY SHAPE, NOT BY FILE</div>
+      <p>We didn't search for "the same code" in other repos. We searched for the same <em>shape</em>: whole-document or whole-list saves, defaults written on "missing", and state that is empty until a read succeeds. That found a different bug in Pebble than the one in Cadence.</p>
+    </div>
+  </section>
+
+  <section class="section" id="s6">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <h2 class="section-title">Sessions that end cleanly</h2>
+    </div>
+    <p>Layer 3 of the Cadence fix, the session reset, turned out to matter everywhere. A single-page app keeps a lot of state in memory: listeners, caches, decrypted rows, "cloud is ready" flags. If sign-out only calls the auth provider's <code>signOut()</code>, all of that survives, and the next account in the same tab starts life with the previous account's state.</p>
+    <p>Grove's version (PR #17) made the order explicit:</p>
+    <ol>
+      <li>mark presence offline <em>first</em>, while the rules still know who you are;</li>
+      <li>reset the session: stop every listener (workspaces, vaults, items, chats), drop the vault key and every cache, close every sheet and clear every list;</li>
+      <li>then sign out of Firebase.</li>
+    </ol>
+    <p>It also found a listener nobody was tracking. It kept running after sign-out and was refused by the rules. Harmless, until it isn't.</p>
+    <p>The same PR removed every <strong>silent failure</strong>: eight empty <code>catch</code> blocks now log, and the user-facing ones (creating, saving, deleting, sending, signing in) show a message. A sync bug you can see is a bug report. A sync bug you can't see is data loss discovered weeks later.</p>
+    <p>A new browser test signs out, then signs in as another account on the same page, and asserts that every list is empty after sign-out and none of the first account's names are left anywhere.</p>
+  </section>
+
+  <section class="section" id="s7">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <h2 class="section-title">Writes that must land together</h2>
+    </div>
+    <p>Pebble stores each month's expenses as one document. Editing an expense's date from 30 October to 2 November saved the new date, but the expense stayed filed under October (PR #25). The edit was written back to the month it came from, whatever the new date said.</p>
+    <p>The fix moved the decision into a pure, unit-tested function that takes the expense out of the old month and puts it into the new one, and the save writes <strong>both months in one batch</strong>. Two separate writes could leave the expense in both months, or in neither, if one failed. A batch can't.</p>
+    <p>The browser test for it fails on the old code, which we checked by putting the old code back. And writing it exposed another timezone bug, this time in the tests: the seed data used the UTC month while the app uses the local one, so for five and a half hours after midnight IST on the 1st, three tests failed locally. CI runs in UTC, so it had never seen them.</p>
+    <p>A related ordering bug showed up in Grove: opening a protected vault right after creating it showed no items, because the listener was attached before the create had reached the server, and the rules check items through their vault. The fix is a bounded retry with backoff on a refused listen, then a visible error, plus mapping the vault before attaching its chat.</p>
+  </section>
+
+  <section class="section" id="s8">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <h2 class="section-title">Fast, but not at the cost of safety</h2>
+    </div>
+    <p>All this caution has a cost: reading from the server before writing is slower than trusting a cache. On phones, Pebble sat on "Loading" for seconds on every reopen. We measured it in headless Chrome against the emulators with added network latency (PR #23):</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Reopen, added latency</th><th>Before</th><th>After</th></tr></thead>
+        <tbody>
+          <tr><td>300 ms per round trip</td><td>2.85 s</td><td>1.93 s</td></tr>
+          <tr><td>600 ms per round trip</td><td>5.0 s</td><td>3.16 s</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Start-up was about six and a half server round trips <em>one after another</em>, including reading the same profile document twice. The fix kept every safety rule and only removed waiting: read the profile once, open the last group while the profile loads, and read a group's data alongside its document. If a group can't be opened, its in-flight reads settle before the next group is tried, so a late result can't leak into the wrong group.</p>
+    <p>The tempting next step, showing cached data instantly and refreshing behind it, was explicitly left out of that PR. It would make reopening near-instant, and it touches exactly the "trust a read that might be stale" behaviour this whole post is about. It deserves its own reviewed change.</p>
+  </section>
+
+  <section class="section" id="s9">
+    <div class="section-header">
+      <span class="section-num">09</span>
+      <h2 class="section-title">The offline cache that cached nothing</h2>
+    </div>
+    <p>One last bug, because it hid in plain sight. Cadence's service worker was meant to cache pages for offline use. It never cached anything. The console said:</p>
+    <div class="spec-card">
+      <div class="spec-row"><span class="spec-key">Console</span><span class="spec-val">TypeError: Failed to execute 'clone' on 'Response': Response body is already used</span></div>
+    </div>
+    <p>It cloned each response inside <code>caches.open().then(…)</code>, which runs <em>after</em> the page has already consumed the body. Clone first, then hand the original to the page (PR #23). Grove's worker had a different version of the same failure: network-first, but it never stored anything, so offline only ever had the home page (PR #16). Its fix borrowed Cadence's, and added a browser test that checks the service worker really caches the bundle.</p>
+    <p>Both workers also got new cache names so the broken caches are dropped on activate, and both now leave Firebase Auth, sign-in and database traffic entirely alone.</p>
+  </section>
+
+  <section class="section" id="s10">
+    <div class="section-header">
+      <span class="section-num">10</span>
+      <h2 class="section-title">The rules we now follow</h2>
+    </div>
+    <p>These became written rules in every app's project docs and in a shared skill for our Firebase PWAs, so the next app starts with them:</p>
+    <div class="checklist">
+      <div class="checklist-item"><span class="check-icon">✅</span><div><div class="check-title">Create only inside a transaction that does nothing if the document exists</div><div class="check-desc">Never "get, then set" for anything that might already hold user data.</div></div></div>
+      <div class="checklist-item"><span class="check-icon">✅</span><div><div class="check-title">Never save what you haven't loaded</div><div class="check-desc">A "loaded" flag set only by a successful read, reset when the context changes. Saving before it is an error, not an empty write.</div></div></div>
+      <div class="checklist-item"><span class="check-icon">✅</span><div><div class="check-title">Guard the most destructive write</div><div class="check-desc">Refuse to upload a blank copy over a full one, and say so.</div></div></div>
+      <div class="checklist-item"><span class="check-icon">✅</span><div><div class="check-title">Reset the whole session on sign-out and auth loss</div><div class="check-desc">Listeners, caches, flags. Presence offline first, sign out last.</div></div></div>
+      <div class="checklist-item"><span class="check-icon">✅</span><div><div class="check-title">Related writes go in one batch</div><div class="check-desc">Moving something between documents is one atomic operation or it's a duplication bug.</div></div></div>
+      <div class="checklist-item"><span class="check-icon">✅</span><div><div class="check-title">Let the rules be the backstop</div><div class="check-desc">If a field should never be updated, deny updates. A wrong client then fails instead of overwriting.</div></div></div>
+      <div class="checklist-item"><span class="check-icon">✅</span><div><div class="check-title">No silent failures, and know your recovery window</div><div class="check-desc">Log and show sync errors. Practise point-in-time recovery before you need it.</div></div></div>
+    </div>
+
+    <div class="series-list">
+      <div class="series-item"><span class="series-badge series-badge--done">Part 1</span><div><div class="series-title">From a static quiz page to a game the client can't cheat</div><div class="series-desc"><a href="/blogs/quizclash-server/">Read it →</a></div></div></div>
+      <div class="series-item"><span class="series-badge series-badge--done">Part 2</span><div><div class="series-title">Rooms that survive people leaving</div><div class="series-desc"><a href="/blogs/quizclash-rooms/">Read it →</a></div></div></div>
+      <div class="series-item"><span class="series-badge series-badge--done">Part 3</span><div><div class="series-title">Testing a real-time app for real</div><div class="series-desc"><a href="/blogs/realtime-testing/">Read it →</a></div></div></div>
+      <div class="series-item"><span class="series-badge series-badge--done">Part 4</span><div><div class="series-title">One engineer, five apps</div><div class="series-desc"><a href="/blogs/one-engineer-five-apps/">Read it →</a></div></div></div>
+      <div class="series-item series-item--current"><span class="series-badge series-badge--current">Part 5</span><div><div class="series-title">Bugs that erase data</div><div class="series-desc">This post.</div></div></div>
+    </div>
+
+    <div class="divider">END OF THE SERIES</div>
+
+    <div class="cta">
+      <h3>Thanks for reading</h3>
+      <p>The apps are all on auragika.com. If you've been bitten by a get-then-set, or recovered data with a point-in-time read, I'd like to hear how it went.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://auragika.com/" target="_blank" rel="noopener">auragika.com ↗</a>
+        <a class="btn btn-ghost" href="https://github.com/anuragdevon" target="_blank" rel="noopener">GitHub ↗</a>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+</body>
+</html>

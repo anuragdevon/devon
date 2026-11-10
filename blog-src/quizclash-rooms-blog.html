@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Rooms that survive people leaving</title>
+</head>
+<body>
+
+<div class="page">
+
+  <header class="hero">
+    <div class="hero-eyebrow">REAL-TIME SYSTEMS · PRESENCE · STATE MACHINES · GO</div>
+    <h1>Rooms that survive<br><em>people leaving.</em></h1>
+    <p class="hero-lead">A multiplayer room is easy while everyone stays. The hard part is the player who closes the tab, loses signal in a lift, or was the host. This is how QuizClash learned to notice a dropped player in seconds instead of a minute, keep a group game going without its host, and hand the room over exactly once, even when every client asks at the same moment.</p>
+    <div class="hero-meta">
+      <span data-icon="✍">anuragdevon</span>
+      <span data-icon="📅">10th Nov 2026</span>
+      <span data-icon="⏱">12 min read</span>
+      <span data-icon="📌">Building Auragika · Part 2 of 5</span>
+    </div>
+  </header>
+
+  <nav class="toc">
+    <div class="toc-label">// TABLE OF CONTENTS</div>
+    <div class="toc-grid">
+      <a class="toc-link" href="#s1"><span class="toc-n">01</span>The symptom: 90-second matches</a>
+      <a class="toc-link" href="#s2"><span class="toc-n">02</span>A room's life, as a state machine</a>
+      <a class="toc-link" href="#s3"><span class="toc-n">03</span>Noticing that someone left</a>
+      <a class="toc-link" href="#s4"><span class="toc-n">04</span>Forfeit or play on?</a>
+      <a class="toc-link" href="#s5"><span class="toc-n">05</span>Who becomes host</a>
+      <a class="toc-link" href="#s6"><span class="toc-n">06</span>Handing over exactly once</a>
+      <a class="toc-link" href="#s7"><span class="toc-n">07</span>Changing topic in a live lobby</a>
+      <a class="toc-link" href="#s8"><span class="toc-n">08</span>How we test it</a>
+      <a class="toc-link" href="#s9"><span class="toc-n">09</span>What's still open</a>
+      <a class="toc-link" href="#s10"><span class="toc-n">10</span>Takeaways</a>
+    </div>
+  </nav>
+
+  <section class="section" id="s1">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2 class="section-title">The symptom: 90-second matches</h2>
+    </div>
+    <p>In <a href="/blogs/quizclash-server/">Part 1</a> we moved the game onto a Go server: clients ask for each step when it's due, and the server takes it once. That fixed cheating. It didn't fix people.</p>
+    <p>A group match of ten questions normally takes about 50 seconds. Once a player closed their tab, especially the host, the same match took about 90. Nothing crashed. Every question just waited a little too long before it revealed, and those waits added up.</p>
+    <p>Before that, it was worse. A group host who went offline mid-match ended the match for everyone, as a forfeit, and between matches only the host could start, rematch or change the topic. If the host left the lobby, the room was dead and everyone had to make a new one and share a new code.</p>
+    <p>Groups had also started staying in one room for match after match. The host had quietly become a single point of failure for the whole evening.</p>
+  </section>
+
+  <section class="section" id="s2">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2 class="section-title">A room's life, as a state machine</h2>
+    </div>
+    <p>It helps to see what "leaving" can interrupt. A room moves through a small set of phases, and the server owns every transition:</p>
+
+    <div class="diagram">
+      <svg viewBox="0 0 760 270" role="img" aria-labelledby="r1t">
+        <title id="r1t">Room phases: lobby, countdown, question, reveal, then the next question or finished, and back to the lobby for a rematch or a topic change.</title>
+        <defs>
+          <marker id="r1a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="tip" d="M0,0 L10,5 L0,10 z"/></marker>
+          <marker id="r1b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="tip-accent" d="M0,0 L10,5 L0,10 z"/></marker>
+        </defs>
+        <rect class="box-accent" x="20" y="90" width="110" height="50" rx="10"/><text class="lbl" x="75" y="120" text-anchor="middle">lobby</text>
+        <rect class="box" x="170" y="90" width="120" height="50" rx="10"/><text class="lbl" x="230" y="120" text-anchor="middle">countdown</text>
+        <rect class="box" x="330" y="90" width="120" height="50" rx="10"/><text class="lbl" x="390" y="120" text-anchor="middle">question</text>
+        <rect class="box" x="490" y="90" width="110" height="50" rx="10"/><text class="lbl" x="545" y="120" text-anchor="middle">reveal</text>
+        <rect class="box-accent" x="640" y="90" width="110" height="50" rx="10"/><text class="lbl" x="695" y="120" text-anchor="middle">finished</text>
+        <path class="ln" d="M130,115 L168,115" marker-end="url(#r1a)"/>
+        <path class="ln" d="M290,115 L328,115" marker-end="url(#r1a)"/>
+        <path class="ln" d="M450,115 L488,115" marker-end="url(#r1a)"/>
+        <path class="ln" d="M600,115 L638,115" marker-end="url(#r1a)"/>
+        <path class="ln" d="M545,90 C545,40 390,40 390,88" marker-end="url(#r1a)"/>
+        <text class="sub" x="468" y="36" text-anchor="middle">next question</text>
+        <path class="ln-accent" d="M695,140 C695,230 75,230 75,142" marker-end="url(#r1b)"/>
+        <text class="sub" x="385" y="222" text-anchor="middle">rematch or topic change = a new round, back in the lobby</text>
+        <text class="sub" x="75" y="80" text-anchor="middle">host needed</text>
+        <text class="sub" x="390" y="170" text-anchor="middle">nobody needed</text>
+        <text class="sub" x="695" y="80" text-anchor="middle">host needed</text>
+      </svg>
+    </div>
+    <p class="diagram-caption">The host only matters between matches. Mid-match, any client's request moves the round along.</p>
+
+    <p>That last observation became the core of the design. Once the server runs the round (Part 1), nothing mid-match actually <em>needs</em> a host. The host is needed in exactly two places: the lobby (start, change topic, remove a player) and the results (rematch). So there are two different problems: <strong>a player leaving mid-match</strong>, and <strong>a host missing between matches</strong>.</p>
+  </section>
+
+  <section class="section" id="s3">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2 class="section-title">Noticing that someone left</h2>
+    </div>
+    <p>Everything starts with presence: each player writes their own <code>{online, lastSeen}</code> entry, and an <code>onDisconnect</code> handler on the Realtime Database flips it to offline when the connection dies. The catch is <em>when</em> it dies. Firebase notices a dead socket only after its own timeout, which can be up to a minute. Until then, the other players see someone "online" who isn't there, and wait for their answer.</p>
+    <p>When a person closes a tab or navigates away, though, the browser tells you. The fix in PR #32 uses that:</p>
+
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="code-lang">js — say goodbye properly, come back from the back/forward cache</span>
+        <div class="code-actions">
+          <div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div>
+          <button class="copy-btn" data-target="code-presence">COPY</button>
+        </div>
+      </div>
+      <pre id="code-presence">addEventListener(<span class="t-st">'pagehide'</span>, () =&gt; {
+  presence.<span class="t-fn">markOffline</span>();   <span class="t-cm">// write "offline" now, not in a minute</span>
+  db.<span class="t-fn">goOffline</span>();           <span class="t-cm">// close the socket cleanly</span>
+});
+
+addEventListener(<span class="t-st">'pageshow'</span>, (e) =&gt; {
+  <span class="t-kw">if</span> (!e.persisted) <span class="t-kw">return</span>;   <span class="t-cm">// restored from the back/forward cache</span>
+  db.<span class="t-fn">goOnline</span>();
+  presence.<span class="t-fn">markOnline</span>();
+});</pre>
+    </div>
+
+    <p><code>pagehide</code> rather than <code>beforeunload</code> or <code>unload</code>: it fires reliably on mobile, and it doesn't stop the page from entering the back/forward cache. That's also why the <code>pageshow</code> half exists. A page restored from that cache never reloaded, so without it a player who pressed Back would be in the room but marked offline.</p>
+    <p>This only covers people who <em>leave</em>. Someone who loses signal still waits for Firebase's timeout. We wrote that down as a known limit instead of pretending otherwise.</p>
+
+    <div class="callout warn">
+      <div class="callout-label">⚠ A PRESENCE BUG THAT WAS ALREADY LIVE</div>
+      <p>When we first ran the browser tests against the real database rules, presence turned out never to have worked: <code>onDisconnect().update()</code> on an entry that didn't exist yet was refused by the rules, so nobody's online status was ever set up. The fix was a one-word change to <code>set()</code>. Only a test against the real rules could have found it.</p>
+    </div>
+  </section>
+
+  <section class="section" id="s4">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2 class="section-title">Forfeit or play on?</h2>
+    </div>
+    <p>Once you know someone left mid-match, what should happen? We decided differently by mode (ADR 0008):</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Mode</th><th>Someone drops mid-match</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr><td>1v1</td><td>The other player can claim a forfeit win</td><td>Nobody is left to play against. A quick win beats ten questions alone.</td></tr>
+          <tr><td>Group</td><td>Play on. The absent player stops scoring.</td><td>Five people are still playing. One leaving shouldn't end it for them.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>"Play on" sounds simple, but the 90-second matches came from two hidden places where an absent player still cost everyone time:</p>
+    <ul>
+      <li><strong>The reveal waited for them.</strong> A question reveals early when everyone has answered. An absent player never answers, so the question ran to the full timer. The fix: an offline player doesn't count toward "everyone answered". That rule is a pure function, so it lives in the JavaScript <code>core/</code> and its Go port, compared by the shared fixtures.</li>
+      <li><strong>The grace period was paid twice per question.</strong> Each step is requested by the host first, and by everyone else after a short grace. With the host gone, every reveal and every next question waited for that grace. The fix: while the host is offline, the next host in line drives the round straight away.</li>
+    </ul>
+    <p>We also considered and rejected a bot that plays the host's turns. There's nothing to play: the server already runs the round, and a bot's answers would distort scores and records.</p>
+  </section>
+
+  <section class="section" id="s5">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2 class="section-title">Who becomes host</h2>
+    </div>
+    <p>Between matches the room does need a host. When the current one leaves or stays offline too long, someone has to take over. This is a small leader-election problem, and it's tempting to reach for a known algorithm. We wrote down the ones we considered:</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Option</th><th>Why not (or why)</th></tr></thead>
+        <tbody>
+          <tr><td>Rendezvous (highest-random-weight) hashing</td><td>Built for spreading many keys over many nodes with minimal reshuffling. We have one decision per room among at most eight players who already have an order. A hash would only make "who's next" harder to explain.</td></tr>
+          <tr><td>Client consensus (Raft, Bully)</td><td>For peers that must agree without a referee. We have one: a database transaction.</td></tr>
+          <tr><td>Whoever asks first becomes host</td><td>Two players asking at once would race.</td></tr>
+          <tr><td>Give it back when the old host returns</td><td>On a flaky connection the room would change hands mid-conversation.</td></tr>
+          <tr><td><strong>Next seat, in seat order, who is online</strong></td><td>Everyone can predict it, the server computes it, and it cycles if that player leaves too. Chosen.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Two hand-over paths fall out of this. A host who taps <strong>Leave room</strong> hands over at once and gives up their place. A host who simply goes quiet is replaced after a timeout; they keep the successor's old seat, so they can come back as a player, but they don't get the room back.</p>
+
+    <div class="callout tip">
+      <div class="callout-label">// BORING ON PURPOSE</div>
+      <p>The best succession rule is the one every player could guess. "The next person in the seat list" needs no explanation in the UI. The toast just says who left and who's hosting now.</p>
+    </div>
+  </section>
+
+  <section class="section" id="s6">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <h2 class="section-title">Handing over exactly once</h2>
+    </div>
+    <p>Every client sees the host go quiet at about the same time, so every client may ask the server to hand over. The successor asks straight away; the others after a grace. The server picks the successor itself (never "the caller") and swaps the host in one compare-and-set transaction that also checks the round and phase haven't changed. One call lands; the others find nothing to do.</p>
+    <p>The browser test found a subtler race. The new host's <em>own</em> takeover request could arrive after it had already been made host by someone else's call. To the server, that request looked like "the host has left" and it handed the room on again, to the third player.</p>
+    <p>The fix is one field. Every hand-over request says which host the caller saw: <code>from</code>. If the room's host is no longer <code>from</code>, the request does nothing.</p>
+
+    <div class="diagram">
+      <svg viewBox="0 0 760 250" role="img" aria-labelledby="r2t">
+        <title id="r2t">Two clients ask to hand over from host A. The first call makes B host. B's own late call says from A, but the host is now B, so it does nothing.</title>
+        <defs>
+          <marker id="r2a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="tip" d="M0,0 L10,5 L0,10 z"/></marker>
+          <marker id="r2b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="tip-accent" d="M0,0 L10,5 L0,10 z"/></marker>
+        </defs>
+        <rect class="box" x="40" y="14" width="140" height="34" rx="8"/><text class="lbl" x="110" y="36" text-anchor="middle">Player C</text>
+        <rect class="box" x="230" y="14" width="140" height="34" rx="8"/><text class="lbl" x="300" y="36" text-anchor="middle">Player B (next)</text>
+        <rect class="box-accent" x="470" y="14" width="160" height="34" rx="8"/><text class="lbl" x="550" y="36" text-anchor="middle">Game server</text>
+        <line class="life" x1="110" y1="48" x2="110" y2="240"/>
+        <line class="life" x1="300" y1="48" x2="300" y2="240"/>
+        <line class="life" x1="550" y1="48" x2="550" y2="240"/>
+        <path class="ln-accent" d="M110,84 L546,84" marker-end="url(#r2b)"/><text class="sub" x="330" y="76" text-anchor="middle">hand over, from: A</text>
+        <text class="sub" x="650" y="104" text-anchor="middle">host == A ✓</text>
+        <text class="sub" x="650" y="120" text-anchor="middle">→ host = B</text>
+        <path class="ln" d="M300,156 L546,156" marker-end="url(#r2a)"/><text class="sub" x="425" y="148" text-anchor="middle">hand over, from: A (late)</text>
+        <text class="sub" x="650" y="176" text-anchor="middle">host == A ✗</text>
+        <text class="sub" x="650" y="192" text-anchor="middle">→ no-op</text>
+        <text class="sub" x="380" y="232" text-anchor="middle">without "from", the late call looks like "B left" and hands the room to C</text>
+      </svg>
+    </div>
+    <p class="diagram-caption">Name the state you acted on. The server ignores requests about a world that no longer exists.</p>
+
+    <p>It's the same idea as the compare-and-set on phases in Part 1, applied to a request instead of a write: a request carries the version of the world it was based on, and stale requests are no-ops, not errors.</p>
+    <p>Leaving had one more ordering detail. A host who taps Leave writes "offline" <em>before</em> the hand-over, so the old host never tries to write presence as someone who is no longer a member, which the rules would refuse.</p>
+  </section>
+
+  <section class="section" id="s7">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <h2 class="section-title">Changing topic in a live lobby</h2>
+    </div>
+    <p>Once groups stayed in one room, they wanted to change topic without making a new room (ADR 0005). The tempting implementation is to update the room's topic and level in place. We didn't, because of what can arrive late:</p>
+    <ul>
+      <li><strong>A late result.</strong> A slow phone's "finish" for the last match arrives after the topic changed. If the topic changed in place, that finish could be scored against the new topic's answer keys and recorded under the new topic's high scores.</li>
+      <li><strong>A start racing a change.</strong> If the host's start and a topic change cross, the room could start with the new questions and the old ready flags.</li>
+    </ul>
+    <p>So a topic change is a <strong>new round</strong>. Everything a round leaves behind is keyed by its round id, and every request names its round. The server draws fresh questions, moves the room to the next round (still in the lobby) through the same compare-and-set path as a rematch, and a late finish gets a clear <code>round_mismatch</code>. Only the host starts ready; everyone else readies up again, so nobody plays a topic they didn't agree to.</p>
+
+    <div class="callout info">
+      <div class="callout-label">// REUSE THE GUARDS YOU HAVE</div>
+      <p>We didn't add a new safety mechanism for topic changes. We made the change look like something the system already handled safely (a rematch) and inherited every guard that came with it.</p>
+    </div>
+  </section>
+
+  <section class="section" id="s8">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <h2 class="section-title">How we test it</h2>
+    </div>
+    <p>Every layer has its own tests, from pure rules up to six real browsers:</p>
+    <div class="spec-card">
+      <div class="spec-row"><span class="spec-key">Pure rules (JS + Go)</span><span class="spec-val">Next host, hand-over due, an offline player doesn't hold up a reveal, no group forfeit. Compared on 300 generated cases (26 due, 274 not)</span></div>
+      <div class="spec-row"><span class="spec-key">Use cases (Go)</span><span class="spec-val">Leave, take over, refusals (in a match, host present, no successor), races, events</span></div>
+      <div class="spec-row"><span class="spec-key">Integration (emulators)</span><span class="spec-val">Two concurrent claims change the host once; a new host leaving skips the offline old host</span></div>
+      <div class="spec-row"><span class="spec-key">Rules (emulator)</span><span class="spec-val">1v1 forfeit allowed, group forfeit refused</span></div>
+      <div class="spec-row"><span class="spec-key">Browser (group of six)</span><span class="spec-val">Host leaves the lobby → next seat hosts; that host drops mid-match → the match finishes → the next seat takes over at the results</span></div>
+    </div>
+    <p>The most important change in the browser test was what it waits for. The original check asserted timing ("the reveal happens within N seconds of a player dropping") and was flaky enough that we quarantined it (issue #2). The replacement asserts <strong>state</strong>: the dropped host shows offline, and the next host is the one driving the round. That check has been stable since. How we got there is the subject of <a href="/blogs/realtime-testing/">Part 3</a>.</p>
+    <p>The result: the dropped-host group match went from about 90 seconds back to about 50, and the test asserts the second match finishes well under the old time.</p>
+  </section>
+
+  <section class="section" id="s9">
+    <div class="section-header">
+      <span class="section-num">09</span>
+      <h2 class="section-title">What's still open</h2>
+    </div>
+    <ul>
+      <li><strong>Lost signal is still slow to notice.</strong> <code>pagehide</code> covers people who leave, not phones that go into a tunnel. Those still wait for the database's own timeout.</li>
+      <li><strong>A host alone can't hand over.</strong> There's nobody to hand to; the room is left for the scheduled clean-up.</li>
+      <li><strong>An old host who never returns keeps a seat.</strong> They show as offline, and the new host can remove them in the lobby like any absent player.</li>
+    </ul>
+    <p>Each of these is written in the ADR's consequences, so the next change starts from what's known rather than rediscovering it.</p>
+  </section>
+
+  <section class="section" id="s10">
+    <div class="section-header">
+      <span class="section-num">10</span>
+      <h2 class="section-title">Takeaways</h2>
+    </div>
+    <div class="checklist">
+      <div class="checklist-item"><span class="check-icon">✅</span><div><div class="check-title">Use the browser's goodbye</div><div class="check-desc"><code>pagehide</code> to mark offline and close the socket, <code>pageshow</code> with <code>persisted</code> to come back. Don't wait for a socket timeout to learn what the page already told you.</div></div></div>
+      <div class="checklist-item"><span class="check-icon">✅</span><div><div class="check-title">Find where an absent player still costs time</div><div class="check-desc">"Wait for everyone" and "wait for the leader" are both hidden dependencies on presence.</div></div></div>
+      <div class="checklist-item"><span class="check-icon">✅</span><div><div class="check-title">Pick the succession rule people can guess</div><div class="check-desc">If you have a total order and a referee, you don't need a distributed algorithm.</div></div></div>
+      <div class="checklist-item"><span class="check-icon">✅</span><div><div class="check-title">Requests carry the state they were based on</div><div class="check-desc">A <code>from</code> or round id turns a dangerous late request into a harmless no-op.</div></div></div>
+      <div class="checklist-item"><span class="check-icon">✅</span><div><div class="check-title">Make new changes look like old, safe ones</div><div class="check-desc">A topic change became a new round and inherited every guard rounds already had.</div></div></div>
+    </div>
+
+    <div class="series-list">
+      <div class="series-item"><span class="series-badge series-badge--done">Part 1</span><div><div class="series-title">From a static quiz page to a game the client can't cheat</div><div class="series-desc"><a href="/blogs/quizclash-server/">Read it →</a></div></div></div>
+      <div class="series-item series-item--current"><span class="series-badge series-badge--current">Part 2</span><div><div class="series-title">Rooms that survive people leaving</div><div class="series-desc">This post.</div></div></div>
+      <div class="series-item"><span class="series-badge series-badge--done">Part 3</span><div><div class="series-title">Testing a real-time app for real</div><div class="series-desc"><a href="/blogs/realtime-testing/">Read it →</a></div></div></div>
+      <div class="series-item"><span class="series-badge series-badge--done">Part 4</span><div><div class="series-title">One engineer, five apps</div><div class="series-desc"><a href="/blogs/one-engineer-five-apps/">Read it →</a></div></div></div>
+      <div class="series-item"><span class="series-badge series-badge--done">Part 5</span><div><div class="series-title">Bugs that erase data</div><div class="series-desc"><a href="/blogs/sync-data-loss/">Read it →</a></div></div></div>
+    </div>
+
+    <div class="divider">END OF PART 2</div>
+
+    <div class="cta">
+      <h3>Try leaving a room</h3>
+      <p>Start a group room on QuizClash, then close the host's tab mid-match. The game should carry on, and the next seat should pick up the room afterwards.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://quizclash.auragika.com/" target="_blank" rel="noopener">Open QuizClash ↗</a>
+        <a class="btn btn-ghost" href="/blogs/realtime-testing/">Next: testing it →</a>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+</body>
+</html>

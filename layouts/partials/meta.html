@@ -1,91 +1,49 @@
-<meta name="dc.relation" content="{{ .Site.BaseURL }}" />
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-<!--  Title Tags -->
-<title itemprop="name">{{ .Site.Title }}</title>
-<meta property="og:title" content="{{ .Site.Title }}" />
-<meta name="twitter:title" content="{{ .Site.Title }}" />
-<meta itemprop="name" content="{{ .Site.Title }}" />
-<meta name="application-name" content="{{ .Site.Title }}" />
-<meta property="og:site_name" content="{{ .Site.Title }}" />
-
-<!--  description Tags -->
-<meta name="description" content="{{ .Site.Params.Description }}" />
-<meta itemprop="description" content="{{ .Site.Params.Description }}" />
-<meta property="og:description" content="{{ .Site.Params.Description }}" />
-<meta name="twitter:description" content="{{ .Site.Params.Description }}" />
-
-<!--  Links Tags -->
-<base href="{{ .Permalink }}">
-<link rel="canonical" href="{{ .Permalink }}" itemprop="url" /> 
-<meta name="url" content="{{ .Permalink }}" />
-<meta name="twitter:url" content="{{ .Permalink }}" /> 
-<meta property="og:url" content="{{ .Permalink }}" />
-
-<!-- Language Tags -->
-<meta property="og:locale" content="{{ .Language.Lang }}">
-<meta name="language" content="{{ .Language.LanguageName }}">
-
-{{ $og := resources.Get "metadata/favicon-32x32.png" }}
-<!-- Image Tags -->
-<meta itemprop="image" content="{{ $og.RelPermalink }}" />
-<meta property="og:image" content="{{ $og.RelPermalink }}" />
-<meta name="twitter:image" content="{{ $og.RelPermalink }}" />
-<meta name="twitter:image:src" content="{{ $og.RelPermalink }}" /> 
-
-<!-- Date Tags -->
-<meta property="og:updated_time" content="{{ .Lastmod.Format "2006-01-02T15:04:05Z0700" | safeHTML }}" />
-<link rel="sitemap" type="application/xml" title="Sitemap" href="{{ .Site.BaseURL }}sitemap.xml" /> 
-
-
+<title itemprop="name">{{ site.Title }}</title>
+<meta name="description" content="{{ site.Params.Description }}">
+<meta name="author" content="{{ site.Params.Author }}">
+<meta name="application-name" content="{{ site.Title }}">
+<meta name="robots" content="index,follow">
 {{ hugo.Generator }}
-<link rel="canonical" hreflang="{{site.LanguageCode|default `en`}}" href="{{.Permalink}}" />
 
-<!-- Search Engine crawlers -->
-<meta name="robots" content="index,follow" /> 
-<meta name="googlebot" content="index,follow" />
+<link rel="canonical" href="{{ .Permalink }}">
+<link rel="sitemap" type="application/xml" title="Sitemap" href="{{ "sitemap.xml" | absURL }}">
 
-<!-- PWA static files -->
-{{ $android192 := resources.Get "metadata/android-chrome-192x192.png" }}
-{{ $android512 := resources.Get "metadata/android-chrome-512x512.png" }}
-{{ $maskable512 := resources.Get "metadata/maskable_icon.png" }}
+{{/* Open Graph / Twitter */}}
+{{ $og := resources.Get "metadata/android-chrome-512x512.png" }}
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="{{ site.Title }}">
+<meta property="og:title" content="{{ site.Title }}">
+<meta property="og:description" content="{{ site.Params.Description }}">
+<meta property="og:url" content="{{ .Permalink }}">
+<meta property="og:locale" content="{{ site.Language.Locale | default `en` }}">
+<meta property="og:image" content="{{ $og.Permalink }}">
+<meta property="og:updated_time" content="{{ .Lastmod.Format "2006-01-02T15:04:05Z0700" }}">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="{{ site.Title }}">
+<meta name="twitter:description" content="{{ site.Params.Description }}">
+<meta name="twitter:image" content="{{ $og.Permalink }}">
 
-<link rel="android192" href="{{ $android192.RelPermalink }}" />
-<link rel="android512" href="{{ $android512.RelPermalink }}" />
-<link rel="maskable512" href="{{ $maskable512.RelPermalink }}" />
-
+{{/* PWA */}}
 {{ $manifest := resources.Get "metadata/manifest.json" }}
-<!-- Manifest File -->
-<link rel="manifest" href="{{ $manifest.RelPermalink }}" />
+<link rel="manifest" href="{{ $manifest.RelPermalink }}">
+{{/* The manifest's icon paths are relative to it, so publish them next to it. */}}
+{{ range slice "android-chrome-192x192.png" "android-chrome-512x512.png" "maskable_icon.png" }}{{ with resources.Get (print "metadata/" .) }}{{ $_ := .Publish }}{{ end }}{{ end }}
+<meta name="theme-color" content="#080c14">
+<meta name="msapplication-TileColor" content="#080c14">
+<meta name="apple-mobile-web-app-title" content="{{ site.Params.sitename }}">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-<!-- Theme Color -->
-<meta name="theme-color" content="#080c14" />
-<meta name="msapplication-TileColor" content="#080c14" />
-
-<meta name="keywords" content="" />
-<meta name="imagemode" content="force" />
-<meta name="coverage" content="Worldwide" /> 
-<meta name="distribution" content="Global" />
-<meta name="HandheldFriendly" content="True" /> 
-<meta name="msapplication-tap-highlight" content="no" />
-<meta name="apple-mobile-web-app-title" content="{{ .Site.Params.sitename }}" /> 
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="apple-touch-fullscreen" content="yes" /> 
-
-
+{{/* Favicons */}}
 {{ $apple := resources.Get "metadata/apple-touch-icon.png" }}
 {{ $fav := resources.Get "metadata/favicon.ico" }}
-{{ $fav1 := resources.Get "metadata/favicon-16x16.png" }}
-{{ $fav3 := resources.Get "metadata/favicon-32x32.png" }}
-{{ $sitemanifest := resources.Get "metadata/site.webmanifest" }}
-
-
-<!-- Favicons Tags -->
-<link rel="shortcut icon" href="{{ $fav.RelPermalink }}" />
-<link rel="icon" type="image/x-icon" sizes="16x16 32x32" href="{{ $fav.RelPermalink }}" />
+{{ $fav16 := resources.Get "metadata/favicon-16x16.png" }}
+{{ $fav32 := resources.Get "metadata/favicon-32x32.png" }}
+<link rel="icon" href="{{ $fav.RelPermalink }}" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="{{ $fav32.RelPermalink }}">
+<link rel="icon" type="image/png" sizes="16x16" href="{{ $fav16.RelPermalink }}">
 <link rel="apple-touch-icon" sizes="180x180" href="{{ $apple.RelPermalink }}">
-<link rel="icon" type="image/png" sizes="32x32" href="{{ $fav3.RelPermalink }}">
-<link rel="icon" type="image/png" sizes="16x16" href="{{ $fav1.RelPermalink }}">
-<link rel="manifest" href="{{ $sitemanifest.RelPermalink }}">

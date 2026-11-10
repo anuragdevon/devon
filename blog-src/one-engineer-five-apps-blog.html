@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>One engineer, five apps: shipping, securing and watching a family of PWAs</title>
+</head>
+<body>
+
+<div class="page">
+
+  <header class="hero">
+    <div class="hero-eyebrow">CI/CD · SECURITY · OBSERVABILITY · PLATFORM THINKING</div>
+    <h1>One engineer, five apps.<br><em>Shipping, securing and watching them.</em></h1>
+    <p class="hero-lead">Auragika is a small family of apps: QuizClash, Pebble, Cadence, Grove and the auragika.com home. They started as separate side projects with separate habits. This is how we gave them one way of shipping, one security baseline and one way of seeing production, without a team, a budget, or a platform group, and what each piece caught.</p>
+    <div class="hero-meta">
+      <span data-icon="✍">anuragdevon</span>
+      <span data-icon="📅">10th Nov 2026</span>
+      <span data-icon="⏱">14 min read</span>
+      <span data-icon="📌">Building Auragika · Part 4 of 5</span>
+    </div>
+  </header>
+
+  <nav class="toc">
+    <div class="toc-label">// TABLE OF CONTENTS</div>
+    <div class="toc-grid">
+      <a class="toc-link" href="#s1"><span class="toc-n">01</span>Five apps, five habits</a>
+      <a class="toc-link" href="#s2"><span class="toc-n">02</span>The path from commit to production</a>
+      <a class="toc-link" href="#s3"><span class="toc-n">03</span>CI that costs minutes only when asked</a>
+      <a class="toc-link" href="#s4"><span class="toc-n">04</span>An AI reviewer that can say no</a>
+      <a class="toc-link" href="#s5"><span class="toc-n">05</span>Merging isn't shipping</a>
+      <a class="toc-link" href="#s6"><span class="toc-n">06</span>Rollback that asks what's really live</a>
+      <a class="toc-link" href="#s7"><span class="toc-n">07</span>One security baseline</a>
+      <a class="toc-link" href="#s8"><span class="toc-n">08</span>Seeing production on a free tier</a>
+      <a class="toc-link" href="#s9"><span class="toc-n">09</span>Making five apps feel like one</a>
+      <a class="toc-link" href="#s10"><span class="toc-n">10</span>Takeaways</a>
+    </div>
+  </nav>
+
+  <section class="section" id="s1">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2 class="section-title">Five apps, five habits</h2>
+    </div>
+    <p>Each app began life the way side projects do: built fast, pushed to <code>main</code>, deployed by Netlify on every push. One had a single 2,000-line <code>app.js</code>. Another had 82 functions exposed on <code>window</code> because the markup called them from <code>onclick</code> attributes. One had production database rules that had drifted from the ones in the repo and let any signed-in user read and write shared data. None had a test that ran on a pull request.</p>
+    <p>Then they got real users, and they moved into one GitHub organisation. Two things followed. Netlify can't build private organisation repos on its free plan, so the "push and Netlify builds it" model stopped working overnight. And with five live apps, doing things five different ways was the main source of risk.</p>
+    <p>The goal was never "enterprise process for a side project". It was: <strong>any change to any app takes the same path, and that path makes the safe thing the easy thing</strong>. We built it on QuizClash first, because it was the most complex, then applied it to the others one app at a time.</p>
+  </section>
+
+  <section class="section" id="s2">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2 class="section-title">The path from commit to production</h2>
+    </div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 760 300" role="img" aria-labelledby="p1t">
+        <title id="p1t">Commit with a checked message, pull request with template and title check, run-ci label, CI jobs, ci-passed status and AI review, squash merge, a release per merge, a manual deploy, and a rollback that redeploys the previous release.</title>
+        <defs>
+          <marker id="p1a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="tip" d="M0,0 L10,5 L0,10 z"/></marker>
+          <marker id="p1b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="tip-accent" d="M0,0 L10,5 L0,10 z"/></marker>
+        </defs>
+        <text class="head" x="20" y="24">REVIEW</text>
+        <rect class="box" x="20" y="36" width="130" height="62" rx="10"/><text class="lbl" x="85" y="62" text-anchor="middle">commit</text><text class="sub" x="85" y="80" text-anchor="middle">msg hook</text>
+        <rect class="box" x="175" y="36" width="130" height="62" rx="10"/><text class="lbl" x="240" y="62" text-anchor="middle">pull request</text><text class="sub" x="240" y="80" text-anchor="middle">template · title</text>
+        <rect class="box" x="330" y="36" width="130" height="62" rx="10"/><text class="lbl" x="395" y="62" text-anchor="middle">run-ci label</text><text class="sub" x="395" y="80" text-anchor="middle">on demand</text>
+        <rect class="box-accent" x="485" y="36" width="255" height="62" rx="10"/><text class="lbl" x="612" y="62" text-anchor="middle">CI → ci-passed + AI review</text><text class="sub" x="612" y="80" text-anchor="middle">both required to merge</text>
+        <path class="ln" d="M150,67 L173,67" marker-end="url(#p1a)"/>
+        <path class="ln" d="M305,67 L328,67" marker-end="url(#p1a)"/>
+        <path class="ln" d="M460,67 L483,67" marker-end="url(#p1a)"/>
+        <path class="ln" d="M612,98 L612,128 L85,128 L85,166" marker-end="url(#p1a)"/>
+        <text class="head" x="20" y="156">SHIP</text>
+        <rect class="box" x="20" y="168" width="130" height="62" rx="10"/><text class="lbl" x="85" y="194" text-anchor="middle">squash merge</text><text class="sub" x="85" y="212" text-anchor="middle">linear history</text>
+        <rect class="box" x="175" y="168" width="150" height="62" rx="10"/><text class="lbl" x="250" y="194" text-anchor="middle">release</text><text class="sub" x="250" y="212" text-anchor="middle">tag · site.zip · image</text>
+        <rect class="box-accent" x="350" y="168" width="170" height="62" rx="10"/><text class="lbl" x="435" y="194" text-anchor="middle">Deploy (by hand)</text><text class="sub" x="435" y="212" text-anchor="middle">server, then site</text>
+        <rect class="box-warn" x="545" y="168" width="195" height="62" rx="10"/><text class="lbl" x="642" y="194" text-anchor="middle">Rollback</text><text class="sub" x="642" y="212" text-anchor="middle">previous live release</text>
+        <path class="ln" d="M150,199 L173,199" marker-end="url(#p1a)"/>
+        <path class="ln" d="M325,199 L348,199" marker-end="url(#p1a)"/>
+        <path class="ln-accent dash" d="M642,230 L642,262 L435,262 L435,232" marker-end="url(#p1b)"/>
+        <text class="sub" x="540" y="282" text-anchor="middle">rollback = Deploy with an older release, nothing rebuilt</text>
+      </svg>
+    </div>
+    <p class="diagram-caption">The same path for all five apps. QuizClash has a server image in its release; the static apps ship a build number instead.</p>
+
+    <p>The pieces at the front are small and boring on purpose:</p>
+    <ul>
+      <li><strong>A commit-msg hook</strong> enforces Conventional Commits locally (<code>feat(room): …</code>, <code>fix(sync): …</code>), and a PR-title check enforces it again, because squash merges use the PR title as the commit. Release notes are then generated straight from merged PR titles.</li>
+      <li><strong>A PR template</strong> with a "Risk and rollback" section that asks two questions every time: did the database rules change, and does deploy order matter? Those two questions prevented more incidents than any test (see the rollout order in <a href="/blogs/quizclash-server/">Part 1</a>).</li>
+      <li><strong>CODEOWNERS, Dependabot</strong> (monthly, grouped) and actions pinned by commit SHA, with read-only default permissions on every workflow.</li>
+    </ul>
+  </section>
+
+  <section class="section" id="s3">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2 class="section-title">CI that costs minutes only when asked</h2>
+    </div>
+    <p>QuizClash's CI is heavy: build plus a leak check on the output, unit tests, a coverage gate, lint and duplicate-code detection, format, dependency audit, rules tests on the emulators, Go tests with the race detector and vulnerability scanning, and three browser suites. Private repos pay for Actions minutes, and a PR typically gets several pushes before it's ready.</p>
+    <p>So on a pull request, CI runs only when someone adds the <code>run-ci</code> label. The first job removes the label straight away, so the next run is another deliberate click. Every push to <code>main</code> runs everything regardless.</p>
+    <p>The interesting part is how merging is gated. Branch protection could require the CI <em>jobs</em>, but a job that is skipped counts as passing, and on a PR without the label everything is skipped. So the last job, <code>report</code>, posts a commit status called <code>ci-passed</code>, set to success only if every other job succeeded, and branch protection requires that status. A PR with no run, or with new pushes since its last run, has no status on its head commit and can't merge.</p>
+
+    <div class="callout info">
+      <div class="callout-label">// THE TRAP WE AVOIDED</div>
+      <p>"Required checks" and "skipped jobs count as success" combine into a gate that is open whenever CI didn't run. Require an explicit status that only a successful run can produce.</p>
+    </div>
+
+    <p>Each app's CI is sized to the app. The static apps (Pebble, Cadence, Grove, the home site) run lint, format, unit tests, rules tests on the emulators, a production build, a secrets scan and an end-to-end suite in headless Chrome with the real Content Security Policy enforced. The home site, which has no npm at all, runs one job: build with warnings as errors, a static check of the output, then browser tests.</p>
+  </section>
+
+  <section class="section" id="s4">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2 class="section-title">An AI reviewer that can say no</h2>
+    </div>
+    <p>With one engineer, "require an approving review" either means approving your own work or no gate at all. We made the second reviewer an AI, and made it a real gate (PRs #1, #5–#7):</p>
+    <ul>
+      <li>When <code>run-ci</code> is added, Claude reviews the PR against the repo's own written standards (a "Reviewing pull requests" section in the project docs), comments inline on real problems, and writes a verdict: <strong>APPROVE</strong> or <strong>BLOCK</strong>.</li>
+      <li>On APPROVE, a follow-up step approves as <code>github-actions</code>, and that approval counts toward the one required approval. On BLOCK it posts a summary review and the job goes red.</li>
+      <li>The model can read the PR and the repo and comment inline. It can't approve by itself; only the follow-up step can, and only on a structured APPROVE verdict.</li>
+      <li>No verdict (an outage, a quota) means no approval, so a human approves instead. The gate fails closed.</li>
+    </ul>
+    <p>Two things we learned getting there. The off-the-shelf review plugin skipped any PR it had already commented on, so after a push dismissed its approval it could never approve again; we replaced it with our own prompt. And a free-text verdict was unreliable to parse, so the verdict moved to structured output (PR #6).</p>
+    <p>It's not a replacement for thinking. It is a second reader that never skips the PR template, notices when a PR changes the rules without saying so, and reads CSS and workflow YAML as carefully as Go.</p>
+  </section>
+
+  <section class="section" id="s5">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2 class="section-title">Merging isn't shipping</h2>
+    </div>
+    <p>Our first automated pipeline deployed every green push to <code>main</code>. It was fast and it coupled two decisions that should be separate: "this change is reviewed" and "users get it now". For QuizClash it was also unsafe, because some changes need a manual rules publish between steps.</p>
+    <p>Now every merge to <code>main</code> publishes a <strong>release</strong> and deploys nothing (PR #10). For QuizClash, one tag covers both halves: the built site as a <code>site.zip</code> on the GitHub Release, and the server's container image with the same tag. Deploy is a workflow you run by hand. It downloads that release's artefacts and uploads them, so production gets exactly what CI built and tested. Nothing is rebuilt at deploy time.</p>
+    <ul>
+      <li><strong>Keyless deploys.</strong> The deploy job authenticates to Google Cloud with Workload Identity Federation: GitHub's OIDC token is exchanged for short-lived credentials. There is no service-account key in the repo, the secrets, or anywhere else.</li>
+      <li><strong>One production queue.</strong> Deploy and Rollback share a concurrency group, so two deploys never overlap.</li>
+      <li><strong>Deployments you can find.</strong> Each deploy appears under the repo's Deployments with a link to the live site.</li>
+    </ul>
+    <p>The static apps follow the same model with build numbers (Pebble PR #14). Every deploy gets the workflow's run number, and that number appears everywhere you'd look: the Deployments list ("Build 12 · abc1234"), the Actions run name, a <code>build-12</code> tag on the commit, the hosting provider's deploy title, and the app itself. The run summary says what's new since the previous build and the exact ref to roll back to.</p>
+
+    <div class="callout tip">
+      <div class="callout-label">// THE VERSION BELONGS IN THE APP</div>
+      <p>When someone reports a bug, the first question is "which build?". Every Auragika app shows its version and build quietly (an About screen, an account menu footer, a pill in the site footer) and puts it in a meta tag. Nobody has to guess.</p>
+    </div>
+  </section>
+
+  <section class="section" id="s6">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <h2 class="section-title">Rollback that asks what's really live</h2>
+    </div>
+    <p>A rollback button is only as good as its answer to "what was live before this?". The naive answer, "the previous GitHub Release", is wrong as soon as you've skipped a release or rolled back once already.</p>
+    <p>QuizClash's Rollback (PR #24) asks the platform instead. Each Cloud Run revision is labelled with the release it came from. Labels can't contain dots, so <code>v2026.10.24-55</code> is stored as <code>v2026_10_24-55</code>. Without the label, a revision only records an image digest, and that digest is the platform-specific manifest rather than the tagged index, so it can't be reliably mapped back to a tag.</p>
+    <p>Rollback reads the current release from the service, picks the newest revision of an <em>older</em> release, and runs Deploy with it: server first, then site. Running it again steps further back, never forward. It also warns when the database rules differ between the two releases, because rules are published by hand and a code rollback doesn't roll them back.</p>
+    <p>Before trusting it, we ran the selection script read-only against production and checked it picked the right pair.</p>
+  </section>
+
+  <section class="section" id="s7">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <h2 class="section-title">One security baseline</h2>
+    </div>
+    <p>Each app got the same sequence of security work, in roughly the same order. The order matters: lock down data first, then make the code safe to change, then reduce what a client can do at all.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Step</th><th>What it means</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td>1. Lock down the data</td><td>Rules in the repo, tested on the emulator, and actually published</td><td>Grove's live rules had drifted from the repo and let any signed-in user read and write shared data. The repo version had never been published. Fixed and tested before anything else.</td></tr>
+          <tr><td>2. Don't store what others can read</td><td>If a collection must be readable by members, it must not hold private fields</td><td>Grove profiles had to be readable for member names, so every user could read every email. Emails stopped being stored, and the rules now only allow removing one.</td></tr>
+          <tr><td>3. Bound what one user can create</td><td>Rules cap sizes, shapes and ranges per user</td><td>Pebble's month documents must be named after a real month in a bounded range, instead of any pattern that looked like one.</td></tr>
+          <tr><td>4. No inline JavaScript, strict CSP</td><td>Every <code>onclick</code> becomes a <code>data-click</code> action; <code>script-src 'self'</code></td><td>Pebble had 34 inline handlers, Cadence 82 functions on <code>window</code>. A build check now fails on any inline script or handler.</td></tr>
+          <tr><td>5. Fingerprint and pin assets</td><td>One bundled, hashed script with Subresource Integrity; third-party libraries self-hosted</td><td>Pebble self-hosts its chart library, and Summary still works if it fails to load.</td></tr>
+          <tr><td>6. Move trust off the client</td><td>Anything that decides an outcome runs where the user can't edit it</td><td>QuizClash's scoring, rounds and AI conversion moved to the Go server (Part 1).</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Grove needed one more step because it stores private things. Protected vaults are readable only by their creator, enforced in the rules, not just hidden in the UI; their item titles are encrypted with the content; and the PIN check moved from a fast hash to a value encrypted with a PBKDF2-derived key, so every guess costs a full key derivation. Chat was disabled inside protected vaults, because the chat rules can't tell whether a vault is protected.</p>
+    <p>Every one of these PRs follows the same shape: the risk in one sentence, the change, the rules tests that prove the abuse case is refused, and whether the rules need publishing and in which order. We describe the classes of fix here and leave the exact rules in the repos.</p>
+  </section>
+
+  <section class="section" id="s8">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <h2 class="section-title">Seeing production on a free tier</h2>
+    </div>
+    <p>Once QuizClash had real traffic, we couldn't see it: how many games were played, on which topics, and whether the API was failing or slow. We wanted monitoring that cost nothing and lived in the repo (ADR 0006).</p>
+    <ul>
+      <li><strong>Structured logs are the source.</strong> The Go server already wrote one JSON line per request. It gained the matched route pattern (so metrics group by endpoint, not by room code) and a handful of game events, such as room created, match finished and host changed. Events carry no user ids, names or room codes, and a test checks that.</li>
+      <li><strong>Log-based metrics, dashboard and alerts as code.</strong> A script applies the metric definitions, alert policies, an uptime check and the dashboard JSON from the repo, and is safe to re-run. Alerts cover server errors, slow game endpoints, AI failures and the health check.</li>
+      <li><strong>A runbook per alert.</strong> Each alert's documentation says what it means, what to check first and what to do. An alert without a runbook is just a notification.</li>
+      <li><strong>Free-plan limits as signals.</strong> A Live section shows players online and rooms in use next to the free plan's limits, so we'd see a limit coming before users hit it.</li>
+    </ul>
+
+    <p>Then visits. A third-party, cookieless analytics script missed a noticeable share of visitors, because ad blockers (and some browsers by default) block it. So we count visits first-party, on the same dashboard (PR #39):</p>
+
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="code-lang">js — a first-party visit beacon (simplified)</span>
+        <div class="code-actions">
+          <div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div>
+          <button class="copy-btn" data-target="code-visit">COPY</button>
+        </div>
+      </div>
+      <pre id="code-visit"><span class="t-kw">export function</span> <span class="t-fn">reportVisit</span>(flags) {   <span class="t-cm">// a few booleans, never an id</span>
+  <span class="t-fn">fetch</span>(VISIT_URL, {
+    method: <span class="t-st">'POST'</span>,
+    <span class="t-cm">// text/plain is a "simple" request: no CORS preflight, one round trip</span>
+    headers: { <span class="t-st">'Content-Type'</span>: <span class="t-st">'text/plain'</span> },
+    body: JSON.<span class="t-fn">stringify</span>(flags),
+    keepalive: <span class="t-kw">true</span>,                <span class="t-cm">// survives navigation</span>
+  }).<span class="t-fn">catch</span>(() =&gt; {});               <span class="t-cm">// fire and forget</span>
+}</pre>
+    </div>
+
+    <p>The server accepts only a fixed set of booleans (anything else is rejected) and writes one log line with no ids. It's a public endpoint, so anyone can inflate the count; the docs say to treat a jump in visits without a matching jump in players online as noise. And there was a side benefit we hadn't planned: the beacon wakes the scaled-to-zero server on page load, so the first game request is less likely to hit a cold start.</p>
+  </section>
+
+  <section class="section" id="s9">
+    <div class="section-header">
+      <span class="section-num">09</span>
+      <h2 class="section-title">Making five apps feel like one</h2>
+    </div>
+    <p>The last layer is the one users see. All five apps share one design system: dark-first, one accent colour per app, the same type, the same spacing and motion rules, light mode that can follow the system. It's kept as a single stylesheet that each app copies <em>unchanged</em>, with app-specific styles built only from its tokens. Updating the theme means replacing the whole file, never editing a copy.</p>
+    <p>Shared patterns moved between apps the same way: the splash that slides into the sign-in card or straight into the app, the "use it like an app" install hint (one tap on Chrome, the Share → Add to Home Screen steps on iPhone), the account menu with a confirmed sign-out, and the quiet version line. Each landed in one app first, then the PR for the next app said "as in Pebble".</p>
+    <p>The home site, auragika.com, ties them together, and it holds itself to the same rules as the apps: a strict CSP, fingerprinted assets, a build check and browser tests. So does this portfolio, as of this month.</p>
+
+    <div class="callout info">
+      <div class="callout-label">// HOW THIS WAS BUILT</div>
+      <p>Most of this was implemented with an AI coding agent (Claude Code), steered by written standards: per-repo CLAUDE.md files, ADRs, and reusable skills for the theme and for Firebase PWAs. Writing the standard down once is what made it possible to apply it to five apps consistently.</p>
+    </div>
+  </section>
+
+  <section class="section" id="s10">
+    <div class="section-header">
+      <span class="section-num">10</span>
+      <h2 class="section-title">Takeaways</h2>
+    </div>
+    <div class="checklist">
+      <div class="checklist-item"><span class="check-icon">✅</span><div><div class="check-title">Gate merges on an explicit status</div><div class="check-desc">Skipped jobs count as passing. Require a status that only a fully green run can post.</div></div></div>
+      <div class="checklist-item"><span class="check-icon">✅</span><div><div class="check-title">Make the second reviewer fail closed</div><div class="check-desc">An AI review that can block, approves only on a structured verdict, and hands over to a human when it can't answer.</div></div></div>
+      <div class="checklist-item"><span class="check-icon">✅</span><div><div class="check-title">Release on merge, deploy by hand, never rebuild</div><div class="check-desc">Ship the exact artefact CI tested. Rollback is just Deploy with an older release.</div></div></div>
+      <div class="checklist-item"><span class="check-icon">✅</span><div><div class="check-title">Ask the platform what's live</div><div class="check-desc">Label what you deploy with its release, and roll back from that, not from your release list.</div></div></div>
+      <div class="checklist-item"><span class="check-icon">✅</span><div><div class="check-title">Data rules first, then CSP, then server-side trust</div><div class="check-desc">The same security order, applied app by app.</div></div></div>
+      <div class="checklist-item"><span class="check-icon">✅</span><div><div class="check-title">Monitoring from logs you already write</div><div class="check-desc">Structured events, metrics and alerts as code, a runbook per alert, and free-tier limits on the dashboard.</div></div></div>
+    </div>
+
+    <div class="series-list">
+      <div class="series-item"><span class="series-badge series-badge--done">Part 1</span><div><div class="series-title">From a static quiz page to a game the client can't cheat</div><div class="series-desc"><a href="/blogs/quizclash-server/">Read it →</a></div></div></div>
+      <div class="series-item"><span class="series-badge series-badge--done">Part 2</span><div><div class="series-title">Rooms that survive people leaving</div><div class="series-desc"><a href="/blogs/quizclash-rooms/">Read it →</a></div></div></div>
+      <div class="series-item"><span class="series-badge series-badge--done">Part 3</span><div><div class="series-title">Testing a real-time app for real</div><div class="series-desc"><a href="/blogs/realtime-testing/">Read it →</a></div></div></div>
+      <div class="series-item series-item--current"><span class="series-badge series-badge--current">Part 4</span><div><div class="series-title">One engineer, five apps</div><div class="series-desc">This post.</div></div></div>
+      <div class="series-item"><span class="series-badge series-badge--done">Part 5</span><div><div class="series-title">Bugs that erase data</div><div class="series-desc"><a href="/blogs/sync-data-loss/">Read it →</a></div></div></div>
+    </div>
+
+    <div class="divider">END OF PART 4</div>
+
+    <div class="cta">
+      <h3>See the family</h3>
+      <p>All the apps are listed on auragika.com. They install like apps and open offline.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://auragika.com/" target="_blank" rel="noopener">auragika.com ↗</a>
+        <a class="btn btn-ghost" href="/blogs/sync-data-loss/">Next: bugs that erase data →</a>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+</body>
+</html>

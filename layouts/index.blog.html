@@ -1,5 +1,5 @@
 {{ define "main" }}
-{{ with site.Data.blogs }}
+{{ with hugo.Data.blogs }}
 <section id="blogs">
   <div class="container blog">
     <div class="section-title animate-on-scroll">
@@ -7,56 +7,11 @@
       <p>Notes on things I've done.</p>
     </div>
 
-    {{/* Pinned: Production Debugging — Cascade Failures */}}
-    <a href="/blogs/cascade/" class="blog-card animate-on-scroll stagger-1">
-      <span class="blog-date">15th May 2026</span>
-      <div class="blog-body">
-        <h3 class="blog-title">One Service Was Slow. Five Were Down.</h3>
-        <p class="blog-excerpt">A single slow DB query brought down checkout, orders, notifications, and two more services. This is how cascading failures happen — and how to stop them.</p>
-        <div class="blog-meta">
-          <span>12 min read</span>
-          <span>·</span>
-          {{ partial "inline-svg" "github" }}
-        </div>
-      </div>
-      <span class="blog-arrow">→</span>
-    </a>
-
-    {{/* Pinned: Production Debugging — Silent Failures */}}
-    <a href="/blogs/silent-failures/" class="blog-card animate-on-scroll stagger-2">
-      <span class="blog-date">15th May 2026</span>
-      <div class="blog-body">
-        <h3 class="blog-title">Everything Was Green… But Production Was Broken.</h3>
-        <p class="blog-excerpt">0 errors. 0 alerts. 100% failure. The story of a silent skip that took down inventory updates — and what it taught me about observability.</p>
-        <div class="blog-meta">
-          <span>9 min read</span>
-          <span>·</span>
-          {{ partial "inline-svg" "github" }}
-        </div>
-      </div>
-      <span class="blog-arrow">→</span>
-    </a>
-
-    {{/* Pinned blog post — the Andromeda rice */}}
-    <a href="/blogs/andromeda-rice/" class="blog-card animate-on-scroll stagger-3">
-      <span class="blog-date">26th Apr. 2026</span>
-
-      <div class="blog-body">
-        <h3 class="blog-title">I Left i3wm. No Regrets.</h3>
-        <p class="blog-excerpt">A full Andromeda Hyprland rice breakdown, including setup, tools, keybinds, and migration gotchas from i3wm.</p>
-        <div class="blog-meta">
-          <span>14 min read</span>
-          <span>·</span>
-          {{ partial "inline-svg" "github" }}
-        </div>
-      </div>
-      <span class="blog-arrow">→</span>
-    </a>
-
+    {{/* Every post, newest first, comes from data/blogs.toml. */}}
     {{ range $i, $b := .blogs }}
     {{ $isExternal := or (hasPrefix $b.link "http://") (hasPrefix $b.link "https://") }}
     <a href="{{ $b.link }}" {{ if $isExternal }}target="_blank" rel="noopener"{{ end }}
-       class="blog-card animate-on-scroll stagger-{{ add (mod $i 8) 2 }}">
+       class="blog-card animate-on-scroll stagger-{{ add (mod $i 8) 1 }}">
       <span class="blog-date">{{ $b.date }}</span>
       <div class="blog-body">
         <h3 class="blog-title">{{ $b.title }}</h3>

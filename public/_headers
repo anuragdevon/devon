@@ -1,0 +1,25 @@
+# Netlify response headers. tools/check-build.mjs checks the CSP, and tests/browser serves
+# the build with these headers and fails on any violation. `hugo server` does NOT send them,
+# so run `npm test` to see the site under the real policy.
+#
+# CSP: no inline scripts or on…= handlers (theme pre-paint is assets/js/theme-init.js).
+# Third parties: Google Fonts only. style-src 'unsafe-inline' covers the style="" attributes in
+# the hero and the blog sources. The contact form posts to Netlify Forms on this origin
+# (connect-src / form-action 'self'). A new external host needs an entry here in the same change.
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Strict-Transport-Security: max-age=31536000
+
+# Fingerprinted by Hugo (content hash in the name), so cache forever.
+/js/*
+  Cache-Control: public, max-age=31536000, immutable
+/css/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# The service worker must always be revalidated, or updates to it get stuck.
+/service_worker.js
+  Cache-Control: no-cache

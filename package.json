@@ -1,43 +1,27 @@
 {
+  "name": "devon",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Anurag Kar's portfolio (Hugo). npm only supplies Bootstrap's SCSS source.",
   "author": "Anurag Kar",
-  "comments": {
-    "dependencies": {
-      "@popperjs/core": "project",
-      "autoprefixer": "project",
-      "bootstrap": "project",
-      "bootstrap-icons": "project",
-      "jquery": "project",
-      "popper.js": "project",
-      "postcss-cli": "project"
-    },
-    "devDependencies": {}
+  "license": "ISC",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "hugo server",
+    "build": "hugo --gc --minify --panicOnWarning",
+    "build:test": "hugo --minify --panicOnWarning -d .build",
+    "check": "node tools/check-build.mjs .build",
+    "test:browser": "node --test \"tests/browser/*.test.mjs\"",
+    "test": "npm run build:test && npm run check && npm run test:browser"
   },
   "dependencies": {
-    "@popperjs/core": "^2.9.2",
-    "autoprefixer": "^10.2.5",
-    "bootstrap": "^5.0.0-beta3",
-    "bootstrap-icons": "^1.5.0",
-    "jquery": "^3.6.0",
-    "popper.js": "^1.16.1",
-    "postcss-cli": "^8.3.1"
+    "bootstrap": "5.0.0-beta3"
   },
-  "description": "portfolio",
-  "devDependencies": {
-    "postcss": "^8.3.5"
-  },
-  "license": "ISC",
-  "main": "index.html",
-  "name": "devon",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "version": "1.0.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/anuragdevon/devon.git"
   },
-  "bugs": {
-    "url": "https://github.com/anuragdevon/devon/issues"
-  },
-  "homepage": "https://github.com/anuragdevon/devon#readme"
+  "homepage": "https://anuragkar.netlify.app/"
 }

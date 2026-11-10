@@ -4,12 +4,13 @@
 Hugo-based static portfolio website for Anurag Kar, hosted on Netlify at `https://anuragkar.netlify.app/`. Custom-built (no external theme). Built with Bootstrap 5 + custom SCSS/JS.
 
 ## Architecture
-- **Framework**: Hugo 0.105.0 (static site generator)
+- **Framework**: Hugo 0.163.3 extended (pinned in `netlify.toml` and `.github/workflows/ci.yml`; keep them equal)
 - **CSS**: SCSS compiled by Hugo (`assets/scss/site.scss` → minified CSS)
-- **JS**: `assets/js/site.js` + `bootstrap.min.js` + `smtp.js` → minified bundle
-- **Content**: All data in `data/*.toml` — never edit content here
+- **JS**: `assets/js/site.js` + `blog.js` → minified, fingerprinted bundle with SRI; `theme-init.js` loads blocking in `<head>` (pre-paint theme). No Bootstrap JS.
+- **Content**: All data in `data/*.toml`; blog post sources in `blog-src/*.html` (rendered by `layouts/partials/blog-post.html`)
 - **Routing**: Hugo custom output formats (About → `/about/`, Blogs → `/blogs/`, Projects → `/projects/`)
-- **PWA**: Service worker at `assets/service_worker.js`, manifest at `assets/metadata/manifest.json`
+- **PWA**: Service worker at `static/service_worker.js` (network-first pages, cache-first fingerprinted assets), manifest at `assets/metadata/manifest.json`
+- **Security**: CSP + security/cache headers in `static/_headers`. Contact form uses Netlify Forms (no credentials client-side)
 
 ## Design System
 - **Theme**: Dark glassmorphism — deep navy (`#080c14`) background, glass cards with `backdrop-filter: blur`
@@ -29,7 +30,11 @@ Hugo-based static portfolio website for Anurag Kar, hosted on Netlify at `https:
 | `assets/scss/_project.scss` | Project glass cards |
 | `assets/scss/_contact.scss` | Glass contact form popup |
 | `assets/scss/_footer.scss` | Footer |
-| `assets/js/site.js` | Scroll effects, IntersectionObserver, cookie consent, email |
+| `assets/js/site.js` | Theme toggle, nav, scroll effects, scroll reveal, contact form (Netlify Forms), SW registration |
+| `assets/js/blog.js` | Blog post progress bar, section reveal, TOC, copy buttons |
+| `static/_headers` | CSP, security and cache headers |
+| `tools/check-build.mjs` | Static checks on a build (CSP, SRI, no inline scripts, no secrets) |
+| `tests/browser/` | Headless-Chrome tests of the build served with the real headers |
 | `layouts/partials/header.html` | `<head>` — CSS, fonts, meta |
 | `layouts/partials/intro.html` | Hero section template |
 | `layouts/index.project.html` | Projects page template |
@@ -39,8 +44,10 @@ Hugo-based static portfolio website for Anurag Kar, hosted on Netlify at `https:
 ```bash
 hugo server          # local dev (runs on :1313)
 hugo --gc --minify   # production build
-npm install          # install Bootstrap, PostCSS dependencies
+npm install          # install Bootstrap (SCSS source only)
+npm test             # build (.build/, --panicOnWarning) + check-build + browser tests (needs Chrome, Node 22+)
 ```
+`hugo server` doesn't send `static/_headers`, so CSP problems only show in `npm test`.
 
 ## Rules
 - **Do not change TOML data files** — content is fixed
@@ -49,9 +56,13 @@ npm install          # install Bootstrap, PostCSS dependencies
 - **CSS custom properties** are defined in `_default.scss` — use vars, not hardcoded colors
 - **Scroll animations**: use `.animate-on-scroll` class + IntersectionObserver in `site.js`
 - **Glass cards**: use `.glass-card` utility or override `.card` within section scopes
-- **No jQuery** — vanilla JS only (Bootstrap 5 uses Popper directly)
-- Service worker in `assets/service_worker.js` must stay at root scope for PWA
+- **No jQuery, no Bootstrap JS** — vanilla JS only
+- **No inline `<script>` or `on…=` handlers** — CSP is `script-src 'self'`; attach listeners in `assets/js/`. New third-party hosts need a CSP entry in `static/_headers`
+- **Local CSS/JS must go through `minify | fingerprint`** and carry `integrity` (SRI); `/css/*` and `/js/*` are cached immutable
+- Run `npm test` before committing; extend `tools/check-build.mjs` / `tests/browser` when adding a rule or feature
+- Service worker `static/service_worker.js` must stay at `/service_worker.js` (root scope); bump `CACHE` when its rules change
 
 ## Known Issues
-- `site.js` contains plaintext SMTP credentials — do not expose in server logs
-- `index.project.html` uses `id="blog"` (copy-paste bug, corrected to `id="projects"`)
+- The old SmtpJS Gmail password (removed) is still in git history — it must be rotated
+- Netlify Forms must be enabled for the site (Forms → enable form detection) for the contact form to receive submissions
+- `public/` is tracked in git but Netlify builds its own; tests build to `.build/` (gitignored)

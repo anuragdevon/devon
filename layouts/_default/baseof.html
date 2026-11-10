@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{site.LanguageCode|default `en`}}">
+<html lang="{{ site.Language.Locale | default `en` }}">
 {{ partial "header" . }}
     <body>
         <a class="skip-link" href="#main">Skip to main content</a>
@@ -10,28 +10,8 @@
             {{ partial "footer" }}
         </main>
 
-        {{ $site      := resources.Get "js/site.js" }}
-        {{ $bootstrap := resources.Get "js/bootstrap.min.js" }}
-        {{ $smtp      := resources.Get "js/smtp.js" }}
-        {{ $js        := slice $site $bootstrap $smtp | resources.Concat "js/bundle.js" | minify | fingerprint }}
-
-        <script src="{{ $js.RelPermalink }}" defer></script>
-
-        {{/* Service Worker registration — must be a separate file at root scope */}}
-        {{ $sw := resources.Get "service_worker.js" }}
-        <script>
-            if ('serviceWorker' in navigator) {
-                window.addEventListener('load', function () {
-                    navigator.serviceWorker
-                        .register('{{ $sw.RelPermalink }}', { scope: '/' })
-                        .then(function (reg) {
-                            console.log('[SW] Registered, scope:', reg.scope);
-                        })
-                        .catch(function (err) {
-                            console.warn('[SW] Registration failed:', err);
-                        });
-                });
-            }
-        </script>
+        {{/* All behaviour lives in these files; templates carry no inline scripts (CSP). */}}
+        {{ $js := slice (resources.Get "js/site.js") (resources.Get "js/blog.js") | resources.Concat "js/bundle.js" | minify | fingerprint }}
+        <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" defer></script>
     </body>
 </html>

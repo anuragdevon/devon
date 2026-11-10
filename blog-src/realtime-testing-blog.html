@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Testing a real-time app for real, and taming flaky tests</title>
+</head>
+<body>
+
+<div class="page">
+
+  <header class="hero">
+    <div class="hero-eyebrow">TESTING · BROWSER AUTOMATION · FLAKY TESTS · CI</div>
+    <h1>Testing a real-time app for real,<br><em>and taming flaky tests.</em></h1>
+    <p class="hero-lead">Unit tests told us the game rules were right. They couldn't tell us whether eight people in eight browsers would see the same reveal at the same moment, against the real security rules and the real game server. This is how we built browser tests for QuizClash without a test framework, why a group match needs nine copies of Chrome, and what we learned from the tests that failed only sometimes.</p>
+    <div class="hero-meta">
+      <span data-icon="✍">anuragdevon</span>
+      <span data-icon="📅">10th Nov 2026</span>
+      <span data-icon="⏱">13 min read</span>
+      <span data-icon="📌">Building Auragika · Part 3 of 5</span>
+    </div>
+  </header>
+
+  <nav class="toc">
+    <div class="toc-label">// TABLE OF CONTENTS</div>
+    <div class="toc-grid">
+      <a class="toc-link" href="#s1"><span class="toc-n">01</span>What we needed to prove</a>
+      <a class="toc-link" href="#s2"><span class="toc-n">02</span>The test pyramid we ended up with</a>
+      <a class="toc-link" href="#s3"><span class="toc-n">03</span>A browser driver with no dependencies</a>
+      <a class="toc-link" href="#s4"><span class="toc-n">04</span>Stop testing the demo</a>
+      <a class="toc-link" href="#s5"><span class="toc-n">05</span>Nine Chromes for one match</a>
+      <a class="toc-link" href="#s6"><span class="toc-n">06</span>Wait on state, never on sleep</a>
+      <a class="toc-link" href="#s7"><span class="toc-n">07</span>Quarantine honestly</a>
+      <a class="toc-link" href="#s8"><span class="toc-n">08</span>When the harness is the flake</a>
+      <a class="toc-link" href="#s9"><span class="toc-n">09</span>Small apps, same habits</a>
+      <a class="toc-link" href="#s10"><span class="toc-n">10</span>Takeaways</a>
+    </div>
+  </nav>
+
+  <section class="section" id="s1">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2 class="section-title">What we needed to prove</h2>
+    </div>
+    <p>QuizClash is a real-time quiz game: up to eight players in a room, ten seconds per question, one shared reveal. After <a href="/blogs/quizclash-server/">Part 1</a> the server runs the round, and after <a href="/blogs/quizclash-rooms/">Part 2</a> the room survives its host leaving. Each of those is a claim about many clients, a server, a database and its security rules behaving together over time.</p>
+    <p>Pure logic is easy to test and we tested it heavily. The things that actually break real-time apps are elsewhere:</p>
+    <ul>
+      <li>a rule that refuses a write the app makes, so a feature silently never works;</li>
+      <li>two clients racing for the same step;</li>
+      <li>a screen that changes its URL before it has rendered its button;</li>
+      <li>a browser that throttles timers in a tab nobody is looking at.</li>
+    </ul>
+    <p>None of those show up unless you run real browsers against the real backend. So that's what we did, and then we spent a surprising amount of time making those runs trustworthy.</p>
+  </section>
+
+  <section class="section" id="s2">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2 class="section-title">The test pyramid we ended up with</h2>
+    </div>
+    <div class="diagram">
+      <svg viewBox="0 0 760 290" role="img" aria-labelledby="t1t">
+        <title id="t1t">Test layers from bottom to top: pure core tests in JS and Go with shared fixtures, Go use-case tests with fakes, emulator integration and rules tests, and three browser suites on the emulators and the real server.</title>
+        <polygon class="box" points="80,270 680,270 610,210 150,210"/>
+        <text class="lbl" x="380" y="238" text-anchor="middle">Pure rules: core/ (JS) + domain (Go)</text>
+        <text class="sub" x="380" y="256" text-anchor="middle">fast, many · shared fixtures keep the two identical · coverage gate</text>
+        <polygon class="box" points="150,205 610,205 545,150 215,150"/>
+        <text class="lbl" x="380" y="176" text-anchor="middle">Use cases with fakes (Go)</text>
+        <text class="sub" x="380" y="194" text-anchor="middle">races, refusals, idempotency</text>
+        <polygon class="box" points="215,145 545,145 480,90 280,90"/>
+        <text class="lbl" x="380" y="116" text-anchor="middle">Emulators: rules + adapters</text>
+        <text class="sub" x="380" y="134" text-anchor="middle">real writes, abuse cases</text>
+        <polygon class="box-accent" points="280,85 480,85 420,20 340,20"/>
+        <text class="lbl" x="380" y="56" text-anchor="middle">Browsers</text>
+        <text class="sub" x="380" y="74" text-anchor="middle">smoke · 1v1 · group</text>
+      </svg>
+    </div>
+    <p class="diagram-caption">Most checks are cheap and pure. A few are expensive and real. Both kinds are required in CI.</p>
+    <p>The bottom layers carry most of the weight. Every rule of play is a pure function with a unit test, and the Go port is checked against fixtures generated from the JavaScript, so the two can't drift. Rules tests run both rule files on the Firebase emulators under a demo project id, so nothing ever reaches the real project. They cover the writes the app really makes and the abuse cases, and we confirm the new cases fail against the old rules before trusting them.</p>
+    <p>The top layer is three browser suites: <strong>smoke</strong> (sign in, solo game, admin tools, history), <strong>vs</strong> (a 1v1 match, rematch, forfeit) and <strong>group</strong> (a room of players, someone dropping, the host leaving). The rest of this post is mostly about that top layer, because that's where all the lessons were.</p>
+  </section>
+
+  <section class="section" id="s3">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2 class="section-title">A browser driver with no dependencies</h2>
+    </div>
+    <p>The app has no runtime npm dependencies, and we wanted the tests to keep it that way: no Playwright, no Puppeteer, no browser downloads in CI. Chrome already speaks a full automation protocol, the Chrome DevTools Protocol (CDP), over a WebSocket. Node 22+ has a built-in <code>WebSocket</code>. That's enough.</p>
+    <p>The driver is about 120 lines. It launches Chrome headless with a remote-debugging port, opens a page per player, and gives each page a handful of methods: <code>goto</code>, <code>eval</code>, <code>waitFor</code>, <code>click</code>, <code>type</code>, <code>shot</code>. It also collects every console message and uncaught exception per page, so a test can assert "no errors" at the end.</p>
+    <p>The tests run the production build with the real response headers, so the strict Content Security Policy is enforced while they run. A CSP violation is a test failure, not a warning in someone's console.</p>
+
+    <div class="callout tip">
+      <div class="callout-label">// WHY NOT A FRAMEWORK</div>
+      <p>A framework would have given us nicer selectors and auto-waiting. It would also have meant a large dependency, browser downloads in CI, and an abstraction between us and exactly the browser behaviour (timers, connections, page lifecycle) we were trying to test. A small driver kept those behaviours visible. The same driver now runs the tests of this portfolio site too.</p>
+    </div>
+  </section>
+
+  <section class="section" id="s4">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2 class="section-title">Stop testing the demo</h2>
+    </div>
+    <p>The first browser suites ran against an offline demo mode: a backend implementation that keeps everything in <code>localStorage</code>, so the UI can be developed without Firebase. It was convenient and fast. It was also lying to us in two ways:</p>
+    <ul>
+      <li>it can't enforce security rules, so anything the rules would refuse looked fine;</li>
+      <li>every write rewrites the whole room in <code>localStorage</code>, and tabs see each other's writes late, so concurrent actions (two rematch votes) were lost and tests flaked for reasons production doesn't have.</li>
+    </ul>
+    <p>PR #14 moved all three suites onto the Firebase emulators (Auth, Firestore, Realtime Database, with the generated rules) and the real Go game server. The runner builds and starts the server and the site, loads the question bank through the admin's own import screen, signs players in as emulated Google users, and runs the suites. The admin in the smoke suite became a real admin instead of a stubbed <code>isAdmin = () =&gt; true</code>.</p>
+    <p>The first run on the real stack found three bugs, one of them live in production:</p>
+
+    <div class="gotchas">
+      <div class="gotcha"><span class="gotcha-num">#01</span><div><div class="gotcha-title">Presence never worked</div><div class="gotcha-desc"><code>onDisconnect().update()</code> on an entry that didn't exist yet was refused by the rules, so nobody's online status was ever set up. Now <code>set()</code>.</div></div></div>
+      <div class="gotcha"><span class="gotcha-num">#02</span><div><div class="gotcha-title">A removed player saw "Lost connection"</div><div class="gotcha-desc">Their room listener failed with a permission error. Now they see "You're no longer in this room", without a refused write on the way out.</div></div></div>
+      <div class="gotcha"><span class="gotcha-num">#03</span><div><div class="gotcha-title">Emulator mode pointed at the wrong ports and namespace</div><div class="gotcha-desc">The kind of configuration drift that only shows up when something actually connects.</div></div></div>
+    </div>
+    <p>The demo mode still exists for UI work. It's just not allowed to be the thing that tells us the app works.</p>
+  </section>
+
+  <section class="section" id="s5">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2 class="section-title">Nine Chromes for one match</h2>
+    </div>
+    <p>The obvious way to simulate a group is one Chrome with a tab per player. It failed in two different ways, and each taught us something about browsers.</p>
+    <p><strong>Connections.</strong> The Firestore emulator speaks HTTP/1.1, and Chrome allows six connections per host. A handful of tabs, each holding long-lived Firestore and database channels, used them all up, and the rest of the players simply stalled. Production Firestore uses HTTP/2, which multiplexes, so this is purely a test-environment limit, but it's a real one.</p>
+    <p><strong>Background timers.</strong> After the server took over the round (Part 1), rounds move forward when a client's timer says a step is due. Chrome doesn't reliably run timers in a background tab, even with the throttling flags turned off. In a one-Chrome setup, only the focused tab was a reliable player.</p>
+    <p>So the group suite gives every player their own browser process, each with its own visible page. That's how real players look anyway: one person, one screen. Together with the browser the runner uses to seed the question bank, a group run starts nine Chromes.</p>
+    <p>That has a cost. A cold CI runner can take well over ten seconds to start Chrome, and with nine launches the odds of one slow start add up. PR #8 gave Chrome 30 seconds to answer, and the launcher kills the process and reports Chrome's own error output if it never does. A Chrome left running keeps Node, and the CI job, alive until its timeout.</p>
+  </section>
+
+  <section class="section" id="s6">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <h2 class="section-title">Wait on state, never on sleep</h2>
+    </div>
+    <p>CI on <code>main</code> once failed in the 1v1 suite with <code>guest: nothing to click for .setup-cta .btn</code>. The guest clicked Ready as soon as the URL hash became <code>#/lobby/</code>. The hash changes before the lobby renders its button. On a fast machine the button was always there in time. On a busy runner it wasn't.</p>
+    <p>The fix (PR #35) was in the driver, not the test: <code>click</code> waits for its element, like <code>waitFor</code> does, instead of failing at once. It's still a state wait (the element exists), never a fixed sleep.</p>
+
+    <div class="code-wrap">
+      <div class="code-bar">
+        <span class="code-lang">js — click waits for its element (simplified)</span>
+        <div class="code-actions">
+          <div class="dots"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div>
+          <button class="copy-btn" data-target="code-click">COPY</button>
+        </div>
+      </div>
+      <pre id="code-click"><span class="t-kw">async</span> <span class="t-fn">click</span>(selector, text, timeout = <span class="t-nu">10_000</span>) {
+  <span class="t-kw">const</span> find = <span class="t-fn">findExpression</span>(selector, text); <span class="t-cm">// first match whose text includes `text`</span>
+  <span class="t-kw">const</span> start = Date.<span class="t-fn">now</span>();
+  <span class="t-kw">do</span> {
+    <span class="t-kw">const</span> clicked = <span class="t-kw">await</span> page.<span class="t-fn">eval</span>(<span class="t-st">`(() =&gt; { const el = ${find}; el?.click(); return !!el; })()`</span>);
+    <span class="t-kw">if</span> (clicked) <span class="t-kw">return</span>;
+    <span class="t-kw">await</span> <span class="t-fn">sleep</span>(<span class="t-nu">100</span>);                       <span class="t-cm">// poll interval, not a guess at timing</span>
+  } <span class="t-kw">while</span> (Date.<span class="t-fn">now</span>() - start &lt; timeout);
+  <span class="t-kw">throw new</span> Error(<span class="t-st">`nothing to click for ${selector} "${text}"`</span>);
+}</pre>
+    </div>
+
+    <p>The same principle fixed our worst flaky test. The group check "a player who drops mid-match doesn't hold up the reveal" asserted a timing: the reveal should happen well before the ten-second timer. Sometimes it didn't:</p>
+    <div class="spec-card">
+      <div class="spec-row"><span class="spec-key">CI output</span><span class="spec-val">✖ group: a dropped player does not hold up the reveal (revealed after 10020 ms)</span></div>
+    </div>
+    <p>The real cause was product behaviour (Part 2: presence went offline late, and hostless rounds paid the grace period twice). Once that was fixed, the check was rewritten to assert state instead of duration: the dropped host shows offline, and the next host is the one driving the round. A state check passes or fails for a reason you can read. A timing check fails when the machine is busy.</p>
+
+    <div class="callout warn">
+      <div class="callout-label">⚠ PASSED ON THE BRANCH, FAILED ON MAIN</div>
+      <p>Several of our failures had the same shape: green on the PR, red on <code>main</code>, same code. That isn't the merge's fault. It means the test is sensitive to load, and the merge just happened to land on a busier runner. Treat it as information about the test (or about a slow path in the product, like the n² transactions in Part 1), not as bad luck.</p>
+    </div>
+  </section>
+
+  <section class="section" id="s7">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <h2 class="section-title">Quarantine honestly</h2>
+    </div>
+    <p>Before we understood the dropped-player failure, it was blocking merges and the first automated deploy. We had three choices: keep re-running until green, delete the check, or quarantine it. We quarantined it, with rules (PR #3, issue #2):</p>
+    <ul>
+      <li><strong>An issue, not a comment.</strong> Issue #2 holds the failure output, the runs that passed and failed, what we tried that didn't work, and the two suspects.</li>
+      <li><strong>Say what coverage is lost.</strong> The PR stated that the behaviour was no longer browser-tested, and that it was still unit-tested in the core rules.</li>
+      <li><strong>A known-gaps section in the architecture doc</strong> pointing at the issue, so it isn't forgotten.</li>
+      <li><strong>An exit criterion.</strong> To restore the check: capture the failing state, fix the cause, then 10 passing runs in a row locally and 3 on CI.</li>
+    </ul>
+    <p>The issue was closed by the product fix in PR #32, and the check came back as the state-based version. Quarantine with an exit criterion is a promise. Quarantine without one is deletion with extra steps.</p>
+  </section>
+
+  <section class="section" id="s8">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <h2 class="section-title">When the harness is the flake</h2>
+    </div>
+    <p>Not every flake was the app. Issue #34 collected the ones that were ours:</p>
+
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-time">Hang</div>
+        <div class="timeline-body">
+          <div class="timeline-title">A local run printed nothing for over an hour</div>
+          <div class="timeline-desc">Every <code>waitFor</code> had a timeout. The raw protocol call underneath didn't: if a reply never came, or the WebSocket closed, it waited forever. Reading the stuck pages from a second CDP client showed Chrome was fine; the test was waiting on itself.</div>
+        </div>
+        <span class="timeline-status timeline-status--fail">HARNESS</span>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-time">Start</div>
+        <div class="timeline-body">
+          <div class="timeline-title">One of nine Chromes didn't start in time on CI</div>
+          <div class="timeline-desc">Infrastructure, not the PR. The note in the issue: if it recurs, launch in parallel and report Chrome's stderr, rather than raising the timeout again.</div>
+        </div>
+        <span class="timeline-status timeline-status--warn">INFRA</span>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-time">Noise</div>
+        <div class="timeline-body">
+          <div class="timeline-title">"Console errors" that were the emulator, not the app</div>
+          <div class="timeline-desc">Firestore's WebChannel transport against the emulator sometimes logged 400s and a blocked network probe. The production CSP stays strict; the plan is to ignore exactly those emulator messages in the test, and nothing wider.</div>
+        </div>
+        <span class="timeline-status timeline-status--warn">NOISE</span>
+      </div>
+    </div>
+
+    <p>Two lessons from that list. Every layer of a harness needs a timeout, including the lowest one, and a pending call should be rejected when its connection closes. And an "ignore these console errors" list must be as narrow as possible, written down with the reason, or it slowly turns into "ignore errors".</p>
+    <p>One more habit paid for itself: <strong>keep the whole log</strong>. One early failure said "console errors:" and our output filter dropped the lines that followed. We never learned what they were. Since then, failures print everything.</p>
+  </section>
+
+  <section class="section" id="s9">
+    <div class="section-header">
+      <span class="section-num">09</span>
+      <h2 class="section-title">Small apps, same habits</h2>
+    </div>
+    <p>The sibling apps (Pebble for expenses, Cadence for routines, Grove for shared spaces) are simpler, but the same approach found real bugs in each:</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>App</th><th>Test</th><th>What it caught</th></tr></thead>
+        <tbody>
+          <tr><td>Pebble</td><td>Unit test with the timezone pinned</td><td>New expenses got <em>yesterday's</em> date between midnight and 05:30 in India, and the previous month on the 1st. <code>toISOString()</code> is UTC. The old test built its dates in the machine's timezone, so on a UTC CI runner it could never catch this. The new one pins the zone and checks fixed moments; putting the old code back fails two of them.</td></tr>
+          <tr><td>Cadence</td><td>Unit tests on the scheduler, run in four timezones</td><td>"Every month on the 31st" skipped every 30-day month, and a yearly routine on 29 February fired on 29 March in other years. <code>new Date(y, m, 31)</code> rolls over into the next month.</td></tr>
+          <tr><td>Grove</td><td>Browser tests on the emulators</td><td>A protected vault opened right after it was created showed no items: the listener was refused because the create hadn't reached the server yet. Fixed with a bounded retry with backoff, then an error you can see.</td></tr>
+          <tr><td>Pebble</td><td>Browser tests with added latency and a 6× CPU throttle</td><td>Proved a startup speed-up (fewer serial round trips) didn't break group switching, and caught a console error in the first version of it.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>The common pattern: tests that run in conditions the developer's laptop doesn't have, such as another timezone, a slow network, a slow CPU, or a fresh write racing a read. Bugs live in the conditions you don't usually run in.</p>
+  </section>
+
+  <section class="section" id="s10">
+    <div class="section-header">
+      <span class="section-num">10</span>
+      <h2 class="section-title">Takeaways</h2>
+    </div>
+    <div class="checklist">
+      <div class="checklist-item"><span class="check-icon">✅</span><div><div class="check-title">Test against the real rules and the real server</div><div class="check-desc">A convenient fake that can't enforce anything will pass the bugs you most need to catch.</div></div></div>
+      <div class="checklist-item"><span class="check-icon">✅</span><div><div class="check-title">One player, one browser</div><div class="check-desc">Connection limits and background-tab throttling make "one tab per player" a different system from production.</div></div></div>
+      <div class="checklist-item"><span class="check-icon">✅</span><div><div class="check-title">Assert state, not duration</div><div class="check-desc">Wait for the condition you care about, with a timeout. Never sleep and hope.</div></div></div>
+      <div class="checklist-item"><span class="check-icon">✅</span><div><div class="check-title">Quarantine with an issue and an exit criterion</div><div class="check-desc">Say what coverage is lost and how many green runs bring it back.</div></div></div>
+      <div class="checklist-item"><span class="check-icon">✅</span><div><div class="check-title">Timeouts at every layer of the harness</div><div class="check-desc">The lowest-level call is the one that hangs for an hour.</div></div></div>
+      <div class="checklist-item"><span class="check-icon">✅</span><div><div class="check-title">Pin the conditions bugs hide in</div><div class="check-desc">Timezone, latency, CPU, and a read racing a fresh write.</div></div></div>
+    </div>
+
+    <div class="series-list">
+      <div class="series-item"><span class="series-badge series-badge--done">Part 1</span><div><div class="series-title">From a static quiz page to a game the client can't cheat</div><div class="series-desc"><a href="/blogs/quizclash-server/">Read it →</a></div></div></div>
+      <div class="series-item"><span class="series-badge series-badge--done">Part 2</span><div><div class="series-title">Rooms that survive people leaving</div><div class="series-desc"><a href="/blogs/quizclash-rooms/">Read it →</a></div></div></div>
+      <div class="series-item series-item--current"><span class="series-badge series-badge--current">Part 3</span><div><div class="series-title">Testing a real-time app for real</div><div class="series-desc">This post.</div></div></div>
+      <div class="series-item"><span class="series-badge series-badge--done">Part 4</span><div><div class="series-title">One engineer, five apps</div><div class="series-desc"><a href="/blogs/one-engineer-five-apps/">Read it →</a></div></div></div>
+      <div class="series-item"><span class="series-badge series-badge--done">Part 5</span><div><div class="series-title">Bugs that erase data</div><div class="series-desc"><a href="/blogs/sync-data-loss/">Read it →</a></div></div></div>
+    </div>
+
+    <div class="divider">END OF PART 3</div>
+
+    <div class="cta">
+      <h3>Next: shipping it</h3>
+      <p>Tests only matter if they gate what reaches users. Part 4 is the delivery pipeline, security and monitoring shared by all five apps.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="/blogs/one-engineer-five-apps/">Read Part 4 →</a>
+        <a class="btn btn-ghost" href="https://quizclash.auragika.com/" target="_blank" rel="noopener">QuizClash ↗</a>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+</body>
+</html>
