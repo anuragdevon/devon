@@ -1,0 +1,75 @@
+{{ define "main" }}
+{{/* One study note: Markdown from content/study, laid out like the blog posts (same classes,
+     same assets/js/blog.js). The heading hook (layouts/_markup) turns each ## into a section. */}}
+{{ $c := printf `<section class="section"><div class="section-body">%s</div></section>` .Content }}
+{{ $c = replace $c `<section class="section"><div class="section-body"></div></section>` "" }}
+{{ $heads := findRESubmatch `<section class="section" id="([^"]+)"><div class="section-header"><span class="section-num">§N:[^§]+§</span><h2 class="section-title">(.*?)</h2>` $c }}
+{{ range $i, $m := $heads }}{{ $c = replace $c (printf "§N:%s§" (index $m 1)) (printf "%02d" (add $i 1)) }}{{ end }}
+
+{{ $track := .Params.track }}
+{{ $tracks := .CurrentSection.Params.tracks }}
+{{ $trackName := "" }}{{ range $tracks }}{{ if eq .id $track }}{{ $trackName = .name }}{{ end }}{{ end }}
+{{ $notes := where .CurrentSection.RegularPages.ByWeight "Params.track" $track }}
+{{ $pos := 0 }}{{ range $i, $p := $notes }}{{ if eq $p $ }}{{ $pos = add $i 1 }}{{ end }}{{ end }}
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap">
+
+<div id="progress-bar"><div id="progress-fill"></div></div>
+
+<section id="blogs">
+  <div class="container blog andromeda-blog-host py-4 py-md-5">
+    <div class="section-title animate-on-scroll">
+      <h2>Study notes</h2>
+    </div>
+    <div class="card">
+      <div class="card-body andromeda-blog-content">
+        <div class="page">
+          <header class="hero">
+            <div class="hero-eyebrow">STUDY NOTES · {{ upper $trackName }}</div>
+            <h1>{{ .Title }}{{ with .Params.subtitle }}<br><em>{{ . }}</em>{{ end }}</h1>
+            <p class="hero-lead">{{ .Description }}</p>
+            <div class="hero-meta">
+              <span data-icon="✍">anuragdevon</span>
+              <span data-icon="📅">{{ .Date.Day | humanize }} {{ .Date.Format "Jan 2006" }}</span>
+              <span data-icon="⏱">{{ .ReadingTime }} min read</span>
+              <span data-icon="📌">{{ $trackName }} · Note {{ $pos }} of {{ len $notes }}</span>
+            </div>
+          </header>
+
+          {{ with $heads }}
+          <nav class="toc" aria-label="Contents">
+            <div class="toc-label">// IN THIS NOTE</div>
+            <div class="toc-grid">
+              {{ range $i, $m := . }}<a class="toc-link" href="#{{ index $m 1 }}"><span class="toc-n">{{ printf "%02d" (add $i 1) }}</span>{{ index $m 2 | plainify }}</a>{{ end }}
+            </div>
+          </nav>
+          {{ end }}
+
+          {{ $c | safeHTML }}
+
+          <section class="section" id="more-in-track">
+            <div class="section-header"><span class="section-num">→</span><h2 class="section-title">More in {{ $trackName }}</h2></div>
+            <div class="series-list">
+              {{ range $i, $p := $notes }}
+              {{ $cur := eq $p $ }}
+              <div class="series-item{{ if $cur }} series-item--current{{ end }}"><span class="series-badge {{ if $cur }}series-badge--current{{ else }}series-badge--done{{ end }}">Note {{ add $i 1 }}</span><div><div class="series-title">{{ $p.Title }}</div><div class="series-desc">{{ if $cur }}You're reading this.{{ else }}<a href="{{ $p.RelPermalink }}">Read it →</a>{{ end }}</div></div></div>
+              {{ end }}
+            </div>
+
+            <div class="divider">END OF NOTE {{ $pos }}</div>
+
+            <div class="cta">
+              <h3>{{ with $notes | after $pos | first 1 }}{{ range . }}Up next: {{ .Title }}{{ end }}{{ else }}End of this track{{ end }}</h3>
+              <p>Short, plain-language notes on what interviewers ask an SDE2 and how to think about it.</p>
+              <div class="cta-row">
+                {{ range $notes | after $pos | first 1 }}<a class="btn btn-primary" href="{{ .RelPermalink }}">Next note →</a>{{ end }}
+                <a class="btn btn-ghost" href="{{ .CurrentSection.RelPermalink }}">All study notes</a>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{{ end }}

@@ -1,0 +1,10 @@
+{{- /* Study notes (content/study): each ## starts a numbered .section, styled like the blog posts.
+       layouts/study/single.html opens the first section, closes the last and fills in the numbers. */ -}}
+{{- if eq .Level 2 -}}
+</div></section>
+<section class="section" id="{{ .Anchor }}"><div class="section-header"><span class="section-num">§N:{{ .Anchor }}§</span><h2 class="section-title">{{ .Text }}</h2></div><div class="section-body">
+{{- else if eq .Level 3 -}}
+<h3 class="subsection" id="{{ .Anchor }}">{{ .Text }}</h3>
+{{- else -}}
+<h{{ .Level }} id="{{ .Anchor }}">{{ .Text }}</h{{ .Level }}>
+{{- end -}}

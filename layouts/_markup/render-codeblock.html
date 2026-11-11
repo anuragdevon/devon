@@ -1,0 +1,3 @@
+{{- /* Code blocks in the blog's code-wrap, with a copy button (assets/js/blog.js). */ -}}
+{{- $id := printf "code-%d" .Ordinal -}}
+<div class="code-wrap"><div class="code-bar"><span class="code-lang">{{ upper (.Type | default "text") }}</span><div class="code-actions"><button type="button" class="copy-btn" data-target="{{ $id }}">COPY</button><div class="dots" aria-hidden="true"><span class="d-red"></span><span class="d-yellow"></span><span class="d-green"></span></div></div></div><pre><code id="{{ $id }}">{{ .Inner }}</code></pre></div>

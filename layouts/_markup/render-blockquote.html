@@ -1,0 +1,9 @@
+{{- /* "> [!TIP] Title" alerts become the blog's callouts; a plain quote is an example answer. */ -}}
+{{- $kinds := dict "note" "info" "tip" "tip" "important" "info" "warning" "warn" "caution" "warn" -}}
+{{- if eq .Type "alert" -}}
+{{- $kind := index $kinds .AlertType | default "info" -}}
+{{- $label := .AlertTitle | default (upper .AlertType) -}}
+<div class="callout {{ $kind }}"><div class="callout-label">// {{ upper $label }}</div>{{ .Text }}</div>
+{{- else -}}
+<div class="callout info example"><div class="callout-label">// SAY IT LIKE THIS</div>{{ .Text }}</div>
+{{- end -}}

@@ -1,7 +1,7 @@
 title = "Anurag Kar"
 baseURL = "https://anuragkar.netlify.app/"
 relativeURLs = true
-disableKinds = ["page", "section", "taxonomy", "term"]
+disableKinds = ["taxonomy", "term"]
 
 enableEmoji = true
 enableGitInfo = true
@@ -36,6 +36,8 @@ name = "Blogs"
 weight = 3
 
 [outputs]
+section = [ "HTML" ]
+page = [ "HTML" ]
 home = [ "HTML", "About", "Blog", "Project", "AndromedaBlog", "SilentFailuresBlog", "CascadeBlog", "CtfBlog", "DecoratorsBlog", "DjangoBlog", "QuizclashServerBlog", "QuizclashRoomsBlog", "RealtimeTestingBlog", "FiveAppsBlog", "SyncDataLossBlog" ]
 
 [outputFormats.About]

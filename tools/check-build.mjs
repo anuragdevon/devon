@@ -9,6 +9,7 @@
 //   - no credentials or dead third-party scripts (SMTP, Google Analytics UA) in the output
 //   - target=_blank links carry rel=noopener, images carry alt
 //   - the contact form is a Netlify form with a honeypot
+//   - study notes (content/study) render fully and stay free of employer and personal details
 // Zero dependencies.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -23,7 +24,7 @@ if (!fs.existsSync(PUB)) {
   process.exit(1);
 }
 
-for (const f of ['index.html', '404.html', 'about/index.html', 'projects/index.html', 'blogs/index.html',
+for (const f of ['index.html', '404.html', 'about/index.html', 'projects/index.html', 'blogs/index.html', 'study/index.html',
   '_headers', 'service_worker.js', 'robots.txt', 'sitemap.xml', 'metadata/manifest.json']) {
   if (!exists(f)) problems.push(`${f} is missing`);
 }
@@ -90,6 +91,19 @@ for (const page of pages) {
   for (const tag of html.match(/<img\b[^>]*>/gi) || []) {
     if (attr(tag, 'alt') === undefined) problems.push(`${page}: <img> without alt: ${tag.slice(0, 120)}`);
   }
+}
+
+// ---- study notes: every note rendered fully, and nothing employer-specific or personal in them
+const notes = pages.filter(p => /^study\/.+\/index\.html$/.test(p.split(path.sep).join('/')));
+if (notes.length < 18) problems.push(`study: expected at least 18 notes, found ${notes.length}`);
+for (const note of notes) {
+  const html = read(note);
+  if (html.includes('§N:')) problems.push(`${note}: unnumbered section marker (layouts/study/single.html)`);
+  const toc = (html.match(/class=["']?toc-link/g) || []).length;
+  const sections = (html.match(/class=["']?section-num["']?>\d+</g) || []).length;
+  if (!toc || toc !== sections) problems.push(`${note}: ${toc} contents links for ${sections} sections`);
+  const leak = html.match(/\b(Swiggy|Instamart|Zomato)\b/i);
+  if (leak) problems.push(`${note}: names a company ("${leak[0]}"); keep study notes generic`);
 }
 
 // ---- secrets and dead third parties, in every page and script we ship

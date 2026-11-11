@@ -8,7 +8,8 @@ Hugo-based static portfolio website for Anurag Kar, hosted on Netlify at `https:
 - **CSS**: SCSS compiled by Hugo (`assets/scss/site.scss` → minified CSS)
 - **JS**: `assets/js/site.js` + `blog.js` → minified, fingerprinted bundle with SRI; `theme-init.js` loads blocking in `<head>` (pre-paint theme). No Bootstrap JS.
 - **Content**: All data in `data/*.toml`; blog post sources in `blog-src/*.html` (rendered by `layouts/partials/blog-post.html`)
-- **Routing**: Hugo custom output formats (About → `/about/`, Blogs → `/blogs/`, Projects → `/projects/`)
+- **Study notes**: Markdown in `content/study/<track>/*.md` (front matter: title, subtitle, description, date, track, weight). Tracks are listed in `content/study/_index.md`. `layouts/study/` renders them in the blog-post look; the render hooks in `layouts/_markup/` turn `##` into numbered sections, `> [!TIP] Title` alerts into callouts, plain quotes into "say it like this" examples, and code fences into copyable code blocks. Adding a note = one Markdown file
+- **Routing**: Hugo custom output formats (About → `/about/`, Blogs → `/blogs/`, Projects → `/projects/`); `/study/` is a normal Hugo section
 - **PWA**: Service worker at `static/service_worker.js` (network-first pages, cache-first fingerprinted assets), manifest at `assets/metadata/manifest.json`
 - **Security**: CSP + security/cache headers in `static/_headers`. Contact form uses Netlify Forms (no credentials client-side)
 
@@ -39,6 +40,8 @@ Hugo-based static portfolio website for Anurag Kar, hosted on Netlify at `https:
 | `layouts/partials/intro.html` | Hero section template |
 | `layouts/index.project.html` | Projects page template |
 | `layouts/index.blog.html` | Blog page template |
+| `layouts/study/` | Study notes list and note templates |
+| `layouts/_markup/` | Markdown render hooks (headings, callouts, code, tables) |
 
 ## Development Commands
 ```bash
@@ -60,6 +63,7 @@ npm test             # build (.build/, --panicOnWarning) + check-build + browser
 - **No inline `<script>` or `on…=` handlers** — CSP is `script-src 'self'`; attach listeners in `assets/js/`. New third-party hosts need a CSP entry in `static/_headers`
 - **Local CSS/JS must go through `minify | fingerprint`** and carry `integrity` (SRI); `/css/*` and `/js/*` are cached immutable
 - Run `npm test` before committing; extend `tools/check-build.mjs` / `tests/browser` when adding a rule or feature
+- **Study notes stay generic**: no employer names, personal stories or real metrics (`check-build` rejects company names)
 - Service worker `static/service_worker.js` must stay at `/service_worker.js` (root scope); bump `CACHE` when its rules change
 
 ## Known Issues

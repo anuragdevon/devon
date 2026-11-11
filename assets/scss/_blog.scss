@@ -84,3 +84,32 @@
     transform: translateX(4px);
   }
 }
+
+// ── Study notes list (/study/): a heading per track above its cards ──────────
+.study-track {
+  margin: 2.5rem 0 0.75rem;
+
+  &:first-of-type { margin-top: 0.5rem; }
+}
+
+.study-track-title {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: 1.35rem;
+  font-weight: 400;
+  color: var(--text-primary);
+  margin: 0 0 0.25rem;
+}
+
+.study-count {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--accent);
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}
+
+.study-track-desc {
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  margin: 0;
+}

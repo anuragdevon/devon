@@ -83,7 +83,8 @@ async function assertClean(p, label) {
 }
 
 const SERIES = ['/blogs/quizclash-server/', '/blogs/quizclash-rooms/', '/blogs/realtime-testing/', '/blogs/one-team-five-apps/', '/blogs/sync-data-loss/'];
-const PAGES = ['/', '/about/', '/projects/', '/blogs/', '/blogs/cascade/', '/blogs/andromeda-rice/', ...SERIES];
+const STUDY = ['/study/', '/study/behavioural/introduction-and-career/', '/study/fundamentals/databases/', '/study/ai-era/building-ai-features/'];
+const PAGES = ['/', '/about/', '/projects/', '/blogs/', '/blogs/cascade/', '/blogs/andromeda-rice/', ...SERIES, ...STUDY];
 
 for (const [size, width, height, mobile] of [['phone', 375, 812, true], ['desktop', 1280, 900, false]]) {
   test(`every page at ${size} width: no overflow in dark or light, everything revealed, no errors or CSP violations`, async () => {
@@ -258,4 +259,39 @@ test('Building Auragika series: listed newest first, every part renders, links b
     for (const href of internal) assert.equal((await fetch(origin + href)).status, 200, `${url} links to missing ${href}`);
     await page.close();
   }
+});
+
+test('study notes: listed by track, each note has numbered sections, contents, track links and working copy buttons', async () => {
+  const p = await open('study-index', 1280, 900, false, '/study/');
+  const tracks = await p.eval("[...document.querySelectorAll('.study-track-title')].map(h => h.textContent.trim())");
+  assert.match(tracks[0], /^Behavioural & career\s+7 notes/);
+  assert.match(tracks[1], /^Technical fundamentals\s+7 notes/);
+  assert.match(tracks[2], /^Engineering in the AI era\s+4 notes/);
+  const notes = await p.eval("[...document.querySelectorAll('.blog-card')].map(a => new URL(a.href).pathname)");
+  assert.equal(notes.length, 18, 'one card per note');
+  assert.ok(await p.eval("[...document.querySelectorAll('#nav-mobile a, .nav-links a')].some(a => a.getAttribute('href').endsWith('/study/'))"), 'no Study link in the nav');
+  await p.close();
+  for (const url of notes) {
+    const page = await open(url, 375, 812, true, url);
+    const s = await page.eval(`({
+      sections: document.querySelectorAll('.andromeda-blog-content section.section[id] .section-num').length,
+      toc: document.querySelectorAll('.toc-link').length,
+      meta: document.querySelector('.hero-meta')?.textContent || '',
+      title: document.title,
+      track: [...document.querySelectorAll('.series-desc a')].map(a => new URL(a.href).pathname),
+      overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    })`);
+    assert.ok(s.toc >= 4 && s.sections === s.toc + 1, `${url}: ${s.toc} contents links for ${s.sections - 1} sections`);
+    assert.match(s.meta, /Note \d+ of \d+/, `${url}: hero meta`);
+    assert.match(s.title, / · Anurag Kar$/, `${url}: page title`);
+    assert.equal(s.overflow, 0, `${url}: horizontal overflow on a phone`);
+    for (const href of s.track) assert.equal((await fetch(origin + href)).status, 200, `${url} links to missing ${href}`);
+    await page.close();
+  }
+  const code = await open('study-code', 1280, 900, false, '/study/fundamentals/databases/');
+  await browser.send('Browser.grantPermissions', { origin, permissions: ['clipboardReadWrite', 'clipboardSanitizedWrite'] });
+  await code.eval("document.querySelector('.copy-btn').click(); true");
+  await code.waitFor("document.querySelector('.copy-btn').textContent === 'COPIED!'", 3000);
+  await assertClean(code, 'study code copy');
+  await code.close();
 });

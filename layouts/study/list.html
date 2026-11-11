@@ -1,0 +1,32 @@
+{{ define "main" }}
+{{/* /study/: every note from content/study, grouped by the tracks listed in content/study/_index.md. */}}
+<section id="blogs">
+  <div class="container blog study">
+    <div class="section-title animate-on-scroll">
+      <h2>{{ .Title }}</h2>
+      <p>{{ .Description }}</p>
+    </div>
+
+    {{ $i := 0 }}
+    {{ range .Params.tracks }}
+    {{ $notes := where $.RegularPages.ByWeight "Params.track" .id }}
+    <div class="study-track animate-on-scroll" id="{{ .id }}">
+      <h3 class="study-track-title">{{ .name }}{{ if $notes }} <span class="study-count">{{ len $notes }} notes</span>{{ else }} <span class="study-count">coming soon</span>{{ end }}</h3>
+      <p class="study-track-desc">{{ .desc }}</p>
+    </div>
+    {{ range $n, $p := $notes }}
+    {{ $i = add $i 1 }}
+    <a href="{{ $p.RelPermalink }}" class="blog-card animate-on-scroll stagger-{{ add (mod $i 8) 1 }}">
+      <span class="blog-date">Note {{ add $n 1 }}</span>
+      <div class="blog-body">
+        <h3 class="blog-title">{{ $p.Title }}</h3>
+        <p class="blog-excerpt">{{ $p.Description }}</p>
+        <div class="blog-meta"><span>{{ $p.ReadingTime }} min read</span></div>
+      </div>
+      <span class="blog-arrow">→</span>
+    </a>
+    {{ end }}
+    {{ end }}
+  </div>
+</section>
+{{ end }}
