@@ -53,3 +53,9 @@
     }
   }
 }
+
+// Logos drawn in near-black vanish on the dark theme: lift them there only.
+:root:not([data-theme="light"]) {
+  .inline-svg--flask svg,
+  .inline-svg--unreal svg { filter: invert(0.85); }
+}

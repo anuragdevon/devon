@@ -228,9 +228,10 @@ test('about: no Student headline, Auragika is the current role above Swiggy', as
   await p.close();
 });
 
-test('home: the Tinkering link goes to auragika.com', async () => {
+test('home: the Tinkering link goes to auragika.com, and the nav cards cover every section', async () => {
   const p = await open('home', 1280, 900, false);
   assert.equal(await p.eval("[...document.querySelectorAll('.hero-cta a')].find(a => /Tinkering/.test(a.textContent))?.getAttribute('href')"), 'https://auragika.com/');
+  assert.deepEqual(await p.eval("[...document.querySelectorAll('.nav-card')].map(a => new URL(a.href).pathname)"), ['/about/', '/projects/', '/blogs/', '/study/']);
   await p.close();
 });
 

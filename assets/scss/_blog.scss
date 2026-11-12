@@ -69,6 +69,9 @@
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.7rem;
   color: var(--text-muted-custom);
+
+  // The source icon (GitHub etc.) sits in a line of small text: keep it text-sized.
+  .inline-svg svg { width: 1.7em; height: 1.7em; }
 }
 
 .blog-arrow {
@@ -83,6 +86,9 @@
     color: var(--accent);
     transform: translateX(4px);
   }
+
+  // Cards stack on phones and the whole card is the link, so a lone arrow row is just a gap.
+  @include media-breakpoint-down(sm) { display: none; }
 }
 
 // ── Study notes list (/study/): a heading per track above its cards ──────────
