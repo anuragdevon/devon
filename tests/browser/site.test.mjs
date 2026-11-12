@@ -83,7 +83,7 @@ async function assertClean(p, label) {
 }
 
 const SERIES = ['/blogs/quizclash-server/', '/blogs/quizclash-rooms/', '/blogs/realtime-testing/', '/blogs/one-team-five-apps/', '/blogs/sync-data-loss/'];
-const STUDY = ['/study/', '/study/behavioural/introduction-and-career/', '/study/fundamentals/databases/', '/study/ai-era/building-ai-features/'];
+const STUDY = ['/study/', '/study/behavioural/introduction-and-career/', '/study/fundamentals/databases/', '/study/ai-era/building-ai-features/', '/study/dsa/playbook/', '/study/dsa/designing-data-structures/', '/study/lld/framework/', '/study/lld/movie-ticket-booking/'];
 const PAGES = ['/', '/about/', '/projects/', '/blogs/', '/blogs/cascade/', '/blogs/andromeda-rice/', ...SERIES, ...STUDY];
 
 for (const [size, width, height, mobile] of [['phone', 375, 812, true], ['desktop', 1280, 900, false]]) {
@@ -96,7 +96,8 @@ for (const [size, width, height, mobile] of [['phone', 375, 812, true], ['deskto
         // clientWidth, not innerWidth: desktop Chrome on Linux draws a classic scrollbar inside innerWidth.
         assert.equal(await p.eval('document.documentElement.scrollWidth - document.documentElement.clientWidth'), 0, `${url}: horizontal overflow in ${theme}`);
       }
-      await p.eval(`(async () => { for (let y = 0; y <= document.body.scrollHeight; y += innerHeight / 2) { scrollTo(0, y); await new Promise(r => setTimeout(r, 60)); } })()`);
+      // Instant jumps: with the site's smooth scrolling, quick successive scrollTo calls interrupt each other and skip whole stretches of a long page.
+      await p.eval(`(async () => { document.documentElement.style.scrollBehavior = 'auto'; for (let y = 0; y <= document.body.scrollHeight; y += innerHeight / 2) { scrollTo(0, y); await new Promise(r => setTimeout(r, 60)); } })()`);
       await p.waitFor("[...document.querySelectorAll('.animate-on-scroll, .animate-fade')].every(e => e.classList.contains('is-visible'))", 5000);
       await assertClean(p, url);
       await p.close();
@@ -268,8 +269,11 @@ test('study notes: listed by track, each note has numbered sections, contents, t
   assert.match(tracks[0], /^Behavioural & career\s+0 \/ 7 done/);
   assert.match(tracks[1], /^Technical fundamentals\s+0 \/ 7 done/);
   assert.match(tracks[2], /^Engineering in the AI era\s+0 \/ 4 done/);
+  assert.match(tracks[3], /^Data structures & algorithms\s+0 \/ 6 done/);
+  assert.match(tracks[4], /^Low-level design\s+0 \/ 11 done/);
+  assert.match(tracks[5], /^High-level design\s+coming soon/);
   const notes = await p.eval("[...document.querySelectorAll('.blog-card')].map(a => new URL(a.href).pathname)");
-  assert.equal(notes.length, 18, 'one card per note');
+  assert.equal(notes.length, 35, 'one card per note');
   assert.ok(await p.eval("[...document.querySelectorAll('#nav-mobile a, .nav-links a')].some(a => a.getAttribute('href').endsWith('/study/'))"), 'no Study link in the nav');
   await p.close();
   for (const url of notes) {
@@ -329,20 +333,20 @@ test('study progress: a reader marks notes complete, sees it on /study/, can und
     count: document.querySelector('.study-progress-count').textContent,
     now: document.querySelector('.study-progress .study-bar').getAttribute('aria-valuenow'),
     done: [...document.querySelectorAll('.blog-card.is-done')].map(a => new URL(a.href).pathname).sort(),
-    tracks: [...document.querySelectorAll('.study-count')].map(c => c.textContent).slice(0, 3),
+    tracks: [...document.querySelectorAll('.study-count')].map(c => c.textContent).slice(0, 5),
     overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
   })`);
-  assert.equal(s.count, '2 of 18 notes done');
+  assert.equal(s.count, '2 of 35 notes done');
   assert.equal(s.now, '2');
   assert.deepEqual(s.done, ['/study/behavioural/growth-and-mindset/', note]);
-  assert.deepEqual(s.tracks, ['1 / 7 done', '1 / 7 done', '0 / 4 done']);
+  assert.deepEqual(s.tracks, ['1 / 7 done', '1 / 7 done', '0 / 4 done', '0 / 6 done', '0 / 11 done']);
   assert.equal(s.overflow, 0, 'study page overflows on a phone');
 
   // Reset takes two clicks.
   await p.eval("document.querySelector('.study-reset').click(); true");
-  assert.equal(await p.eval("document.querySelector('.study-progress-count').textContent"), '2 of 18 notes done', 'one click must not reset');
+  assert.equal(await p.eval("document.querySelector('.study-progress-count').textContent"), '2 of 35 notes done', 'one click must not reset');
   await p.eval("document.querySelector('.study-reset').click(); true");
-  assert.equal(await p.eval("document.querySelector('.study-progress-count').textContent"), '0 of 18 notes done');
+  assert.equal(await p.eval("document.querySelector('.study-progress-count').textContent"), '0 of 35 notes done');
   assert.equal(await p.eval("document.querySelectorAll('.blog-card.is-done').length"), 0);
   assert.equal(await p.eval("localStorage.getItem('study-progress-v1')"), '{}');
   await assertClean(p, 'study progress');

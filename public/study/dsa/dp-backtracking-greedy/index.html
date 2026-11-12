@@ -1,0 +1,194 @@
+<!doctype html><html lang=en-us><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title itemprop=name>DP, backtracking & greedy · Anurag Kar</title><meta name=description content="A five-step framework for dynamic programming, the knapsack loop-direction rule, one backtracking template for subsets and permutations, and when greedy is provably safe (P34–P47)."><meta name=author content="Anurag Kar"><meta name=application-name content="Anurag Kar"><meta name=robots content="index,follow"><meta name=generator content="Hugo 0.163.3"><link rel=canonical href=https://anuragkar.netlify.app/study/dsa/dp-backtracking-greedy/><link rel=sitemap type=application/xml title=Sitemap href=https://anuragkar.netlify.app/sitemap.xml><meta property="og:type" content="website"><meta property="og:site_name" content="Anurag Kar"><meta property="og:title" content="DP, backtracking & greedy · Anurag Kar"><meta property="og:description" content="A five-step framework for dynamic programming, the knapsack loop-direction rule, one backtracking template for subsets and permutations, and when greedy is provably safe (P34–P47)."><meta property="og:url" content="https://anuragkar.netlify.app/study/dsa/dp-backtracking-greedy/"><meta property="og:locale" content="en-us"><meta property="og:image" content="https://anuragkar.netlify.app/metadata/android-chrome-512x512.png"><meta property="og:updated_time" content="2026-11-12T00:00:00Z"><meta name=twitter:card content="summary"><meta name=twitter:title content="DP, backtracking & greedy · Anurag Kar"><meta name=twitter:description content="A five-step framework for dynamic programming, the knapsack loop-direction rule, one backtracking template for subsets and permutations, and when greedy is provably safe (P34–P47)."><meta name=twitter:image content="https://anuragkar.netlify.app/metadata/android-chrome-512x512.png"><link rel=manifest href=../../../metadata/manifest.json><meta name=theme-color content="#080c14"><meta name=msapplication-TileColor content="#080c14"><meta name=apple-mobile-web-app-title content="anuragdevon"><meta name=apple-mobile-web-app-capable content="yes"><meta name=mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="black-translucent"><link rel=icon href=../../../metadata/favicon.ico sizes=any><link rel=icon type=image/png sizes=32x32 href=../../../metadata/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=../../../metadata/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=../../../metadata/apple-touch-icon.png><script src=../../../js/theme-init.min.3fe2def907943ca7229b506d35535f6e5a29a6e2e721e700d41a16ca9b240fe6.js integrity="sha256-P+Le+QeUPKcim1BtNVNfbloppuLnIecA1BoWypskD+Y="></script><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display&family=JetBrains+Mono:wght@400;500&display=swap" rel=stylesheet><link rel=stylesheet href=../../../css/style.min.7b1198d03051728d3790adf8201fd581d82d71fc2fb580013eb9f1175ee7d1f7.css integrity="sha256-exGY0DBRco03kK34IB/VgdgtcfwvtYABPrnxF17n0fc="></head><body><a class=skip-link href=#main>Skip to main content</a><main id=main><nav id=navbar><div class=nav-inner><a class=nav-logo href=../../../>Anurag Kar</a><ul class=nav-links><li><a href=../../../about/>About</a></li><li><a href=../../../projects/>Projects</a></li><li><a href=../../../blogs/>Blogs</a></li><li><a href=../../../study/>Study</a></li></ul><div class=nav-end><button type=button id=theme-toggle class=theme-toggle aria-label="Toggle colour theme">
+<svg class="icon-sun" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+<svg class="icon-moon" aria-hidden="true" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+</button>
+<button type=button id=nav-hamburger class=nav-hamburger aria-label="Toggle navigation" aria-controls=nav-mobile aria-expanded=false>☰</button></div></div><div class="nav-mobile hidden" id=nav-mobile><ul><li><a href=../../../about/>About</a></li><li><a href=../../../projects/>Projects</a></li><li><a href=../../../blogs/>Blogs</a></li><li><a href=../../../study/>Study</a></li></ul></div></nav><link rel=stylesheet href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap"><div id=progress-bar><div id=progress-fill></div></div><section id=blogs><div class="container blog andromeda-blog-host py-4 py-md-5"><div class="section-title animate-on-scroll"><h2>Study notes</h2></div><div class=card><div class="card-body andromeda-blog-content"><div class=page><header class=hero><div class=hero-eyebrow>STUDY NOTES · DATA STRUCTURES & ALGORITHMS</div><h1>DP, backtracking & greedy<br><em>Say the state in words before you write it in code.</em></h1><p class=hero-lead>A five-step framework for dynamic programming, the knapsack loop-direction rule, one backtracking template for subsets and permutations, and when greedy is provably safe (P34–P47).</p><div class=hero-meta><span data-icon=✍>anuragdevon</span>
+<span data-icon=📅>12th Nov 2026</span>
+<span data-icon=⏱>9 min read</span>
+<span data-icon=📌>Data structures & algorithms · Note 5 of 6</span></div></header><nav class=toc aria-label=Contents><div class=toc-label>// IN THIS NOTE</div><div class=toc-grid><a class=toc-link href=#dynamic-programming-the-framework-and-1d-problems><span class=toc-n>01</span>Dynamic programming: the framework and 1D problems</a><a class=toc-link href=#dynamic-programming-strings-knapsack-and-grids><span class=toc-n>02</span>Dynamic programming: strings, knapsack and grids</a><a class=toc-link href=#backtracking><span class=toc-n>03</span>Backtracking</a><a class=toc-link href=#greedy><span class=toc-n>04</span>Greedy</a></div></nav><section class=section><div class=section-body><p>These are the patterns people fear, mostly because they try to jump straight to the code. Dynamic programming becomes manageable once you write the state and transition in plain English first. Backtracking is one template with a choose/explore/undo loop. Greedy is fast and simple, but only when you can argue that the local choice is globally safe.</p><div class="callout tip"><div class=callout-label>// THE SHORT VERSION</div><ul><li><strong>DP:</strong> state → transition → base cases → answer → order, then optimise space.</li><li><strong>Knapsack:</strong> inner loop <em>backwards</em> for 0/1, <em>forwards</em> for unbounded.</li><li><strong>Backtracking:</strong> make a choice, recurse, undo it. Prune early.</li><li><strong>Greedy:</strong> justify it with an exchange argument, or fall back to DP.</li></ul></div></div></section><section class=section id=dynamic-programming-the-framework-and-1d-problems><div class=section-header><span class=section-num>01</span><h2 class=section-title>Dynamic programming: the framework and 1D problems</h2></div><div class=section-body><p><strong>Use when:</strong> the problem asks for a count of ways, a minimum or maximum, or whether something is possible, <strong>and</strong> the choices create <strong>overlapping subproblems</strong> with <strong>optimal substructure</strong>.</p><p><strong>The framework (say it out loud in the interview):</strong></p><ol><li><strong>State:</strong> what does <code>dp[i]</code> (or <code>dp[i][j]</code>) mean, <em>in words</em>?</li><li><strong>Transition:</strong> how does <code>dp[i]</code> follow from smaller states?</li><li><strong>Base cases.</strong></li><li><strong>Answer:</strong> which state holds the final answer?</li><li><strong>Order:</strong> compute top-down (memoised recursion) or bottom-up (a table). Then <strong>optimise space</strong> if each row depends only on the previous one.</li></ol><div class="callout tip"><div class=callout-label>// TOP-DOWN FIRST</div><p>Start top-down if it&rsquo;s easier to think about. Then mention, or convert to, bottom-up for no recursion overhead and O(1) or O(n) space.</p></div><h3 class=subsection id=p34-climbing-stairs-and-house-robber-1d-dp>P34. Climbing Stairs and House Robber (1D DP)</h3><div class=code-wrap><div class=code-bar><span class=code-lang>JAVA</span><div class=code-actions><button type=button class=copy-btn data-target=code-0>COPY</button><div class=dots aria-hidden=true><span class=d-red></span><span class=d-yellow></span><span class=d-green></span></div></div></div><pre><code id=code-0>// Climbing stairs: dp[i] = dp[i-1] &#43; dp[i-2]
+int climbStairs(int n) {
+    int a = 1, b = 1;                                      // ways to reach step 0 and step 1
+    for (int i = 2; i &lt;= n; i&#43;&#43;) { int c = a &#43; b; a = b; b = c; }
+    return b;
+}
+
+// House robber: dp[i] = max(dp[i-1], dp[i-2] &#43; nums[i])   (skip or rob house i)
+int rob(int[] nums) {
+    int prev2 = 0, prev1 = 0;
+    for (int x : nums) { int cur = Math.max(prev1, prev2 &#43; x); prev2 = prev1; prev1 = cur; }
+    return prev1;
+}</code></pre></div><p><strong>Variant:</strong> House Robber II (the houses form a circle) = max(rob without the first house, rob without the last).</p><h3 class=subsection id=p35-coin-change-unbounded-knapsack-minimum-count>P35. Coin Change (unbounded knapsack, minimum count)</h3><p><strong>State:</strong> <code>dp[a]</code> = the fewest coins needed to make amount <code>a</code>. <strong>Transition:</strong> <code>dp[a] = min(dp[a - coin] + 1)</code>.</p><div class=code-wrap><div class=code-bar><span class=code-lang>JAVA</span><div class=code-actions><button type=button class=copy-btn data-target=code-1>COPY</button><div class=dots aria-hidden=true><span class=d-red></span><span class=d-yellow></span><span class=d-green></span></div></div></div><pre><code id=code-1>int coinChange(int[] coins, int amount) {
+    int[] dp = new int[amount &#43; 1];
+    Arrays.fill(dp, amount &#43; 1);                           // acts as &#34;infinity&#34;
+    dp[0] = 0;
+    for (int a = 1; a &lt;= amount; a&#43;&#43;)
+        for (int c : coins)
+            if (c &lt;= a) dp[a] = Math.min(dp[a], dp[a - c] &#43; 1);
+    return dp[amount] &gt; amount ? -1 : dp[amount];
+}</code></pre></div><p><strong>Complexity:</strong> O(amount × coins).</p><p><strong>Variant, Coin Change II (number of combinations):</strong> loop <strong>coins on the outside</strong> so each combination is counted once regardless of order: <code>for c: for a = c..amount: dp[a] += dp[a-c]</code>.</p><h3 class=subsection id=p36-longest-increasing-subsequence>P36. Longest Increasing Subsequence</h3><div class=code-wrap><div class=code-bar><span class=code-lang>JAVA</span><div class=code-actions><button type=button class=copy-btn data-target=code-2>COPY</button><div class=dots aria-hidden=true><span class=d-red></span><span class=d-yellow></span><span class=d-green></span></div></div></div><pre><code id=code-2>// O(n²): dp[i] = length of the LIS ending at i
+// O(n log n): tails[k] = smallest tail of any increasing subsequence of length k&#43;1
+int lengthOfLIS(int[] nums) {
+    int[] tails = new int[nums.length];
+    int size = 0;
+    for (int x : nums) {
+        int lo = 0, hi = size;
+        while (lo &lt; hi) { int mid = (lo &#43; hi) &gt;&gt;&gt; 1; if (tails[mid] &lt; x) lo = mid &#43; 1; else hi = mid; }
+        tails[lo] = x;
+        if (lo == size) size&#43;&#43;;
+    }
+    return size;
+}</code></pre></div></div></section><section class=section id=dynamic-programming-strings-knapsack-and-grids><div class=section-header><span class=section-num>02</span><h2 class=section-title>Dynamic programming: strings, knapsack and grids</h2></div><div class=section-body><h3 class=subsection id=p37-longest-common-subsequence-2d-dp-on-two-strings>P37. Longest Common Subsequence (2D DP on two strings)</h3><p><strong>State:</strong> <code>dp[i][j]</code> = the LCS of <code>a[0..i)</code> and <code>b[0..j)</code>.</p><div class=code-wrap><div class=code-bar><span class=code-lang>JAVA</span><div class=code-actions><button type=button class=copy-btn data-target=code-3>COPY</button><div class=dots aria-hidden=true><span class=d-red></span><span class=d-yellow></span><span class=d-green></span></div></div></div><pre><code id=code-3>int lcs(String a, String b) {
+    int[][] dp = new int[a.length() &#43; 1][b.length() &#43; 1];
+    for (int i = 1; i &lt;= a.length(); i&#43;&#43;)
+        for (int j = 1; j &lt;= b.length(); j&#43;&#43;)
+            dp[i][j] = a.charAt(i - 1) == b.charAt(j - 1)
+                    ? dp[i - 1][j - 1] &#43; 1
+                    : Math.max(dp[i - 1][j], dp[i][j - 1]);
+    return dp[a.length()][b.length()];
+}</code></pre></div><p><strong>This family includes:</strong> edit distance, distinct subsequences, interleaving string, and diff tools such as <code>git diff</code>, which is built on LCS.</p><h3 class=subsection id=p38-edit-distance>P38. Edit Distance</h3><div class=code-wrap><div class=code-bar><span class=code-lang>JAVA</span><div class=code-actions><button type=button class=copy-btn data-target=code-4>COPY</button><div class=dots aria-hidden=true><span class=d-red></span><span class=d-yellow></span><span class=d-green></span></div></div></div><pre><code id=code-4>int minDistance(String a, String b) {
+    int m = a.length(), n = b.length();
+    int[][] dp = new int[m &#43; 1][n &#43; 1];
+    for (int i = 0; i &lt;= m; i&#43;&#43;) dp[i][0] = i;             // delete everything
+    for (int j = 0; j &lt;= n; j&#43;&#43;) dp[0][j] = j;             // insert everything
+    for (int i = 1; i &lt;= m; i&#43;&#43;)
+        for (int j = 1; j &lt;= n; j&#43;&#43;)
+            dp[i][j] = a.charAt(i - 1) == b.charAt(j - 1)
+                    ? dp[i - 1][j - 1]
+                    : 1 &#43; Math.min(dp[i - 1][j - 1],        // replace
+                          Math.min(dp[i - 1][j],            // delete
+                                   dp[i][j - 1]));          // insert
+    return dp[m][n];
+}</code></pre></div><p><strong>Used in practice for:</strong> fuzzy search, such as matching &ldquo;panner tika&rdquo; to &ldquo;Paneer Tikka&rdquo;.</p><h3 class=subsection id=p39-partition-equal-subset-sum-01-knapsack>P39. Partition Equal Subset Sum (0/1 knapsack)</h3><p><strong>State:</strong> <code>dp[s]</code> = whether some subset sums to <code>s</code>. Iterate <code>s</code> <strong>backwards</strong>, so each item is used at most once.</p><div class=code-wrap><div class=code-bar><span class=code-lang>JAVA</span><div class=code-actions><button type=button class=copy-btn data-target=code-5>COPY</button><div class=dots aria-hidden=true><span class=d-red></span><span class=d-yellow></span><span class=d-green></span></div></div></div><pre><code id=code-5>boolean canPartition(int[] nums) {
+    int total = Arrays.stream(nums).sum();
+    if (total % 2 == 1) return false;
+    int target = total / 2;
+    boolean[] dp = new boolean[target &#43; 1];
+    dp[0] = true;
+    for (int x : nums)
+        for (int s = target; s &gt;= x; s--)                  // backwards = 0/1; forwards = unbounded
+            dp[s] |= dp[s - x];
+    return dp[target];
+}</code></pre></div><p><strong>The knapsack rule to remember:</strong> iterate the inner loop <em>backwards</em> for 0/1 (use each item once) and <em>forwards</em> for unbounded (reuse items).</p><h3 class=subsection id=p40-word-break>P40. Word Break</h3><div class=code-wrap><div class=code-bar><span class=code-lang>JAVA</span><div class=code-actions><button type=button class=copy-btn data-target=code-6>COPY</button><div class=dots aria-hidden=true><span class=d-red></span><span class=d-yellow></span><span class=d-green></span></div></div></div><pre><code id=code-6>boolean wordBreak(String s, List&lt;String&gt; wordDict) {
+    Set&lt;String&gt; dict = new HashSet&lt;&gt;(wordDict);
+    boolean[] dp = new boolean[s.length() &#43; 1];            // dp[i]: s[0..i) can be segmented
+    dp[0] = true;
+    for (int i = 1; i &lt;= s.length(); i&#43;&#43;)
+        for (int j = 0; j &lt; i; j&#43;&#43;)
+            if (dp[j] &amp;&amp; dict.contains(s.substring(j, i))) { dp[i] = true; break; }
+    return dp[s.length()];
+}</code></pre></div><p><strong>Optimisation:</strong> limit <code>j</code> to <code>i - maxWordLen</code>, or use a trie.</p><h3 class=subsection id=p41-unique-paths--minimum-path-sum-grid-dp>P41. Unique Paths / Minimum Path Sum (grid DP)</h3><div class=code-wrap><div class=code-bar><span class=code-lang>JAVA</span><div class=code-actions><button type=button class=copy-btn data-target=code-7>COPY</button><div class=dots aria-hidden=true><span class=d-red></span><span class=d-yellow></span><span class=d-green></span></div></div></div><pre><code id=code-7>int minPathSum(int[][] g) {
+    int m = g.length, n = g[0].length;
+    int[] dp = new int[n];                                 // rolling row
+    for (int i = 0; i &lt; m; i&#43;&#43;)
+        for (int j = 0; j &lt; n; j&#43;&#43;) {
+            if (i == 0 &amp;&amp; j == 0) dp[j] = g[0][0];
+            else if (i == 0) dp[j] = dp[j - 1] &#43; g[i][j];
+            else if (j == 0) dp[j] = dp[j] &#43; g[i][j];
+            else dp[j] = Math.min(dp[j], dp[j - 1]) &#43; g[i][j];
+        }
+    return dp[n - 1];
+}</code></pre></div><p><strong>Other DP families to know by name:</strong> interval DP (burst balloons, matrix-chain multiplication), DP on trees (house robber III), bitmask DP (travelling salesman for n ≤ 20), and stock buy/sell (a state machine: hold or not hold, cooldown).</p></div></section><section class=section id=backtracking><div class=section-header><span class=section-num>03</span><h2 class=section-title>Backtracking</h2></div><div class=section-body><p><strong>Use when:</strong> you need <strong>all</strong> combinations, permutations, subsets or placements, or must search with pruning (N-Queens, Sudoku). The complexity is exponential, so pruning is what matters.</p><p><strong>Template:</strong></p><div class=code-wrap><div class=code-bar><span class=code-lang>JAVA</span><div class=code-actions><button type=button class=copy-btn data-target=code-8>COPY</button><div class=dots aria-hidden=true><span class=d-red></span><span class=d-yellow></span><span class=d-green></span></div></div></div><pre><code id=code-8>void backtrack(State state, List&lt;Result&gt; res) {
+    if (isComplete(state)) { res.add(copy(state)); return; }
+    for (Choice c : choices(state)) {
+        if (!valid(c)) continue;          // prune
+        make(c);
+        backtrack(state, res);
+        undo(c);                          // backtrack
+    }
+}</code></pre></div><h3 class=subsection id=p42-subsets-and-permutations>P42. Subsets and Permutations</h3><div class=code-wrap><div class=code-bar><span class=code-lang>JAVA</span><div class=code-actions><button type=button class=copy-btn data-target=code-9>COPY</button><div class=dots aria-hidden=true><span class=d-red></span><span class=d-yellow></span><span class=d-green></span></div></div></div><pre><code id=code-9>List&lt;List&lt;Integer&gt;&gt; subsets(int[] nums) {
+    List&lt;List&lt;Integer&gt;&gt; res = new ArrayList&lt;&gt;();
+    subsetsFrom(0, nums, new ArrayList&lt;&gt;(), res);
+    return res;
+}
+void subsetsFrom(int start, int[] nums, List&lt;Integer&gt; cur, List&lt;List&lt;Integer&gt;&gt; res) {
+    res.add(new ArrayList&lt;&gt;(cur));                         // every node is a subset
+    for (int i = start; i &lt; nums.length; i&#43;&#43;) {
+        cur.add(nums[i]);
+        subsetsFrom(i &#43; 1, nums, cur, res);
+        cur.remove(cur.size() - 1);
+    }
+}
+
+List&lt;List&lt;Integer&gt;&gt; permute(int[] nums) {
+    List&lt;List&lt;Integer&gt;&gt; res = new ArrayList&lt;&gt;();
+    perm(nums, new boolean[nums.length], new ArrayList&lt;&gt;(), res);
+    return res;
+}
+void perm(int[] nums, boolean[] used, List&lt;Integer&gt; cur, List&lt;List&lt;Integer&gt;&gt; res) {
+    if (cur.size() == nums.length) { res.add(new ArrayList&lt;&gt;(cur)); return; }
+    for (int i = 0; i &lt; nums.length; i&#43;&#43;) {
+        if (used[i]) continue;
+        used[i] = true; cur.add(nums[i]);
+        perm(nums, used, cur, res);
+        used[i] = false; cur.remove(cur.size() - 1);
+    }
+}</code></pre></div><p><strong>Complexity:</strong> subsets O(n·2ⁿ), permutations O(n·n!).</p><p><strong>With duplicates:</strong> sort first, then skip with <code>if (i > start && nums[i] == nums[i-1]) continue;</code> (for permutations: <code>if (i > 0 && nums[i] == nums[i-1] && !used[i-1]) continue;</code>).</p><h3 class=subsection id=p43-combination-sum-reuse-allowed>P43. Combination Sum (reuse allowed)</h3><div class=code-wrap><div class=code-bar><span class=code-lang>JAVA</span><div class=code-actions><button type=button class=copy-btn data-target=code-10>COPY</button><div class=dots aria-hidden=true><span class=d-red></span><span class=d-yellow></span><span class=d-green></span></div></div></div><pre><code id=code-10>List&lt;List&lt;Integer&gt;&gt; combinationSum(int[] candidates, int target) {
+    Arrays.sort(candidates);
+    List&lt;List&lt;Integer&gt;&gt; res = new ArrayList&lt;&gt;();
+    combo(candidates, target, 0, new ArrayList&lt;&gt;(), res);
+    return res;
+}
+void combo(int[] c, int remain, int start, List&lt;Integer&gt; cur, List&lt;List&lt;Integer&gt;&gt; res) {
+    if (remain == 0) { res.add(new ArrayList&lt;&gt;(cur)); return; }
+    for (int i = start; i &lt; c.length &amp;&amp; c[i] &lt;= remain; i&#43;&#43;) {   // sorted → early stop
+        cur.add(c[i]);
+        combo(c, remain - c[i], i, cur, res);                     // i, not i&#43;1: reuse allowed
+        cur.remove(cur.size() - 1);
+    }
+}</code></pre></div><h3 class=subsection id=p44-word-search-grid-backtracking>P44. Word Search (grid backtracking)</h3><div class=code-wrap><div class=code-bar><span class=code-lang>JAVA</span><div class=code-actions><button type=button class=copy-btn data-target=code-11>COPY</button><div class=dots aria-hidden=true><span class=d-red></span><span class=d-yellow></span><span class=d-green></span></div></div></div><pre><code id=code-11>boolean exist(char[][] board, String word) {
+    for (int r = 0; r &lt; board.length; r&#43;&#43;)
+        for (int c = 0; c &lt; board[0].length; c&#43;&#43;)
+            if (search(board, word, 0, r, c)) return true;
+    return false;
+}
+boolean search(char[][] b, String w, int i, int r, int c) {
+    if (i == w.length()) return true;
+    if (r &lt; 0 || c &lt; 0 || r &gt;= b.length || c &gt;= b[0].length || b[r][c] != w.charAt(i)) return false;
+    char tmp = b[r][c]; b[r][c] = &#39;#&#39;;                     // mark the cell as on the current path
+    boolean found = search(b, w, i &#43; 1, r &#43; 1, c) || search(b, w, i &#43; 1, r - 1, c)
+                 || search(b, w, i &#43; 1, r, c &#43; 1) || search(b, w, i &#43; 1, r, c - 1);
+    b[r][c] = tmp;                                         // restore it
+    return found;
+}</code></pre></div><p><strong>Also know:</strong> N-Queens (use sets for columns and both diagonals: <code>r-c</code> and <code>r+c</code>), Sudoku solver, generate parentheses (<code>open &lt; n</code>, <code>close &lt; open</code>).</p></div></section><section class=section id=greedy><div class=section-header><span class=section-num>04</span><h2 class=section-title>Greedy</h2></div><div class=section-body><p><strong>Use when:</strong> a locally optimal choice provably leads to the global optimum. <strong>Be ready to justify it</strong>, usually with an exchange argument (&ldquo;swapping our choice for any other can&rsquo;t make things better&rdquo;). If you can&rsquo;t justify it, the problem probably needs DP.</p><h3 class=subsection id=p45-jump-game-i-and-ii>P45. Jump Game I and II</h3><div class=code-wrap><div class=code-bar><span class=code-lang>JAVA</span><div class=code-actions><button type=button class=copy-btn data-target=code-12>COPY</button><div class=dots aria-hidden=true><span class=d-red></span><span class=d-yellow></span><span class=d-green></span></div></div></div><pre><code id=code-12>boolean canJump(int[] nums) {
+    int reach = 0;
+    for (int i = 0; i &lt; nums.length; i&#43;&#43;) {
+        if (i &gt; reach) return false;
+        reach = Math.max(reach, i &#43; nums[i]);
+    }
+    return true;
+}
+
+int minJumps(int[] nums) {                                 // BFS by levels, greedily
+    int jumps = 0, curEnd = 0, farthest = 0;
+    for (int i = 0; i &lt; nums.length - 1; i&#43;&#43;) {
+        farthest = Math.max(farthest, i &#43; nums[i]);
+        if (i == curEnd) { jumps&#43;&#43;; curEnd = farthest; }
+    }
+    return jumps;
+}</code></pre></div><h3 class=subsection id=p46-non-overlapping-intervals-interval-scheduling>P46. Non-overlapping Intervals (interval scheduling)</h3><p><strong>Greedy rule:</strong> sort by <strong>end time</strong> and always keep the interval that finishes earliest. That leaves the most room for the rest.</p><div class=code-wrap><div class=code-bar><span class=code-lang>JAVA</span><div class=code-actions><button type=button class=copy-btn data-target=code-13>COPY</button><div class=dots aria-hidden=true><span class=d-red></span><span class=d-yellow></span><span class=d-green></span></div></div></div><pre><code id=code-13>int eraseOverlapIntervals(int[][] intervals) {
+    Arrays.sort(intervals, (a, b) -&gt; Integer.compare(a[1], b[1]));
+    int kept = 0, end = Integer.MIN_VALUE;
+    for (int[] in : intervals) {
+        if (in[0] &gt;= end) { kept&#43;&#43;; end = in[1]; }
+    }
+    return intervals.length - kept;
+}</code></pre></div><p><strong>Similar problems:</strong> minimum arrows to burst balloons, the maximum number of deliveries one rider can do in non-overlapping slots.</p><h3 class=subsection id=p47-gas-station>P47. Gas Station</h3><p><strong>Idea:</strong> if total gas ≥ total cost, a solution exists. Whenever the running tank goes negative, no station between the current start and here can be the start, so restart from the next station.</p><div class=code-wrap><div class=code-bar><span class=code-lang>JAVA</span><div class=code-actions><button type=button class=copy-btn data-target=code-14>COPY</button><div class=dots aria-hidden=true><span class=d-red></span><span class=d-yellow></span><span class=d-green></span></div></div></div><pre><code id=code-14>int canCompleteCircuit(int[] gas, int[] cost) {
+    int total = 0, tank = 0, start = 0;
+    for (int i = 0; i &lt; gas.length; i&#43;&#43;) {
+        int diff = gas[i] - cost[i];
+        total &#43;= diff; tank &#43;= diff;
+        if (tank &lt; 0) { start = i &#43; 1; tank = 0; }
+    }
+    return total &gt;= 0 ? start : -1;
+}</code></pre></div><p><strong>Other greedy problems:</strong> task scheduler (most frequent task first), partition labels, assign cookies, Huffman coding.</p></div></section><div class=study-mark data-study-note=/study/dsa/dp-backtracking-greedy/ hidden><button type=button class="btn btn-primary study-mark-btn" aria-pressed=false>Mark as complete</button><p class=study-mark-help>Finished reading? Mark it and track your progress on the <a href=../../../study/>study page</a>. Saved in this browser only, no sign-up.</p></div><section class=section id=more-in-track><div class=section-header><span class=section-num>→</span><h2 class=section-title>More in Data structures & algorithms</h2></div><div class=series-list><div class=series-item data-study-note=/study/dsa/playbook/><span class="series-badge series-badge--next">Note 1</span><div><div class=series-title>The DSA playbook</div><div class=series-desc><a href=../../../study/dsa/playbook/>Read it →</a></div></div></div><div class=series-item data-study-note=/study/dsa/arrays-hashing-and-windows/><span class="series-badge series-badge--next">Note 2</span><div><div class=series-title>Arrays, hashing & windows</div><div class=series-desc><a href=../../../study/dsa/arrays-hashing-and-windows/>Read it →</a></div></div></div><div class=series-item data-study-note=/study/dsa/binary-search-stacks-heaps-intervals/><span class="series-badge series-badge--next">Note 3</span><div><div class=series-title>Binary search, stacks, heaps & intervals</div><div class=series-desc><a href=../../../study/dsa/binary-search-stacks-heaps-intervals/>Read it →</a></div></div></div><div class=series-item data-study-note=/study/dsa/lists-trees-and-graphs/><span class="series-badge series-badge--next">Note 4</span><div><div class=series-title>Linked lists, trees & graphs</div><div class=series-desc><a href=../../../study/dsa/lists-trees-and-graphs/>Read it →</a></div></div></div><div class="series-item series-item--current" data-study-note=/study/dsa/dp-backtracking-greedy/><span class="series-badge series-badge--current">Note 5</span><div><div class=series-title>DP, backtracking & greedy</div><div class=series-desc>You're reading this.</div></div></div><div class=series-item data-study-note=/study/dsa/designing-data-structures/><span class="series-badge series-badge--next">Note 6</span><div><div class=series-title>Designing data structures</div><div class=series-desc><a href=../../../study/dsa/designing-data-structures/>Read it →</a></div></div></div></div><div class=divider>END OF NOTE 5</div><div class=cta><h3>Up next: Designing data structures</h3><p>Short, plain-language notes on what interviewers ask an SDE2 and how to think about it.</p><div class=cta-row><a class="btn btn-primary" href=../../../study/dsa/designing-data-structures/>Next note →</a>
+<a class="btn btn-ghost" href=../../../study/>All study notes</a></div></div></section></div></div></div></div></section><button type=button class=open-button id=contact aria-label="Contact me" aria-controls=contact-popup aria-expanded=false>
+<i class=in><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="comment-alt" class="svg-inline--fa fa-comment-alt fa-w-16" role="img" viewBox="0 0 512 512"><path fill="currentColor" d="M448 0H64C28.7.0.0 28.7.0 64v288c0 35.3 28.7 64 64 64h96v84c0 9.8 11.2 15.5 19.1 9.7L304 416h144c35.3.0 64-28.7 64-64V64c0-35.3-28.7-64-64-64z"/></svg></i></button><div class=form-popup id=contact-popup><form class=form-container id=contactme name=contact method=POST data-netlify=true netlify-honeypot=bot-field><input type=hidden name=form-name value=contact><p class=visually-hidden><label>Leave this empty <input name=bot-field tabindex=-1 autocomplete=off></label></p><div class=row><div class=col><h3>Contact</h3></div><div class="col text-end"><button type=button id=contact-close class=contact-close aria-label="Close contact form">
+<i class=fa><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="times-circle" class="svg-inline--fa fa-times-circle fa-w-16" role="img" viewBox="0 0 512 512"><path fill="currentColor" d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm121.6 313.1c4.7 4.7 4.7 12.3.0 17L338 377.6c-4.7 4.7-12.3 4.7-17 0L256 312l-65.1 65.6c-4.7 4.7-12.3 4.7-17 0L134.4 338c-4.7-4.7-4.7-12.3.0-17l65.6-65-65.6-65.1c-4.7-4.7-4.7-12.3.0-17l39.6-39.6c4.7-4.7 12.3-4.7 17 0l65 65.7 65.1-65.6c4.7-4.7 12.3-4.7 17 0l39.6 39.6c4.7 4.7 4.7 12.3.0 17L312 256l65.6 65.1z"/></svg></i></button></div></div><label for=contact-email><b>Email</b></label>
+<input type=email id=contact-email name=email placeholder="Your Email" autocomplete=email maxlength=254 required>
+<label for=contact-message><b>Message</b></label>
+<input type=text id=contact-message name=message placeholder="Your Message" maxlength=2000 required>
+<button type=submit class="custom-btn btn-11">Submit</button><p id=contact-status class=contact-status role=status aria-live=polite></p></form></div><footer class="container-fluid flex-shrink-0 border-top"><div class=row><div class="col-12 col-md-6 text-center"><p class=my-1>&copy; 2026 Anurag Kar. All rights are reserved.</p></div><div class="col-12 col-md-6 text-center"><div class="d-inline-flex py-1 py-md-0 flex-wrap justify-content-center flex-row fw-bolder"><a href=mailto:anuragkar16@gmail.com rel=noopener aria-label=mail target=_blank><i class=fa><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="envelope" class="svg-inline--fa fa-envelope fa-w-16" role="img" viewBox="0 0 512 512"><path fill="currentColor" d="M502.3 190.8c3.9-3.1 9.7-.2 9.7 4.7V4e2c0 26.5-21.5 48-48 48H48c-26.5.0-48-21.5-48-48V195.6c0-5 5.7-7.8 9.7-4.7 22.4 17.4 52.1 39.5 154.1 113.6 21.1 15.4 56.7 47.8 92.2 47.6 35.7.3 72-32.8 92.3-47.6 102-74.1 131.6-96.3 154-113.7zM256 320c23.2.4 56.6-29.2 73.4-41.4 132.7-96.3 142.8-104.7 173.4-128.7 5.8-4.5 9.2-11.5 9.2-18.9v-19c0-26.5-21.5-48-48-48H48C21.5 64 0 85.5.0 112v19c0 7.4 3.4 14.3 9.2 18.9 30.6 23.9 40.7 32.4 173.4 128.7 16.8 12.2 50.2 41.8 73.4 41.4z"/></svg></i>
+</a><a href=https://github.com/anuragdevon rel=noopener aria-label=github target=_blank><i class=fa><svg aria-hidden="true" focusable="false" data-prefix="fab" data-icon="github" class="svg-inline--fa fa-github fa-w-16" role="img" viewBox="0 0 496 512"><path fill="currentColor" d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6.0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6.0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3.0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1.0-6.2-.3-40.4-.3-61.4.0.0-70 15-84.7-29.8.0.0-11.4-29.1-27.8-36.6.0.0-22.9-15.7 1.6-15.4.0.0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5.0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9.0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4.0 33.7-.3 75.4-.3 83.6.0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6.0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9.0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></i>
+</a><a href=https://www.linkedin.com/in/anurag-kar-472587192/ rel=noopener aria-label=linkedin target=_blank><i class=fa><svg aria-hidden="true" focusable="false" data-prefix="fab" data-icon="linkedin-in" class="svg-inline--fa fa-linkedin-in fa-w-14" role="img" viewBox="0 0 448 512"><path fill="currentColor" d="M100.28 448H7.4V148.9h92.88zM53.79 108.1C24.09 108.1.0 83.5.0 53.8a53.79 53.79.0 01107.58.0c0 29.7-24.1 54.3-53.79 54.3zM447.9 448h-92.68V302.4c0-34.7-.7-79.2-48.29-79.2-48.29.0-55.69 37.7-55.69 76.7V448h-92.78V148.9h89.08v40.8h1.3c12.4-23.5 42.69-48.3 87.88-48.3 94 0 111.28 61.9 111.28 142.3V448z"/></svg></i>
+</a><a href=https://twitter.com/AnuragKar016 rel=noopener aria-label=twitter target=_blank><i class=fa><svg aria-hidden="true" focusable="false" data-prefix="fab" data-icon="twitter" class="svg-inline--fa fa-twitter fa-w-16" role="img" viewBox="0 0 512 512"><path fill="currentColor" d="M459.37 151.716c.325 4.548.325 9.097.325 13.645.0 138.72-105.583 298.558-298.558 298.558-59.452.0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055.0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421.0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391.0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04.0-57.828 46.782-104.934 104.934-104.934 30.213.0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg></i>
+</a><a href=https://www.youtube.com/channel/UCrWytD5s1b29limBpsis9RQ rel=noopener aria-label=youtube target=_blank><i class=fa><svg aria-hidden="true" focusable="false" data-prefix="fab" data-icon="youtube" class="svg-inline--fa fa-youtube fa-w-18" role="img" viewBox="0 0 576 512"><path fill="currentColor" d="M549.655 124.083c-6.281-23.65-24.787-42.276-48.284-48.597C458.781 64 288 64 288 64S117.22 64 74.629 75.486c-23.497 6.322-42.003 24.947-48.284 48.597-11.412 42.867-11.412 132.305-11.412 132.305s0 89.438 11.412 132.305c6.281 23.65 24.787 41.5 48.284 47.821C117.22 448 288 448 288 448s170.78.0 213.371-11.486c23.497-6.321 42.003-24.171 48.284-47.821 11.412-42.867 11.412-132.305 11.412-132.305s0-89.438-11.412-132.305zm-317.51 213.508V175.185l142.739 81.205-142.739 81.201z"/></svg></i></a></div></div></div></footer></main><script src=../../../js/bundle.min.5cc002564f650991a37e39436342794c206cd6aecf0da8b6509260bc42f70b7d.js integrity="sha256-XMACVk9lCZGjfjlDY0J5TCBs1q7PDai2UJJgvEL3C30=" defer></script></body></html>

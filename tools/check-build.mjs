@@ -95,7 +95,7 @@ for (const page of pages) {
 
 // ---- study notes: every note rendered fully, and nothing employer-specific or personal in them
 const notes = pages.filter(p => /^study\/.+\/index\.html$/.test(p.split(path.sep).join('/')));
-if (notes.length < 18) problems.push(`study: expected at least 18 notes, found ${notes.length}`);
+if (notes.length < 35) problems.push(`study: expected at least 35 notes, found ${notes.length}`);
 for (const note of notes) {
   const html = read(note);
   if (html.includes('§N:')) problems.push(`${note}: unnumbered section marker (layouts/study/single.html)`);
