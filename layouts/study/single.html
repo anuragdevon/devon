@@ -47,12 +47,18 @@
 
           {{ $c | safeHTML }}
 
+          {{/* Shown by assets/js/study.js; progress is kept in this browser (localStorage). */}}
+          <div class="study-mark" data-study-note="{{ .RelPermalink }}" hidden>
+            <button type="button" class="btn btn-primary study-mark-btn" aria-pressed="false">Mark as complete</button>
+            <p class="study-mark-help">Finished reading? Mark it and track your progress on the <a href="{{ .CurrentSection.RelPermalink }}">study page</a>. Saved in this browser only, no sign-up.</p>
+          </div>
+
           <section class="section" id="more-in-track">
             <div class="section-header"><span class="section-num">→</span><h2 class="section-title">More in {{ $trackName }}</h2></div>
             <div class="series-list">
               {{ range $i, $p := $notes }}
               {{ $cur := eq $p $ }}
-              <div class="series-item{{ if $cur }} series-item--current{{ end }}"><span class="series-badge {{ if $cur }}series-badge--current{{ else }}series-badge--done{{ end }}">Note {{ add $i 1 }}</span><div><div class="series-title">{{ $p.Title }}</div><div class="series-desc">{{ if $cur }}You're reading this.{{ else }}<a href="{{ $p.RelPermalink }}">Read it →</a>{{ end }}</div></div></div>
+              <div class="series-item{{ if $cur }} series-item--current{{ end }}" data-study-note="{{ $p.RelPermalink }}"><span class="series-badge {{ if $cur }}series-badge--current{{ else }}series-badge--next{{ end }}">Note {{ add $i 1 }}</span><div><div class="series-title">{{ $p.Title }}</div><div class="series-desc">{{ if $cur }}You're reading this.{{ else }}<a href="{{ $p.RelPermalink }}">Read it →</a>{{ end }}</div></div></div>
               {{ end }}
             </div>
 

@@ -264,9 +264,9 @@ test('Building Auragika series: listed newest first, every part renders, links b
 test('study notes: listed by track, each note has numbered sections, contents, track links and working copy buttons', async () => {
   const p = await open('study-index', 1280, 900, false, '/study/');
   const tracks = await p.eval("[...document.querySelectorAll('.study-track-title')].map(h => h.textContent.trim())");
-  assert.match(tracks[0], /^Behavioural & career\s+7 notes/);
-  assert.match(tracks[1], /^Technical fundamentals\s+7 notes/);
-  assert.match(tracks[2], /^Engineering in the AI era\s+4 notes/);
+  assert.match(tracks[0], /^Behavioural & career\s+0 \/ 7 done/);
+  assert.match(tracks[1], /^Technical fundamentals\s+0 \/ 7 done/);
+  assert.match(tracks[2], /^Engineering in the AI era\s+0 \/ 4 done/);
   const notes = await p.eval("[...document.querySelectorAll('.blog-card')].map(a => new URL(a.href).pathname)");
   assert.equal(notes.length, 18, 'one card per note');
   assert.ok(await p.eval("[...document.querySelectorAll('#nav-mobile a, .nav-links a')].some(a => a.getAttribute('href').endsWith('/study/'))"), 'no Study link in the nav');
@@ -294,4 +294,56 @@ test('study notes: listed by track, each note has numbered sections, contents, t
   await code.waitFor("document.querySelector('.copy-btn').textContent === 'COPIED!'", 3000);
   await assertClean(code, 'study code copy');
   await code.close();
+});
+
+test('study progress: a reader marks notes complete, sees it on /study/, can undo and reset', async () => {
+  const note = '/study/fundamentals/databases/';
+  const p = await open('study-mark', 375, 812, true, note);
+  await p.eval("localStorage.removeItem('study-progress-v1'); true");
+  await p.goto(origin + note);
+  await p.waitFor("document.readyState === 'complete' && !document.querySelector('.study-mark').hidden");
+  const btn = "document.querySelector('.study-mark-btn')";
+  assert.equal(await p.eval(`${btn}.getAttribute('aria-pressed')`), 'false');
+  await p.eval(`${btn}.click(); true`);
+  assert.equal(await p.eval(`${btn}.getAttribute('aria-pressed')`), 'true');
+  assert.match(await p.eval("document.querySelector('.hero-meta').textContent"), /Completed/);
+  assert.ok(await p.eval(`document.querySelector('.series-item[data-study-note="${note}"]').classList.contains('is-done')`), 'track list shows the note done');
+  // Persisted: survives a reload.
+  await p.goto(origin + note);
+  await p.waitFor("document.readyState === 'complete' && !document.querySelector('.study-mark').hidden");
+  assert.equal(await p.eval(`${btn}.getAttribute('aria-pressed')`), 'true', 'progress lost on reload');
+  await p.eval(`${btn}.click(); true`);
+  assert.equal(await p.eval(`${btn}.getAttribute('aria-pressed')`), 'false', 'undo');
+  assert.doesNotMatch(await p.eval("document.querySelector('.hero-meta').textContent"), /Completed/);
+  await p.eval(`${btn}.click(); true`);
+  await assertClean(p, 'study mark');
+
+  // Also mark a behavioural note, then check the study page.
+  await p.goto(origin + '/study/behavioural/growth-and-mindset/');
+  await p.waitFor("document.readyState === 'complete' && !document.querySelector('.study-mark').hidden");
+  await p.eval(`${btn}.click(); true`);
+  await p.goto(origin + '/study/');
+  await p.waitFor("document.readyState === 'complete' && !document.querySelector('[data-study-progress]').hidden");
+  const s = await p.eval(`({
+    count: document.querySelector('.study-progress-count').textContent,
+    now: document.querySelector('.study-progress .study-bar').getAttribute('aria-valuenow'),
+    done: [...document.querySelectorAll('.blog-card.is-done')].map(a => new URL(a.href).pathname).sort(),
+    tracks: [...document.querySelectorAll('.study-count')].map(c => c.textContent).slice(0, 3),
+    overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  })`);
+  assert.equal(s.count, '2 of 18 notes done');
+  assert.equal(s.now, '2');
+  assert.deepEqual(s.done, ['/study/behavioural/growth-and-mindset/', note]);
+  assert.deepEqual(s.tracks, ['1 / 7 done', '1 / 7 done', '0 / 4 done']);
+  assert.equal(s.overflow, 0, 'study page overflows on a phone');
+
+  // Reset takes two clicks.
+  await p.eval("document.querySelector('.study-reset').click(); true");
+  assert.equal(await p.eval("document.querySelector('.study-progress-count').textContent"), '2 of 18 notes done', 'one click must not reset');
+  await p.eval("document.querySelector('.study-reset').click(); true");
+  assert.equal(await p.eval("document.querySelector('.study-progress-count').textContent"), '0 of 18 notes done');
+  assert.equal(await p.eval("document.querySelectorAll('.blog-card.is-done').length"), 0);
+  assert.equal(await p.eval("localStorage.getItem('study-progress-v1')"), '{}');
+  await assertClean(p, 'study progress');
+  await p.close();
 });

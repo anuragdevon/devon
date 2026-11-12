@@ -113,3 +113,110 @@
   font-size: 0.88rem;
   margin: 0;
 }
+
+// ── Study progress (assets/js/study.js): saved per browser ─────────────────
+.study-progress {
+  margin: 0 0 2rem;
+  padding: 1.1rem 1.25rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-card);
+  backdrop-filter: var(--blur-sm);
+
+  &[hidden] { display: none; }
+}
+
+.study-progress-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.6rem;
+}
+
+.study-progress-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.study-progress-count {
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.study-progress-foot {
+  margin: 0.7rem 0 0;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.study-reset {
+  background: none;
+  border: 0;
+  padding: 0;
+  margin-left: 0.35rem;
+  color: var(--accent);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+
+  &[hidden] { display: none; }
+}
+
+.study-bar {
+  height: 8px;
+  border-radius: 100px;
+  background: var(--border-glass);
+  overflow: hidden;
+
+  &--sm {
+    height: 4px;
+    max-width: 260px;
+    margin-top: 0.6rem;
+  }
+}
+
+.study-bar-fill {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent), var(--accent-light));
+  transition: width 0.4s ease;
+}
+
+.study-tick {
+  display: none;
+  margin-left: 0.5rem;
+  color: #16a34a;
+}
+
+.blog-card.is-done {
+  .study-tick { display: inline; }
+  .blog-title { opacity: 0.75; }
+}
+
+// The "mark as complete" block at the end of a note.
+.andromeda-blog-content .study-mark {
+  margin: 8px 0 32px;
+  padding: 22px 20px;
+  text-align: center;
+  border: 1px dashed var(--border-mid);
+  border-radius: var(--radius);
+
+  &[hidden] { display: none; }
+
+  .study-mark-btn { min-width: 210px; justify-content: center; }
+
+  .study-mark-help {
+    margin: 12px auto 0;
+    max-width: 440px;
+    font-size: 12.5px;
+    color: var(--overlay0);
+  }
+}

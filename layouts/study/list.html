@@ -7,17 +7,29 @@
       <p>{{ .Description }}</p>
     </div>
 
+    {{/* Filled in by assets/js/study.js from this browser's saved progress. */}}
+    <div class="study-progress" data-study-progress hidden>
+      <div class="study-progress-head">
+        <span class="study-progress-label">Your progress</span>
+        <span class="study-progress-count">0 notes done</span>
+      </div>
+      <div class="study-bar" role="progressbar" aria-label="Notes completed" aria-valuemin="0" aria-valuemax="{{ len .RegularPages }}" aria-valuenow="0"><span class="study-bar-fill"></span></div>
+      <p class="study-progress-foot">Open a note and press <em>Mark as complete</em> when you've read it. Progress is saved in this browser only, no sign-up. <button type="button" class="study-reset" hidden>Reset progress</button></p>
+    </div>
+
     {{ $i := 0 }}
     {{ range .Params.tracks }}
     {{ $notes := where $.RegularPages.ByWeight "Params.track" .id }}
-    <div class="study-track animate-on-scroll" id="{{ .id }}">
+    {{ $tname := .name }}
+    <div class="study-track animate-on-scroll" id="{{ .id }}" data-study-track="{{ .id }}">
       <h3 class="study-track-title">{{ .name }}{{ if $notes }} <span class="study-count">{{ len $notes }} notes</span>{{ else }} <span class="study-count">coming soon</span>{{ end }}</h3>
       <p class="study-track-desc">{{ .desc }}</p>
+      {{ with $notes }}<div class="study-bar study-bar--sm" role="progressbar" aria-label="{{ $tname }}: notes completed" aria-valuemin="0" aria-valuemax="{{ len . }}" aria-valuenow="0"><span class="study-bar-fill"></span></div>{{ end }}
     </div>
     {{ range $n, $p := $notes }}
     {{ $i = add $i 1 }}
-    <a href="{{ $p.RelPermalink }}" class="blog-card animate-on-scroll stagger-{{ add (mod $i 8) 1 }}">
-      <span class="blog-date">Note {{ add $n 1 }}</span>
+    <a href="{{ $p.RelPermalink }}" class="blog-card animate-on-scroll stagger-{{ add (mod $i 8) 1 }}" data-study-note="{{ $p.RelPermalink }}" data-track="{{ $p.Params.track }}">
+      <span class="blog-date">Note {{ add $n 1 }}<span class="study-tick">✓ Done</span></span>
       <div class="blog-body">
         <h3 class="blog-title">{{ $p.Title }}</h3>
         <p class="blog-excerpt">{{ $p.Description }}</p>

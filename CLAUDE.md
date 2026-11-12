@@ -9,6 +9,7 @@ Hugo-based static portfolio website for Anurag Kar, hosted on Netlify at `https:
 - **JS**: `assets/js/site.js` + `blog.js` → minified, fingerprinted bundle with SRI; `theme-init.js` loads blocking in `<head>` (pre-paint theme). No Bootstrap JS.
 - **Content**: All data in `data/*.toml`; blog post sources in `blog-src/*.html` (rendered by `layouts/partials/blog-post.html`)
 - **Study notes**: Markdown in `content/study/<track>/*.md` (front matter: title, subtitle, description, date, track, weight). Tracks are listed in `content/study/_index.md`. `layouts/study/` renders them in the blog-post look; the render hooks in `layouts/_markup/` turn `##` into numbered sections, `> [!TIP] Title` alerts into callouts, plain quotes into "say it like this" examples, and code fences into copyable code blocks. Adding a note = one Markdown file
+- **Study progress**: `assets/js/study.js` lets a reader mark a note complete (button at the end of each note) and shows overall + per-track progress bars on `/study/`. Stored in the reader's browser only (`localStorage` key `study-progress-v1`, `{ "<note path>": "YYYY-MM-DD" }`), no accounts or backend; elements opt in with `data-study-note="<RelPermalink>"`
 - **Routing**: Hugo custom output formats (About → `/about/`, Blogs → `/blogs/`, Projects → `/projects/`); `/study/` is a normal Hugo section
 - **PWA**: Service worker at `static/service_worker.js` (network-first pages, cache-first fingerprinted assets), manifest at `assets/metadata/manifest.json`
 - **Security**: CSP + security/cache headers in `static/_headers`. Contact form uses Netlify Forms (no credentials client-side)
@@ -33,6 +34,7 @@ Hugo-based static portfolio website for Anurag Kar, hosted on Netlify at `https:
 | `assets/scss/_footer.scss` | Footer |
 | `assets/js/site.js` | Theme toggle, nav, scroll effects, scroll reveal, contact form (Netlify Forms), SW registration |
 | `assets/js/blog.js` | Blog post progress bar, section reveal, TOC, copy buttons |
+| `assets/js/study.js` | Study notes: mark complete, progress bars (localStorage) |
 | `static/_headers` | CSP, security and cache headers |
 | `tools/check-build.mjs` | Static checks on a build (CSP, SRI, no inline scripts, no secrets) |
 | `tests/browser/` | Headless-Chrome tests of the build served with the real headers |
